@@ -43,7 +43,12 @@ bool AQcdnumDDISCS::Update() {
    fValue.resize(GetRequirements().size());
    fError.resize(GetRequirements().size());
 
-   vector<double> q2 = DOUBLE_COL_NS(Data,Q2,GetAlposName());
+   vector<double> q2Vec = DOUBLE_COL_NS(Data,Q2,GetAlposName());
+   cout << "q2Vector size " << q2Vec.size() << endl;
+
+   for(auto q2 : q2Vec)
+       cout << q2 <<" "<< endl;
+
    //vector<double> x = DOUBLE_COL_NS(Data,x,GetAlposName());
    //vector<double> y = DOUBLE_COL_NS(Data,y,GetAlposName());
 

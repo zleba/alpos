@@ -38,13 +38,13 @@ IsNC                             true
 #
 ##########################################################          
 
-#   ColumnType = 3*'Bin','Sigma',12*'Error'
+#   ColumnType = 3*'Bin','Sigma',14*'Error'
 #   ColumnName = 'Q2','x','y','reduced x-section',2*'ignore','stat','uncor',2*'ignore','V2','H2','N1','B2','xlum_4','corlum'
 # Q2      x     ds/dxdq2  tot   stat  unc   u^h   cor    c^V+   c^h+   c^N+   c^B+ 1.72916 0.5
 #GeV^2          pb/GeV^2    %     %    %     %     %      %      %      %      % 1.72916 0.5
 
 Data {{
- Q2        x        y        Sigma    ??       tot       stat      unc       u^h       cor      c^V+      c^h+      c^N+      c^B+      1.72916   0.5
+xp       Q2          beta        Sigma      d(stat) d(sys) d(tot) d(unc) d(lar) d(ele) d(theta) d(noise) d(xpom) d(beta) d(bg) d(Plug) d(Q2) d(spa) 
 
 0.0003 		 3.5 		 0.17 		 0.0224 	 17.2 	 10.8 	 20.3 	 1.6 	 0.2 	 5.3 	 -1.7 	 -4.7 	 -0.6 	 -0.8 	 0.0 	 -0.0 	 3.0 	 1.7 
 0.0003 		 3.5 		 0.27 		 0.0262 	 7.6 	 6.4 	 9.9 	 1.6 	 0.2 	 1.3 	 2.7 	 -4.6 	 -0.4 	 -0.5 	 -0.1 	 -0.1 	 1.0 	 1.8 
