@@ -1,0 +1,85 @@
+#! -*-sh-*- (colors for emacs)
+
+# --------------------------------------------------------------#
+#
+#  PDF at starting scale q2_0=1.9, as used in HERAPDF-1.0 fit
+#  Initialization in main steering file requires at least
+#     InitFunctions {{
+#        FunctionName          FunctionType      
+#        xyz                   PDFQ0_HERA 
+#     }}
+#  where 'xyz' may be conveniently chosen to be PDFQ0_HERA, or
+#  any other name, of there herein defined default parameters
+#  should be partially ignored.
+#
+#
+#  Free parameters in fit are then:
+#    xyz.gB   
+#    xyz.gC   
+#    xyz.uvB  
+#    xyz.uvC  
+#    xyz.uvE  
+#    xyz.dvC  		     
+#    xyz.UbarC
+#    xyz.DbarA
+#    xyz.DbarB
+#    xyz.DbarC
+#
+#  where again xyz may most likely by 'PDFQ0_HERA'.
+#
+#  Parameters: gA, uvA, dvA and UbarA are taken from sumrules
+#
+# --------------------------------------------------------------#
+
+
+# --------------------------------------------------------------#
+# PDFQ0_HERA (full)  
+# --------------------------------------------------------------#
+PDFQ0_HERA.iPDF                           0 # dummy
+PDFQ0_HERA.xp                             0.1  # dummy
+
+PDFQ0_HERA.fs                             0.31
+
+PDFQ0_HERA.gA                             0 # take from sumrules
+PDFQ0_HERA.gB                             0.21385
+PDFQ0_HERA.gC                             9.0138
+PDFQ0_HERA.gD                             0
+PDFQ0_HERA.gE                             0
+PDFQ0_HERA.gF                             0
+PDFQ0_HERA.gAP                            0
+PDFQ0_HERA.gBP                            0
+PDFQ0_HERA.gCP                            0
+
+PDFQ0_HERA.uvA                            0 # take from sumrules
+PDFQ0_HERA.uvB                            0.66559 
+PDFQ0_HERA.uvC                            4.6522 
+PDFQ0_HERA.uvD                            0 
+PDFQ0_HERA.uvE                            9.6938 
+PDFQ0_HERA.uvF                            0 
+
+PDFQ0_HERA.dvA                            0 # take from sumrules
+PDFQ0_HERA.dvB                            PDFQ0_HERA.uvB
+PDFQ0_HERA.dvC                            4.2914 
+PDFQ0_HERA.dvD                            0 
+PDFQ0_HERA.dvE                            0 
+PDFQ0_HERA.dvF                            0 
+
+PDFQ0_HERA.UbarA                          0 # take from sumrules
+PDFQ0_HERA.UbarB                          PDFQ0_HERA.DbarB   
+PDFQ0_HERA.UbarC                          2.5820  
+PDFQ0_HERA.UbarD                          0   
+PDFQ0_HERA.UbarE                          0   
+PDFQ0_HERA.UbarF                          0   
+PDFQ0_HERA.DbarA                          0.16261   
+PDFQ0_HERA.DbarB                          -0.16511   
+PDFQ0_HERA.DbarC                          2.4048   
+PDFQ0_HERA.DbarD                          0   
+PDFQ0_HERA.DbarE                          0   
+PDFQ0_HERA.DbarF                          0   
+PDFQ0_HERA.seaA                           0
+PDFQ0_HERA.seaB                           0
+PDFQ0_HERA.seaC                           0
+PDFQ0_HERA.seaD                           0 
+PDFQ0_HERA.seaE                           0
+PDFQ0_HERA.seaF                           0
+

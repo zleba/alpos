@@ -1,0 +1,439 @@
+#! -*-sh-*- (colors for emacs)
+
+#################################################################
+#
+#  An example steering file for Alpos
+#
+#################################################################
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part I: Global Alpos settings
+#
+#  Alpos global settings
+#
+# --------------------------------------------------------------#
+ErrorSymmetrization       SignImprovedQuadratic  # not yet implemented: only hardcoded
+GlobalVerbosity           Info    # Possible options: Infom, Debug, Warning, Error
+InitSubsets               false   # Init subsets of datasets: true, false
+Output                    output
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part II: Datasets 
+#
+#  Specify 'DataTheorySets', i.e. data-files containing
+#  data sets and their corresponding theory class
+#
+# --------------------------------------------------------------#
+
+DataTheorySets {{
+  AlposName                          SteerFile                                                       TheoryFunction
+# ---------                          ---------                                                       --------------
+  HERA-II-NCe+p-920                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e+p_920_2IP.dat              TwoPomeronModel  Q2==3.5
+  HERA-II-NCe+p-820                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e+p_820_2IP.dat              TwoPomeronModel  Q2==3.5
+  HERA-II-NCe+p-575                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e+p_575_2IP.dat              TwoPomeronModel  Q2==3.5
+  HERA-II-NCe+p-460                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e+p_460_2IP.dat              TwoPomeronModel  Q2==3.5
+  HERA-II-NCe-p-920                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e-p_2IP.dat                  TwoPomeronModel  Q2==3.5
+#  HERA-II-CCe+p                      datafiles/h1zeus/1506.06042/HERA1+2_CC_e+p.dat                  TwoPomeronModel
+#  HERA-II-CCe-p                      datafiles/h1zeus/1506.06042/HERA1+2_CC_e-p.dat                  TwoPomeronModel
+}}
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part III: Tasks
+#
+#  Specify tasks and their name which should be executed by Alpos
+#
+# --------------------------------------------------------------#
+Tasks {{
+  TaskType               TaskName       
+# --------               --------
+#   PrintErrorSummary     PrintErrors          # print errors 
+#   PrintSteering	 PrintSt	 	   
+#   PrintTheorySet	 Print	 	   
+  StatAnalysis	         Stat                  
+#  AFitter		 MyFit		   
+  StatAnalysis	         Stat                  
+  PrintDataTheory        DataTheory
+#  SavePDFTGraph          SavePDFTGraph
+}}
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part IV: Task parameters
+#
+#  Specify parameters for each task
+#  The parameters must be related to the 'task type' and 
+#  must put into a namespace (i.e. '{{{' '}}}') with the
+#  'name' of the taks 
+#
+# --------------------------------------------------------------#
+
+DataTheory {{{
+  Columns {
+      iData Q2 x y Data ErrData ErrTot Theory  Ratio Pull 
+  }
+}}}
+
+
+MyFit {{{
+   Minimizer                    TMinuit  # Minuit2 TMinuit
+   PrintLevel                   3 
+   Tolerance                    0.1  
+   Strategy                     1
+   Chisq		        LogNormal #HERAFitterDefault
+   # Chisq options:
+   #    HERAFitterDefault 
+   #    HERAFitterFull
+   #    HERAFitterFullImproved
+   #    LogNormal
+   #    LogNormalNuisance
+   #    SimpleNuisance 
+   #    ChisqCovariance 
+   #    SimpleNuisanceBias 
+
+   FitParameters {
+      TwoPomeronParams.a0	
+      TwoPomeronParams.b0	
+      TwoPomeronParams.e0	
+      TwoPomeronParams.eta0a	
+      TwoPomeronParams.eta0b	
+      TwoPomeronParams.a1	
+      TwoPomeronParams.b1	
+      TwoPomeronParams.e1	
+      TwoPomeronParams.eta1a	
+      TwoPomeronParams.eta1b	
+   }
+
+   # printing
+   PrintResults			true
+   PrintCovariance		false
+
+   # todo's
+   InputTheorySet		MyFit.Result
+   PrintCorrelations		true
+
+# --- Chi2Scan parameters
+   SigmaRange                   5
+   RootFilename                 test_chi2scan.hera2_LogN.5x2s.80.root
+   nPoints                      80
+   DoFit                        true  # repeat full fit for each scan point (may be time consuming. Requires parameters for AFitter)
+   Fitter                       MyFit
+
+}}}
+
+
+# --------------------------------------------------------------#
+
+Stat {{{
+   Chisq		        LogNormal #LogNormalNuisance #HERAFitterDefault #LogNormal #ChisqCovariance # LogNormal   # current choices: LogNormal, ChisqCovariance, LogNormalNuisance
+   Chisq2                       
+   DoChisq                      true
+   DoPValue                     true
+}}}
+
+# --------------------------------------------------------------#
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part V: Alpos theory settings
+#
+#  Specify 'theory' parameters
+#  These consists fo
+#     + functions
+#     + parameters
+#
+#  A theory function takes parameters and/or other functions
+#  as input to calculate output value(s), as for instance 
+#  cross sections (or PDFs). A parameter obviously always returns
+#  its value.
+#  
+#  Parameters can be made 'identical' by setting one value to
+#  the other, e.g.:
+#    AlphasMZ         AsMz
+#  This does not only 'copy' the value of the parameter, but also
+#  if the parameter is changed during the run, both parameters
+#  are updated simultaneously. If only the 'starting' value
+#  should be identical, then one could use the 'read_steer' feature
+#    AlphasMZ         ${AsMz}
+#
+#  Any function requires a particular set of input paramters,
+#  which can be looked up in the .cc file.
+#  The 'default' values can be specified like:
+#    <functiontype>.<parametername>    value
+#  
+#  A particular instantiation of a function takes the default 
+#  parameters. These may be replaced for each instance
+#  of a function by setting them explicitly, like e.g.:
+#    <functionname>.<parametername>    value
+#       
+#  By that, multiple instances of functions with different input
+#  parameters may be defined.
+#
+#  Some functions have 'integration' parameters, which have to
+#  set to a dummy value, like for instance a renormalization or
+#  factorization scale:
+#     QcdnumPDF.muf		       100
+#
+#  Please see the documentation of the individual functions for 
+#  more details on the parameters.
+#
+#  If the functions have a (non-object-oriented) implementation
+#  with e.g. fortran, one typically has a 'Init'-function, which 
+#  then is required by the actual function as input.
+#  
+#  If a function is accesses during runtime, which is not 
+#  initialized, this will cause a 'purely virtual function call' 
+#  error.
+#
+# --------------------------------------------------------------#
+
+
+AlposTheory {{{
+
+# --------------------------------------------------------------#
+#   Specify used functions.
+#   Give them a 'name' and specify the class
+# --------------------------------------------------------------#
+InitFunctions {{
+   FunctionName          FunctionType         # one line here! (header of 'table')
+   TwoPomeronParams      TwoPomeronParams
+}}
+
+
+
+# --------------------------------------------------------------#
+# Useful parameter shorthand notations
+# --------------------------------------------------------------#
+iOrd                        1
+AlphasMz		    0.118000001 
+mZ                          91.1876
+alphaPrime                                  0.25
+beta0                                       1.87 
+
+# --------------------------------------------------------------#
+#  Theory defaults
+# --------------------------------------------------------------#
+# TwoPomeronModel defaults
+TwoPomeronModel.beta0                       beta0
+TwoPomeronModel.alphaPrime0                 alphaPrime
+TwoPomeronModel.beta1	                    beta0
+TwoPomeronModel.alphaPrime1                 alphaPrime
+TwoPomeronModel.mp	                    0.938272 
+TwoPomeronModel.TwoPomeronPars              TwoPomeronParams
+
+
+# --------------------------------------------------------------#
+# QcdnumInit defaults
+TwoPomeronParams.Q2                          0.2   # This parameter is only for internal use   
+TwoPomeronParams.y			     0.2   # This parameter is only for internal use  
+TwoPomeronParams.x			     0.2   # This parameter is only for internal use  
+TwoPomeronParams.s			     0.2   # This parameter is only for internal use  
+TwoPomeronParams.mp			     TwoPomeronModel.mp
+
+#TwoPomeronParams.a0       =   3.9446e+07   +/-   803846      
+#TwoPomeronParams.b0       =  8.54649e+08   +/-   1.57165e+07 
+#TwoPomeronParams.e0       =     -0.45146   +/-   0.000897991 
+#TwoPomeronParams.eta0a    =     -1.11986   +/-   0.0035791   
+#TwoPomeronParams.eta0b    =    -0.534791   +/-   0.00300436  
+
+TwoPomeronParams.a0			     -14     # Set this parameter to unequal 0 to use individual parameters for each Q2 point
+TwoPomeronParams.b0			     1.0     # Set this parameter to unequal 0 to use individual parameters for each Q2 point
+TwoPomeronParams.e0			     0.9     # Set this parameter to unequal 0 to use individual parameters for each Q2 point
+TwoPomeronParams.eta0a			     10  
+TwoPomeronParams.eta0b			     0.2  
+TwoPomeronParams.a1			     0.8     # Set this parameter to unequal 0 to use individual parameters for each Q2 point
+TwoPomeronParams.b1			     -1     # Set this parameter to unequal 0 to use individual parameters for each Q2 point
+TwoPomeronParams.e1			     0.2 #0.25     # Set this parameter to unequal 0 to use individual parameters for each Q2 point
+TwoPomeronParams.eta1a			     24  
+TwoPomeronParams.eta1b			     -0.2  
+
+TwoPomeronParams.a0_q2_0p045		     0.  
+TwoPomeronParams.b0_q2_0p045		     0.  
+TwoPomeronParams.e0_q2_0p045		     0.  
+TwoPomeronParams.a1_q2_0p045		     0.  
+TwoPomeronParams.b1_q2_0p045		     0.  
+TwoPomeronParams.e1_q2_0p045		     0.  
+
+TwoPomeronParams.a0_q2_0p065		     0.  
+TwoPomeronParams.b0_q2_0p065		     0.  
+TwoPomeronParams.e0_q2_0p065		     0.  
+TwoPomeronParams.a1_q2_0p065		     0.  
+TwoPomeronParams.b1_q2_0p065		     0.  
+TwoPomeronParams.e1_q2_0p065		     0.  
+
+TwoPomeronParams.a0_q2_0p085		     0.  
+TwoPomeronParams.b0_q2_0p085		     0.  
+TwoPomeronParams.e0_q2_0p085		     0.  
+TwoPomeronParams.a1_q2_0p085		     0.  
+TwoPomeronParams.b1_q2_0p085		     0.  
+TwoPomeronParams.e1_q2_0p085		     0.  
+
+TwoPomeronParams.a0_q2_0p11		     0.  
+TwoPomeronParams.b0_q2_0p11		     0.  
+TwoPomeronParams.e0_q2_0p11		     0.  
+TwoPomeronParams.a1_q2_0p11		     0.  
+TwoPomeronParams.b1_q2_0p11		     0.  
+TwoPomeronParams.e1_q2_0p11		     0.  
+
+TwoPomeronParams.a0_q2_0p15		     0.  
+TwoPomeronParams.b0_q2_0p15		     0.  
+TwoPomeronParams.e0_q2_0p15		     0.  
+TwoPomeronParams.a1_q2_0p15		     0.  
+TwoPomeronParams.b1_q2_0p15		     0.  
+TwoPomeronParams.e1_q2_0p15		     0.  
+
+TwoPomeronParams.a0_q2_0p20		     0.  
+TwoPomeronParams.b0_q2_0p20		     0.  
+TwoPomeronParams.e0_q2_0p20		     0.  
+TwoPomeronParams.a1_q2_0p20		     0.  
+TwoPomeronParams.b1_q2_0p20		     0.  
+TwoPomeronParams.e1_q2_0p20		     0.  
+
+TwoPomeronParams.a0_q2_0p25		     0.  
+TwoPomeronParams.b0_q2_0p25		     0.  
+TwoPomeronParams.e0_q2_0p25		     0.  
+TwoPomeronParams.a1_q2_0p25		     0.  
+TwoPomeronParams.b1_q2_0p25		     0.  
+TwoPomeronParams.e1_q2_0p25		     0.  
+
+TwoPomeronParams.a0_q2_0p35		     0.  
+TwoPomeronParams.b0_q2_0p35		     0.  
+TwoPomeronParams.e0_q2_0p35		     0.  
+TwoPomeronParams.a1_q2_0p35		     0.  
+TwoPomeronParams.b1_q2_0p35		     0.  
+TwoPomeronParams.e1_q2_0p35		     0.  
+
+TwoPomeronParams.a0_q2_0p40		     0.  
+TwoPomeronParams.b0_q2_0p40		     0.  
+TwoPomeronParams.e0_q2_0p40		     0.  
+TwoPomeronParams.a1_q2_0p40		     0.  
+TwoPomeronParams.b1_q2_0p40		     0.  
+TwoPomeronParams.e1_q2_0p40		     0.  
+
+TwoPomeronParams.a0_q2_0p50		     0.  
+TwoPomeronParams.b0_q2_0p50		     0.  
+TwoPomeronParams.e0_q2_0p50		     0.  
+TwoPomeronParams.a1_q2_0p50		     0.  
+TwoPomeronParams.b1_q2_0p50		     0.  
+TwoPomeronParams.e1_q2_0p50		     0.  
+
+TwoPomeronParams.a0_q2_0p65		     0.  
+TwoPomeronParams.b0_q2_0p65		     0.  
+TwoPomeronParams.e0_q2_0p65		     0.  
+TwoPomeronParams.a1_q2_0p65		     0.  
+TwoPomeronParams.b1_q2_0p65		     0.  
+TwoPomeronParams.e1_q2_0p65		     0.  
+
+TwoPomeronParams.a0_q2_0p85		     0.  
+TwoPomeronParams.b0_q2_0p85		     0.  
+TwoPomeronParams.e0_q2_0p85		     0.  
+TwoPomeronParams.a1_q2_0p85		     0.  
+TwoPomeronParams.b1_q2_0p85		     0.  
+TwoPomeronParams.e1_q2_0p85		     0.  
+
+TwoPomeronParams.a0_q2_1p2		     0.  
+TwoPomeronParams.b0_q2_1p2		     0.  
+TwoPomeronParams.e0_q2_1p2		     0.  
+TwoPomeronParams.a1_q2_1p2		     0.  
+TwoPomeronParams.b1_q2_1p2		     0.  
+TwoPomeronParams.e1_q2_1p2		     0.  
+
+TwoPomeronParams.a0_q2_1p5		     0.  
+TwoPomeronParams.b0_q2_1p5		     0.  
+TwoPomeronParams.e0_q2_1p5		     0.  
+TwoPomeronParams.a1_q2_1p5		     0.  
+TwoPomeronParams.b1_q2_1p5		     0.  
+TwoPomeronParams.e1_q2_1p5		     0.  
+
+TwoPomeronParams.a0_q2_2p0		     0.  
+TwoPomeronParams.b0_q2_2p0		     0.  
+TwoPomeronParams.e0_q2_2p0		     0.  
+TwoPomeronParams.a1_q2_2p0		     0.  
+TwoPomeronParams.b1_q2_2p0		     0.  
+TwoPomeronParams.e1_q2_2p0		     0.  
+
+TwoPomeronParams.a0_q2_2p5		     0.  
+TwoPomeronParams.b0_q2_2p5		     0.  
+TwoPomeronParams.e0_q2_2p5		     0.  
+TwoPomeronParams.a1_q2_2p5		     0.  
+TwoPomeronParams.b1_q2_2p5		     0.  
+TwoPomeronParams.e1_q2_2p5		     0.  
+
+TwoPomeronParams.a0_q2_2p7		     0.  
+TwoPomeronParams.b0_q2_2p7		     0.  
+TwoPomeronParams.e0_q2_2p7		     0.  
+TwoPomeronParams.a1_q2_2p7		     0.  
+TwoPomeronParams.b1_q2_2p7		     0.  
+TwoPomeronParams.e1_q2_2p7		     0.  
+
+TwoPomeronParams.a0_q2_3p5		     0.  
+TwoPomeronParams.b0_q2_3p5		     0.  
+TwoPomeronParams.e0_q2_3p5		     0.  
+TwoPomeronParams.a1_q2_3p5		     0.  
+TwoPomeronParams.b1_q2_3p5		     0.  
+TwoPomeronParams.e1_q2_3p5		     0.  
+
+TwoPomeronParams.a0_q2_4p5		     0.  
+TwoPomeronParams.b0_q2_4p5		     0.  
+TwoPomeronParams.e0_q2_4p5		     0.  
+TwoPomeronParams.a1_q2_4p5		     0.  
+TwoPomeronParams.b1_q2_4p5		     0.  
+TwoPomeronParams.e1_q2_4p5		     0.  
+
+TwoPomeronParams.a0_q2_6p5		     0.  
+TwoPomeronParams.b0_q2_6p5		     0.  
+TwoPomeronParams.e0_q2_6p5		     0.  
+TwoPomeronParams.a1_q2_6p5		     0.  
+TwoPomeronParams.b1_q2_6p5		     0.  
+TwoPomeronParams.e1_q2_6p5		     0.  
+
+TwoPomeronParams.a0_q2_8p5		     0.  
+TwoPomeronParams.b0_q2_8p5		     0.  
+TwoPomeronParams.e0_q2_8p5		     0.  
+TwoPomeronParams.a1_q2_8p5		     0.  
+TwoPomeronParams.b1_q2_8p5		     0.  
+TwoPomeronParams.e1_q2_8p5                   0.  
+
+TwoPomeronParams.a0_q2_10		     0.  
+TwoPomeronParams.b0_q2_10		     0.  
+TwoPomeronParams.e0_q2_10		     0.  
+TwoPomeronParams.a1_q2_10		     0.  
+TwoPomeronParams.b1_q2_10		     0.  
+TwoPomeronParams.e1_q2_10                    0.  
+
+TwoPomeronParams.a0_q2_12		     0.  
+TwoPomeronParams.b0_q2_12		     0.  
+TwoPomeronParams.e0_q2_12		     0.  
+TwoPomeronParams.a1_q2_12		     0.  
+TwoPomeronParams.b1_q2_12		     0.  
+TwoPomeronParams.e1_q2_12                    0.  
+
+
+# --------------------------------------------------------------#
+#  Theory specializations
+# --------------------------------------------------------------#
+
+
+}}} # end of 'AlposTheory' namespace
+# --------------------------------------------------------------#
+
+
+
+

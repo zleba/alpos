@@ -1,0 +1,41 @@
+#! -*-sh-*-
+##########################################################
+#  General parameters of this dataset
+##########################################################
+AlposName			"bla-33"  # A unique alpos name
+Description		  	"Polarisation measurement e+RH"
+Reference			"JHEP 09 (2012) 061 [arXiv:1206.7007]"
+
+##########################################################
+#  Theory factors
+##########################################################
+#TheoryFunction: 'SingleConstant'
+theConst                        polEpRH     # 'polEmLH' must be defined in main steering
+
+##########################################################
+#  Data table 
+##########################################################
+
+Data {{
+  Sigma       ErrUnc   PolErrCorrLpol   PolErrCorrTpol
+  0.324957     1.99              0.48             0.37
+}}
+
+Subsets { }
+Cuts {  }
+
+ErrorSet		"H1-Pol"   # errors are labelled as "<ErrorSet>_<Name>", and are correlated with other of the same name of other datasets 
+ErrorUnit		Percent    # Are errors given as: "Absolute", "Relative", "Percent"
+
+Errors {{
+  ErrorName      Column           Correlation     Nature
+  ErrUnc         ErrUnc              0            M
+  PolErrCorrLpol PolErrCorrLpol      1            M
+  PolErrCorrTpol PolErrCorrTpol      1            M
+}}
+
+TheoryFactors { }
+TheoryErrors {{
+  Name      Column     Correlation    Percent     DesiredTreatment   
+}}
+

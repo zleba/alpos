@@ -1,0 +1,155 @@
+#! -*-sh-*- (colors for emacs)
+
+################################################################
+#
+#  A steering file for an example Alpos alpha_s fit
+#  using the D0 inclusive jet data
+#  DB Feb 2015
+#
+#################################################################
+
+# --------------------------------------------------------------#
+#  Specify 'DataTheorySets', i.e. data-files containing
+#  data sets and their corresponding theory class
+# --------------------------------------------------------------#
+DataTheorySets {{
+  AlposName                         SteerFile                                TheoryFunction         CutsAndParameters
+  D0-InclJet-RunII-EtaBin1          datafiles/d0/D0-InclJets-2009.dat        fastNLOInterpolPDFas   PubFit==1
+#  D0-InclJet-RunII-EtaBin1          datafiles/d0/D0-InclJets-2009.dat        fastNLO                PubFit==1
+}}
+
+
+# --------------------------------------------------------------#
+#  Specify tasks which should be executed by Alpos
+# --------------------------------------------------------------#
+Tasks {{
+   TaskType           TaskName
+   AFitter            MyFit
+   StatAnalysis       Stat
+}}
+
+# --------------------------------------------------------------#
+#  Alpos global settings
+# --------------------------------------------------------------#
+ErrorSymmetrization       blabla
+GlobalVerbosity           Info # Debug, Warning, Error
+InitSubsets               false  # inti subsets of datasets
+
+
+# --------------------------------------------------------------#
+#  Task parameters
+#    Put all parameters in a namespace with the task's name
+# --------------------------------------------------------------#
+
+MyFit {{{
+   Minimizer                    TMinuit
+   PrintLevel                   3
+   Tolerance                    1
+   Strategy                     1
+   Chisq                        D0Fit 
+
+   FitParameters {
+       "AlphasMz"
+   }
+
+   # printing
+   PrintResults                 true
+   PrintCovariance              true
+
+   # todo's
+   InputTheorySet               MyFit.Result
+   PrintCorrelations            true
+
+}}}
+
+# --------------------------------------------------------------#
+
+Stat {{{
+   Chisq                        LogNormal
+   ChisqStatUncorr              
+   DoChisq                      true
+   DoPValue                     true
+}}}
+# --------------------------------------------------------------#
+
+
+
+#################################################################
+#  Specify Alpos theory (in 'AlposTheory' namespace)
+#################################################################
+AlposTheory {{{
+
+# --------------------------------------------------------------#
+#   Specify used functions.
+#   Give them a 'name' and specify the class
+# --------------------------------------------------------------#
+InitFunctions {{
+# one line here! (header of 'table')
+  AsRun                   CRunDec
+  LHAPDF                  LHAPDF6
+}}
+
+
+
+# --------------------------------------------------------------#
+# Useful parameter shorthand notations
+# --------------------------------------------------------------#
+iOrd                        1
+iThr                        1
+AlphasMz                    0.1188888
+mZ                          91.1876
+
+# --------------------------------------------------------------#
+#  Theory defaults
+# --------------------------------------------------------------#
+# CRunDec defaults
+CRunDec.AlphasMz                AlphasMz
+CRunDec.Mz                      mZ
+CRunDec.nFlavor                 5
+CRunDec.nLoop                   3
+CRunDec.mur                     100             # temporary initialization value
+# --------------------------------------------------------------#
+# LHAPDF6 defaults
+LHAPDF6.PDFSet                  10
+LHAPDF6.LHAPDFFile              MSTW2008nnlo_asmzrange #CT10nlo #MSTW2008nlo_asmzrange #HERAPDF15NLO_EIG #HERAPDF MSTW2008nlo_asmzrange #"CT10"
+LHAPDF6.xp                      0.01
+LHAPDF6.muf                     100
+
+# --------------------------------------------------------------#
+# fastNLO defaults
+fastNLO.Filename             table.tab
+fastNLO.ScaleFacMuR          1
+fastNLO.ScaleFacMuF          1
+fastNLO.Units                1      # 0: absoluteUnits, 1: PublicationUnits
+fastNLO.iOrd                 iOrd
+fastNLO.iThr                 iThr
+# flexible-scale options
+fastNLO.MuRFuncForm          0 # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+fastNLO.MuFFuncForm          0
+fastNLO.PDF                  LHAPDF
+fastNLO.Alpha_s              AsRun
+
+# --------------------------------------------------------------#
+# fastNLOInterpolPdfAs defaults
+fastNLOInterpolPDFas.Filename             table.tab
+fastNLOInterpolPDFas.ScaleFacMuR          1
+fastNLOInterpolPDFas.ScaleFacMuF          1
+fastNLOInterpolPDFas.Units                1      # 0: absoluteUnits, 1: PublicationUnits
+fastNLOInterpolPDFas.iOrd                 iOrd
+fastNLOInterpolPDFas.iThr                 iThr
+fastNLOInterpolPDFas.MuRFuncForm          0  # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+fastNLOInterpolPDFas.MuFFuncForm          0
+fastNLOInterpolPDFas.PDF                  LHAPDF
+fastNLOInterpolPDFas.AlphasMz             AlphasMz
+fastNLOInterpolPDFas.FitFunc              pol2
+fastNLOInterpolPDFas.LHAPDFasSeries       MSTW2008nnlo_asmzrange #CT10was #MSTW2008nlo_asmzrange
+
+
+# --------------------------------------------------------------#
+#  Theory specializations
+# --------------------------------------------------------------#
+# --------------------------------------------------------------#
+
+
+}}} # end of 'AlposTheory' namespace
+# --------------------------------------------------------------#

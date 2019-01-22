@@ -1,0 +1,103 @@
+#-*-sh-*-
+#
+# The data are taken from:
+#
+#"Inclusive jet and dijet cross sections in deep inelastic scattering at HERA"
+# By ZEUS Collaboration 
+# Published in: Nucl.Phys.B765:1-30,2007
+# e-Print: 	arXiv:hep-ex/0608048v2
+#
+# Data as listed in Table 8 of the original publication
+# Some errors have been symmetrised in respect to publication (err = 0.5 * (errP + errM))
+# The QED correction differs from the published one, after contact with editors
+# 
+
+##########################################################
+#  General parameters of this dataset
+##########################################################
+
+AlposName           "bla" # not used
+Description         "ZEUS HighQ2 Inclusive jets 98/00"
+Reference           "Pucl.Phys. B765 (2007) 1 [arXiv:hep-ex/0608048]"
+
+
+##########################################################
+#  Theory function settings
+##########################################################
+TheoryFunction		         fastNLO    # e.g. fastNLO, fastNLOalt, ...
+
+
+##########################################################
+#  fastNLO parameters, specific to this dataset
+#  not specified parameters are taken from default as
+#  specified in the global steering file
+##########################################################
+Filename			theoryfiles/fnh4401_I724050.tab
+Units				1      # 0: absoluteUnits, 1: PublicationUnits
+MuRFuncForm			3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+MuFFuncForm		        3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+
+
+##########################################################
+#  Data table 
+#  
+#  Necessary keys are:
+#   + ErrorSet           (Specifies the 'set' of error, which may correlated to other data sets)
+#   + Data		 (the data table, bin boundaries, and errors)
+#   + Errors		 (specify the used errors, and its nature)
+#   + TheoryFactors     (multiplicative factors to be applied on theory) 
+#   + TheoryErrors	 (additional errors on the theory [as sepcified in 'Data'])
+# 
+##########################################################
+
+Data {{
+q2min q2max etmin  etmax et    Sigma  stat   uncor    hfs  lumi[%]    lumi  NP3%Perc    Z0CoDt  Z0Corr  NPCorr kfac
+125.  250.    8.    10.  9.0   32.97  0.49    1.21    1.75     2.2  0.72534    0.9891    0.9983     1.0    0.90  1.21
+125.  250.    10.   14.  12.0  13.00  0.22    0.19    0.77     2.2  0.286      0.39      1.001      1.0    0.94  1.26
+125.  250.    14.   18.  16.0  3.71   0.11    0.15    0.26     2.2  0.08162    0.1113    1.004      1.0    0.94  1.28
+125.  250.    18.   25.  21.5  0.835  0.037   0.0125  0.0535   2.2  0.01837    0.02505   0.9987     1.0    0.93  1.26
+125.  250.    25.   100. 50.0  0.0160 0.0014  0.0027  0.00105  2.2  0.000352   0.00048   1.007      1.0    0.86  1.13
+250.  500.    8.    10.  9.0   18.40  0.38    0.74    0.64     2.2  0.4048     0.552     0.9985     1.0    0.92  1.10
+250.  500.    10.   14.  12.0  8.74   0.19    0.3     0.34     2.2  0.19228    0.2622    1.004      1.0    0.95  1.15
+250.  500.    14.   18.  16.0  3.30   0.11    0.15    0.16     2.2  0.0726     0.099     1.002      1.0    0.97  1.20
+250.  500.    18.   25.  21.5  0.889  0.042   0.041   0.0545   2.2  0.019558   0.02667   1.004      1.0    0.97  1.21
+250.  500.    25.   100. 50.0  0.0242 0.0020  0.0005  0.00115  2.2  0.0005324  0.000726  0.9943     1.0    0.91  1.15
+500.  1000.   8.    10.  9.0   8.79   0.26    0.34    0.205    2.2  0.19338    0.2637    1.000      1.0    0.91  1.02
+500.  1000.   10.   14.  12.0  4.69   0.14    0.19    0.12     2.2  0.10318    0.1407    1.000      1.0    0.95  1.06
+500.  1000.   14.   18.  16.0  2.239  0.093   0.137   0.0825   2.2  0.049258   0.06717   1.000      1.0    0.98  1.10
+500.  1000.   18.   25.  21.5  0.701  0.039   0.051   0.026    2.2  0.015422   0.02103   1.000      1.0    0.99  1.14
+500.  1000.   25.   100. 50.0  0.0335 0.0027  0.0018  0.0019   2.2  0.000737   0.001005  1.000      1.0    0.97  1.12
+1000. 2000.   8.    10.  9.0   3.30   0.16    0.14    0.085    2.2  0.0726     0.099     0.9950     1.0    0.93  0.96
+1000. 2000.   10.   14.  12.0  1.985  0.091   0.077   0.027    2.2  0.04367    0.05955   0.9962     1.0    0.95  0.98
+1000. 2000.   14.   18.  16.0  1.115  0.069   0.056   0.021    2.2  0.02453    0.03345   1.000      1.0    0.99  1.01
+1000. 2000.   18.   25.  21.5  0.492  0.034   0.039   0.0135   2.2  0.010824   0.01476   1.000      1.0    0.99  1.05
+1000. 2000.   25.   100. 50.0  0.0263 0.0026  0.0043  0.00165  2.2  0.0005786  0.000789  0.9983     1.0    1.00  1.06
+2000. 5000.   8.    10.  9.0   1.292  0.095   0.12    0.0275   2.2  0.028424   0.03876   0.9712    1.03    0.90  0.88
+2000. 5000.   10.   14.  12.0  0.858  0.060   0.024   0.0065   2.2  0.018876   0.02574   0.9738    1.03    0.93  0.90
+2000. 5000.   14.   18.  16.0  0.612  0.052   0.07    0.02     2.2  0.013464   0.01836   0.9797    1.02    1.00  0.94
+2000. 5000.   18.   25.  21.5  0.242  0.024   0.028   0.0075   2.2  0.005324   0.00726   0.9822    1.02    1.00  0.97
+2000. 5000.   25.   100. 50.0  0.0185 0.0021  0.0023  0.00045  2.2  0.000407   0.000555  0.9885    1.01    0.99  0.99
+5000. 100000. 8.    10.  9.0   0.225  0.037   0.091   0.0085   2.2  0.00495    0.00675   0.8362    1.19    0.93  1.00
+5000. 100000. 10.   14.  12.0  0.267  0.037   0.0225  0.011    2.2  0.005874   0.00801   0.8405    1.19    0.93  0.87
+5000. 100000. 14.   18.  16.0  0.122  0.024   0.017   0.004    2.2  0.002684   0.00366   0.8432    1.19    0.98  0.85
+5000. 100000. 18.   25.  21.5  0.070  0.013   0.019   0.0005   2.2  0.00154    0.0021    0.8424    1.19    0.99  0.87
+5000. 100000. 25.   100. 50.0  0.0114 0.0022  0.0042  0.0002   2.2  0.0002508  0.000342  0.8126    1.23    1.00  0.90
+ 
+}}
+
+Subsets {  q2min  etmin }
+
+TheoryFactors {  NPCorr Z0Corr  }
+
+ErrorSet		"ZEUS-HERAI"   # errors are labelled as "<ErrorSet>_<Name>", and are correlated with other of the same name of other datasets 
+ErrorUnit		  Absolute         # Are errors given as: "Absolute", "Relative", "Percent"
+
+Errors {{
+  ErrorName      Column       Correlation      Nature
+    Stat         stat            ESM0		P 
+    Uncorr       uncor           EYM0		M
+    hfs	         hfs	         EYM1		M 
+    Lumi	 lumi	         EYM1		M 
+    NP           NP3%Perc        TYM1           M
+}}
+

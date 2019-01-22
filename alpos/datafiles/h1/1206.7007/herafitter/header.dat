@@ -1,0 +1,38 @@
+#-*-sh-*-
+# 
+# H1 HERA-II polarized data
+# 
+
+##########################################################
+#  General parameters of this dataset 
+##########################################################
+AlposName                       "bla-33"  # A unique alpos name 
+Description                    	""
+Reference                       "JHEP 09 (2012) 061, arXiv:1206.7007"  #
+
+
+########################################################## 
+#  Theory function settings 
+##########################################################  
+TheoryFunction                   QcdnumDISCS
+
+
+########################################################## 
+#  theory parameters, specific to this dataset 
+#  not specified parameters are taken from default as
+#  specified in the global steering file                                      
+##########################################################          
+sqrt-s                           318.       # sqrt-s only needed if y is not given in table
+e-charge                         +1.
+e-polarity                       0.
+IsReducedCS                      true
+IsNC                             true
+
+
+##########################################################          
+#
+#   Data table
+#
+##########################################################          
+
+Data {{

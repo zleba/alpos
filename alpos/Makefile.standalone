@@ -1,0 +1,97 @@
+##########################################################################################
+# 
+# temporary makefile for alpos until autotools are availabe
+#
+##########################################################################################
+
+##########################################################################################
+#  
+#  README: 
+#  only 'Local install-paths' have to be updated
+#  after compilation run:
+#     $  ./src/alpos  Steering/welcome.str
+#  or
+#     $  ./src/alpos  Steering/alpos.str
+#
+#  Ensure, that you have at least gcc4.7
+#  LHAPDF6, QCDNUM, ROOT, and fastNLO (svn-trunk-version) are also required
+#
+#  QCDNUM is available from: http://www.nikhef.nl/~h24/qcdnum-mb/index.html
+#
+#  For successful running, it may be helpful to adjust LD_LIBRARY_PATH and LHAPDF paths.
+#  I am running (adjust it for your needs first): 
+#     $  source AddLibPath.sh
+#
+##########################################################################################
+
+
+##########################################################################################
+# To be edited:
+# Local install-paths
+FASTNLOSYS = /afs/desy.de/user/b/britzger/xxl/fastNLO/svn/trunk/v2.0/install
+QCDNUMSYS  = /afs/desy.de/user/b/britzger/xxl/qcdnum/qcdnum-17-00-06
+LHAPDFSYS  = /afs/desy.de/user/b/britzger/xxl/lhapdf-6.1.5/install/
+APFELSYS   = /afs/desy.de/user/b/britzger/xxl/apfel/
+##########################################################################################
+
+
+# build variables (no changes should be necessary)
+# all objects
+SRCS	   = src/main.cc alpos/AExampleFunction.cc alpos/ATheoryHandler.cc alpos/AApfelInit.cc alpos/AApfelPDF.cc alpos/AApfelAs.cc alpos/AApfelQEDEvol.cc alpos/ALhapdf6.cc alpos/ALhapdf6Alphas.cc alpos/ACRunDecFunction.cc alpos/fastNLOAlpos.cc alpos/AQcdnumAlphas.cc alpos/AQcdnumPDF.cc alpos/AQcdnumInit.cc alpos/AfastNLO.cc alpos/AfastNLOalt.cc alpos/AfastNLOnormDIS.cc alpos/AQcdnumDISCS.cc alpos/AfastNLOInterpolPDFas.cc alpos/Alpos.cc alpos/AData.cc alpos/AError.cc alpos/ASingleConstant.cc alpos/ASuperTheory.cc  alpos/ASuperData.cc alpos/ASubsetFunction.cc alpos/ASubsetData.cc alpos/AlposTools.cc alpos/AFactory.cc alpos/AChisq.cc alpos/ATask.cc alpos/AExampleTask.cc alpos/AFitter.cc alpos/AStatAnalysis.cc alpos/AAlphaEmRun.cc  #alpos/ATaskResult.cc  #alpos/read_steer.cc alpos/CRunDec.cc  
+AEM        = aem/hadr5n12.f aem/formff.f aem/wrap_ew.f
+OBJS	   = $(SRCS:.cc=.o) $(AEM:.f=.o)
+MAIN	   = src/alpos
+# compiler and compiler flags
+FF         = gfortran
+FFLAGS     = -g -fbacktrace
+CC	   = g++
+CFLAGS     = -Wall -g -std=gnu++11
+LDFLAGS    = -lm -lpthread `gtk-config --cflags` `gtk-config --libs` -lgthread
+LIBS	   = -lm -lstdc++ -lz 
+LIBS      += -L$(FASTNLOSYS)/lib -lfastnlotoolkit
+LIBS      += -L$(LHAPDFSYS)/lib -lLHAPDF
+LIBS      += -L$(APFELSYS)/lib -lAPFEL
+LIBS      += -L$(ROOTSYS)/lib -lMatrix -lHist -lCore
+LIBS      += -L$(QCDNUMSYS)/lib -lqcdnum -lzmstf -lhqstf -lmbutil -lgfortran
+#Info: LHAPDF include includes link to boost-libraries
+INCLUDES   =  -I./alpos/include 
+INCLUDES  += -I$(FASTNLOSYS)/include
+INCLUDES  += -I$(LHAPDFSYS)/include
+INCLUDES  += -I$(APFELSYS)/include
+INCLUDES  += -I$(QCDNUMSYS)/include
+INCLUDES  += -I$(ROOTSYS)/include
+
+#
+# The following part of the makefile is generic; it can be used to 
+# build any executable just by changing the definitions above and by
+# deleting dependencies appended to the file from 'make depend'
+#
+# Makefile folows instructions from
+# http://www.cs.swarthmore.edu/~newhall/unixhelp/howto_makefiles.html
+#
+
+.PHONY:	depend clean
+
+all:	$(MAIN)
+	@echo Compilation done.
+
+$(MAIN): $(OBJS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(MAIN) $(OBJS) $(LFLAGS) $(LIBS)
+# this is a suffix replacement rule for building .o's from .c's
+# it uses automatic variables $<: the name of the prerequisite of
+# the rule(a .c file) and $@: the name of the target of the rule (a .o file) 
+# (see the gnu make manual section about automatic variables)
+.cc.o:
+	$(CC) $(CFLAGS) $(INCLUDES) -c $<  -o $@
+
+.f.o:
+	$(FF) $(FFLAGS) -c $<  -o $@
+
+clean:
+	$(RM) *.o $(OBJS) *~ $(MAIN)
+
+depend:	$(SRCS)
+	makedepend $(INCLUDES) $^
+
+# DO NOT DELETE THIS LINE -- make depend needs it
+

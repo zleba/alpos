@@ -1,0 +1,21 @@
+
+**********************************************
+
+  apccpp 
+
+  A C++ implementation of apcalc (Aplcon): 
+  Contrained least squares fit
+
+**********************************************
+
+
+For running a standalone example, just type
+ $ make -f Makefile.standalone all 
+ $ make -f Makefile.standalone install
+ $ ./example/example
+
+
+The compilation requires an installation of the 
+Eigen package.
+Please provide this either as an inculde path
+or as a link or real directory named 'Eigen'.

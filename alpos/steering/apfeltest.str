@@ -1,0 +1,241 @@
+#! -*-sh-*- (colors for emacs)
+
+################################################################
+#
+#  An example steering file for Alpos
+#
+#################################################################
+
+# --------------------------------------------------------------#
+#  Specify 'DataTheorySets', i.e. data-files containing
+#  data sets and their corresponding theory class
+# --------------------------------------------------------------#
+DataTheorySets {{
+  AlposName                          SteerFile                       TheoryFunction
+# ------------                       -----------                     ----------------
+  #H1ZEUS-HERA-I-NCDISe+p        datafiles/h1zeus/0911.0884/H1ZEUS_NC_e+p_HERA1.dat                ApfelDISCS   Q2>=3.5
+  H1ZEUS-HERA-I-NCDISe+p        datafiles/h1zeus/0911.0884/H1ZEUS_NC_e+p_HERA1-Q2.gt.3p5.dat      ApfelDISCS
+  H1ZEUS-HERA-I-NCDISe-p        datafiles/h1zeus/0911.0884/H1ZEUS_NC_e-p_HERA1.dat                ApfelDISCS              
+  H1ZEUS-HERA-I-CCDISe+p        datafiles/h1zeus/0911.0884/H1ZEUS_CC_e+p_HERA1.dat                ApfelDISCS 
+  H1ZEUS-HERA-I-CCDISe-p        datafiles/h1zeus/0911.0884/H1ZEUS_CC_e-p_HERA1.dat                ApfelDISCS 
+
+#  HERA-II-NCe-p-920                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e-p.dat                  ApfelDISCS    
+#  HERA-II-NCe+p-460                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e+p_460_Q2.gt.3.5.dat    ApfelDISCS    
+#  HERA-II-CCe+p                      datafiles/h1zeus/1506.06042/HERA1+2_CC_e+p.dat                  ApfelDISCS    
+#  H1-HeraII-RHPol                    datafiles/h1/1206.7007/EplusRH.DoubleQ2X.CombJets.Pol32.50.dat  ApfelDISCS
+# nothing used here in the example
+}}
+
+
+# --------------------------------------------------------------#
+#  Specify tasks which should be executed by Alpos
+# --------------------------------------------------------------#
+Tasks {{
+  TaskName                TaskType
+# two tasks define here only
+    Welcome		  AExampleTask
+    PrintTheorySet        PrintTheorySet
+    StatAnalysis          StatAnalysis
+    MyFit                 AFitter
+    StatAnalysis          StatAnalysis
+}}
+
+
+# --------------------------------------------------------------#
+#  Alpos global settings
+# --------------------------------------------------------------#
+ErrorSymmetrization       blabla
+GlobalVerbosity           Info # Debug, Warning, Error
+InitSubsets               false  # Init subsets of datasets
+
+
+# --------------------------------------------------------------#
+#  Task parameters
+#    Put all parameters in a namespace with the task's name
+# --------------------------------------------------------------#
+
+StatAnalysis {{{
+   Chisq                        LogNormal
+   ChisqStatUncorr              HERAFitterDefault
+   DoChisq                      true
+   DoPValue                     true
+}}}
+
+
+# --------------------------------------------------------------#
+
+MyFit {{{
+   Minimizer                    TMinuit  # Minuit2 TMinuit                                                                  
+   PrintLevel                   3
+   Tolerance                    0.1
+   Strategy                     1
+   Chisq                        LogNormal #HERAFitterDefault
+
+   FitParameters {
+#       "AlphasMz"
+PDFQ0_HERA.gB
+PDFQ0_HERA.gC
+#PDFQ0_HERA.gAP
+#PDFQ0_HERA.gBP
+PDFQ0_HERA.uvB
+PDFQ0_HERA.uvC
+PDFQ0_HERA.uvE
+#PDFQ0_HERA.dvB
+PDFQ0_HERA.dvC
+PDFQ0_HERA.UbarC
+#PDFQ0_HERA.UbarD
+PDFQ0_HERA.DbarA
+PDFQ0_HERA.DbarB
+PDFQ0_HERA.DbarC
+   }
+
+   # printing
+   PrintResults                 true
+   PrintCovariance              false
+
+   # todo's
+   InputTheorySet               MyFit.Result
+   PrintCorrelations            true
+
+}}}
+
+
+
+
+#################################################################
+#  Specify Alpos theory (in 'AlposTheory' namespace)
+#################################################################
+AlposTheory {{{
+
+# --------------------------------------------------------------#
+#   Specify used functions.
+#   Give them a 'name' and specify the class
+# --------------------------------------------------------------#
+InitFunctions {{
+  # one line here! (header of 'table')
+    ApfelInit            ApfelInit
+    LHAPDF6               LHAPDF6
+    PDFQ0_LHAPDF          PDFQ0_LHAPDF
+    PDFQ0_HERA            PDFQ0_HERA
+}}
+
+# --------------------------------------------------------------#
+# Useful parameter shorthand notations
+# --------------------------------------------------------------#
+Pi                               3.1415
+
+
+# LHAPDF6 defaults
+LHAPDF6.PDFSet                     0
+LHAPDF6.LHAPDFFile                 CT10 
+LHAPDF6.xp                         0.01
+LHAPDF6.muf                        100
+
+# PDFQ0_LHAPDF
+PDFQ0_LHAPDF.PDF                   LHAPDF6
+PDFQ0_LHAPDF.PDFLiCo               "HERAStyle"
+PDFQ0_LHAPDF.iPDF                  0 # dummy
+PDFQ0_LHAPDF.xp                    0.1  # dummy
+PDFQ0_LHAPDF.Q0                    1  # dummy
+
+
+ApfelDISCS.ApfelInit               ApfelInit
+
+ApfelInit.iOrd                     1
+ApfelInit.Q0                       1.41421
+ApfelInit.nf                       0  #the Fixed-Flavour Number Scheme with 'nf' active flavours. 0 denotes VFNS
+ApfelInit.PDFQ0                    PDFQ0_HERA #PDFQ0_LHAPDF
+ApfelInit.theory                   "QCD"  # the theory to be used in the evolution: (theory = 'QCD','QED','QUniD', default 'QCD')
+ApfelInit.QCDRefAs                 0.35 # reference values of alphas at the scale 'QCDRefQRef' [GeV] to alpharef
+ApfelInit.QCDRefQRef               1.41421356
+ApfelInit.QEDRefAem                7.496252e-3 # reference values of alpha (em) at the scale 'QEDRefQRef' [GeV] to alpharef
+ApfelInit.QEDRefQRef               1.777 
+ApfelInit.LambdaQCDRef             0.220 # value of LambdaQCD [GeV] with 'nref'flavours to 'lambdaref' (default '0.220')
+ApfelInit.LambdaQCDnref            5     # value of LambdaQCD [GeV] with 'nref'flavours to 'lambdaref' (default '5')
+ApfelInit.mc                       1.4   # pole mass
+ApfelInit.mb                       4.5   # pole mass
+ApfelInit.mt                       175   # pole mass
+ApfelInit.mcMSbar                  ApfelInit.mc
+ApfelInit.mbMSbar                  ApfelInit.mb
+ApfelInit.mtMSbar                  ApfelInit.mt           
+ApfelInit.mtau                     1.777
+ApfelInit.EnableMassRunning        1 # dis/en-ables the running of the MSbar masses
+ApfelInit.MaxFlavourAlpha          6 # maximum number of active flavours in the couplings evolution (including the masses)
+ApfelInit.MaxFlavourPDFs           6 # maximum number of active flavours in the PDF evolution (default 'nf' = 6)
+ApfelInit.RenFacRatio              1 
+ApfelInit.SmallxResummation        0 # 'LL', 'NLL' or 0 to disable Small x resummation
+ApfelInit.AlphaEvolution           "exact" # solution of the beta function equations for the running couplings ('evol' = 'exact','expanded','lambda')
+ApfelInit.PDFEvolution             "exactmu" #sets the solution of the DGLAP equations for PDFs ('evolp' = 'exactmu', 'expandalpha', 'expandalpha')
+ApfelInit.QLimitMin                0.5 #range where it is possible to perform the evolution
+ApfelInit.QLimitMax                1000 #
+ApfelInit.FastEvolution            1 # fast PDF evolution (default 1)
+ApfelInit.EnableLeptonEvolution    0 # enables the evolution of the lepton PDFs when the fast QUniD is used (default false).
+ApfelInit.mZ                       91.1876  # mass of Z boson
+ApfelInit.mW                       80.385   # mass of W boson
+ApfelInit.Gf                       1.16638e-5   # g Fermi
+ApfelInit.MassScheme               ZM-VFNS # mass scheme for structure functions ('ZM-VFNS', 'FFNS', 'FONLL-A', 'FONLL-B', 'FONLL-C')
+ApfelInit.nGridPts0                50 # number of grid points for grid 0 (x>5.e-6)
+ApfelInit.nGridPts1                30 # number of grid points for grid 1 (x>1.e-1) 
+ApfelInit.nGridPts2                20 # number of grid points for grid 2 (x>8.e-1)
+				   
+ApfelInit.SinThetaW                0.23126 # weinberg angle 
+ApfelInit.TargetMassCorrections    0  
+
+
+
+# --------------------------------------------------------------# 
+# PDFQ0_HERA (full)
+PDFQ0_HERA.iPDF                           0         # dummy    
+PDFQ0_HERA.xp                             0.1       # dummy
+PDFQ0_HERA.fs                             0.4 #0.31
+
+PDFQ0_HERA.gA                             0         # if gA=0, then sumrules are applies
+PDFQ0_HERA.gB                             0.21385  #-0.014834
+PDFQ0_HERA.gC                             9.0138   #9.106839
+PDFQ0_HERA.gD                             0
+PDFQ0_HERA.gE                             0
+PDFQ0_HERA.gF                             0
+PDFQ0_HERA.gAP                            0 #1.043590
+PDFQ0_HERA.gBP                            0 #-0.166400
+PDFQ0_HERA.gCP                            0 #25.000000
+
+PDFQ0_HERA.uvA                            0          #  if uvA=0, then sumrules are applies
+PDFQ0_HERA.uvB                            0.66559  #0.713453
+PDFQ0_HERA.uvC                            4.6522   #4.840721
+PDFQ0_HERA.uvD                            0
+PDFQ0_HERA.uvE                            9.6938   #13.405266
+PDFQ0_HERA.uvF                            0
+
+PDFQ0_HERA.dvA                            0          #  if dvA=0, then sumrules are applies  
+PDFQ0_HERA.dvB                            PDFQ0_HERA.uvB  #0.805766
+PDFQ0_HERA.dvC                            4.2914   #4.079602
+PDFQ0_HERA.dvD                            0
+PDFQ0_HERA.dvE                            0
+PDFQ0_HERA.dvF                            0
+
+PDFQ0_HERA.UbarA                          0          #  if UbarA=0, then sumrules are applies
+PDFQ0_HERA.UbarB                          PDFQ0_HERA.DbarB
+PDFQ0_HERA.UbarC                          2.5820 #8.055252
+PDFQ0_HERA.UbarD                          0 #11.900269
+PDFQ0_HERA.UbarE                          0
+
+PDFQ0_HERA.DbarA                          0.16261 #0.175618
+PDFQ0_HERA.DbarB                          -0.16511 #-0.172358
+PDFQ0_HERA.DbarC                          2.4048 #4.885482
+PDFQ0_HERA.DbarD                          0
+PDFQ0_HERA.DbarE                          0
+
+PDFQ0_HERA.seaA                           0
+PDFQ0_HERA.seaB                           0
+PDFQ0_HERA.seaC                           0
+PDFQ0_HERA.seaD                           0
+PDFQ0_HERA.seaE                           0
+
+
+
+}}} # end of 'AlposTheory' namespace
+# --------------------------------------------------------------#
+
+
+
+

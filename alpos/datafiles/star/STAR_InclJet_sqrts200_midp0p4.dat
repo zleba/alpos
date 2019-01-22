@@ -1,0 +1,123 @@
+#-*-sh-*-
+#
+# The data are taken from:
+#
+#"Inclusive jet and dijet cross sections in deep inelastic scattering at HERA"
+# By ZEUS Collaboration 
+# Published in: Nucl.Phys.B765:1-30,2007
+# e-Print: 	arXiv:hep-ex/0608048v2
+#
+# Data as listed in Table 8 of the original publication
+# Some errors have been symmetrised in respect to publication (err = 0.5 * (errP + errM))
+# The QED correction differs from the published one, after contact with editors
+# 
+
+##########################################################
+#  General parameters of this dataset
+##########################################################
+
+AlposName           "bla" # not used
+Description         "STAR inclusive jet, sqrt(s)=200GeV, midp0p4"
+Reference           "Phys.Rev.Lett. 97 (2006) 252001 [hep-ex/0608030]"
+InspireHep          723509
+
+##########################################################
+#  Theory function settings
+##########################################################
+TheoryFunction		         fastNLO    # e.g. fastNLO, fastNLOalt, ...
+
+
+##########################################################
+#  fastNLO parameters, specific to this dataset
+#  not specified parameters are taken from default as
+#  specified in the global steering file
+##########################################################
+Filenames {
+    theoryfiles/InclusiveNJets_fnr0001midpMB_v23_fix_I723509.tab
+    theoryfiles/InclusiveNJets_fnr0001midpHT_v23_fix_I723509.tab 
+}		
+Units				1      # 0: absoluteUnits, 1: PublicationUnits
+MuRFuncForm			0      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+MuFFuncForm		        0      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+
+
+##########################################################
+#  Data table 
+#  
+#  Necessary keys are:
+#   + ErrorSet           (Specifies the 'set' of error, which may correlated to other data sets)
+#   + Data		 (the data table, bin boundaries, and errors)
+#   + Errors		 (specify the used errors, and its nature)
+#   + TheoryFactors     (multiplicative factors to be applied on theory) 
+#   + TheoryErrors	 (additional errors on the theory [as sepcified in 'Data'])
+# 
+##########################################################
+
+#
+# https://drupal.star.bnl.gov/STAR/files/starpublications/68/data.html
+#
+Data {{
+     bin_low  bin_up  bin_avg           Sigma       stat       sys        NP   Trig    Fit
+         5.0     6.2     5.5         9.30e+06   0.30e+06  4.50e+06   0.475491     0      1  # e
+         6.2     7.6     6.8         2.70e+06   0.10e+06  1.30e+06   0.608242     0      1  # e
+         7.6     9.3     8.3         6.70e+05   0.50e+05  3.20e+05   0.692804     0      1  # e
+         9.3    11.4     10.3        1.84e+05   0.24e+05  0.88e+05   0.727845     0      1  # e
+        11.4    14.1     12.6        5.10e+04   1.10e+04  2.40e+04   0.73         0      0  # e 
+	 7.6     9.3      8.3        6.40e+05   0.90e+05  3.10e+05   0.73         1      0  # e
+	 9.3    11.4     10.3        2.40e+05   0.30e+05  1.10e+05   0.73         1      0  # e
+	11.4    14.1     12.6        5.90e+04   0.60e+04  2.80e+04   0.737565     1      1  # e
+	14.1    17.3     15.5        1.19e+04   0.10e+04  0.57e+04   0.739383     1      1  # e
+	17.3    21.3     19.0        3.50e+03   0.20e+03  1.70e+03   0.739603     1      1  # e
+	21.3    26.2     23.4        7.80e+02   0.40e+02  3.70e+02   0.739619     1      1  # e
+	26.2    32.2     28.7        1.41e+02   0.09e+02  0.68e+02   0.73962      1      1  # e
+	32.2    39.6     35.3        2.20e+01   0.30e+01  1.10e+01   0.73962      1      1  # e
+	39.6    48.7     43.3        2.60e+00   0.60e+00  1.30e+00   0.73962      1      1  # e 
+ #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ #IObs  Bin Size IODimO  [ |eta|             ]  IODimI  [ pT_[GeV]          ]  <pT_jet_[GeV]>  LO cross section   NLO cross section   KNLO
+ #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ #     1  9.048         1   0.2000      0.8000         1   5.000       6.200      5.488          6.91771657252E+06  8.01651624881E+06   1.15884
+ #     2  10.56         1   0.2000      0.8000         2   6.200       7.600      6.771          2.19074059961E+06  2.57865177707E+06   1.17707
+ #     3  12.82         1   0.2000      0.8000         3   7.600       9.300      8.288          6.88991438413E+05  8.22801971750E+05   1.19421
+ #     4  15.83         1   0.2000      0.8000         4   9.300       11.40      10.14          2.06860847496E+05  2.50893187087E+05   1.21286
+ #     5  20.36         1   0.2000      0.8000         5   11.40       14.10      12.45          5.71631929648E+04  7.04377532987E+04   1.23222
+ #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ #IObs  Bin Size IODimO  [ |eta|             ]  IODimI  [ pT_[GeV]          ]  <pT_jet_[GeV]>  LO cross section   NLO cross section   KNLO
+ #-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ #     1  12.82         1   0.2000      0.8000         1   7.600       9.300      8.288          6.89004618380E+05  8.22914628452E+05   1.19435
+ #     2  15.83         1   0.2000      0.8000         2   9.300       11.40      10.14          2.06887167542E+05  2.50896835383E+05   1.21272
+ #     3  20.36         1   0.2000      0.8000         3   11.40       14.10      12.46          5.71605582360E+04  7.04034910401E+04   1.23168
+ #     4  24.13         1   0.2000      0.8000         4   14.10       17.30      15.35          1.46516899163E+04  1.83187169137E+04   1.25028
+ #     5  30.16         1   0.2000      0.8000         5   17.30       21.30      18.82          3.53950031964E+03  4.49900486242E+03   1.27108
+ #     6  36.94         1   0.2000      0.8000         6   21.30       26.20      23.12          7.60263116900E+02  9.90822468483E+02   1.30326
+ #     7  45.24         1   0.2000      0.8000         7   26.20       32.20      28.35          1.41259413608E+02  1.87585088627E+02   1.32795
+ #     8  55.79         1   0.2000      0.8000         8   32.20       39.60      34.70          2.09553857843E+01  2.85799487768E+01   1.36385
+ #     9  68.61         1   0.2000      0.8000         9   39.60       48.70      42.38          2.16609370939E+00  3.06608652834E+00   1.41549
+ #
+}}
+
+# ve/in v(1:4,001)   5.5       9.3e+06   0.3e+06   4.5e+06
+# ve/in v(1:4,002)   6.8       2.7e+06   0.1e+06   1.3e+06
+# ve/in v(1:4,003)   8.3       6.7e+05   0.5e+05   3.2e+05
+# ve/in v(1:4,004)   4.3      1.84e+05  0.24e+05  0.88e+05
+# ve/in v(1:4,005)   12.6      5.9e+04   0.6e+04   2.8e+04
+# ve/in v(1:4,006)   15.5      1.19e+04  0.4e+04  0.57e+04
+# ve/in v(1:4,007)   19.0      3.5e+03   0.2e+03   1.7e+03
+# ve/in v(1:4,008)   23.4      7.8e+02   0.4e+02   3.7e+02
+# ve/in v(1:4,009)   28.7      1.41e+02  0.09e+02  0.68e+02
+# ve/in v(1:4,010)   35.3      2.2e+01   0.3e+01   1.1e+01
+# ve/in v(1:4,011)   43.3      2.6e+00   0.6e+00   1.3e+00
+# 
+
+Subsets { Trig }
+
+TheoryFactors {  NP }
+
+ErrorSet		"RHIC-STAR"   # errors are labelled as "<ErrorSet>_<Name>", and are correlated with other of the same name of other datasets 
+ErrorUnit		  Absolute         # Are errors given as: "Absolute", "Relative", "Percent"
+
+Errors {{
+  ErrorName      Column       Correlation      Nature
+    Stat         stat            ESM0		P 
+    sys          sys             EYM1		M
+}}
+

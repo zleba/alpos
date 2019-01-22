@@ -1,0 +1,110 @@
+#-*-sh-*-
+#*
+#* The data are taken from:
+#*
+#*"Inclusive jet cross sections in the Breit frame in neutral current deep inelastic scattering at HERA and determinatio#n of alphas"
+#* By ZEUS Collaboration (August 2002)
+#* Published in: Physics Letters B 547 (November 2002) 164-180 
+#* e-Print: 	arXiv:hep-ex/0208037v1
+#*
+#! Data as listed in Table 4 of the original publication
+#! Some errors have been symmetrised in respect to publication (err = 0.5 * (errP + errM))
+#! The QED correction differs from the published one, after contact with editors
+#! 
+
+##########################################################
+#  General parameters of this dataset
+##########################################################
+
+AlposName           "bla" # not used
+Description         "ZEUS HighQ2 Inclusive jets 96/97"
+Reference           "PLB 547 (2002) 164 [arXiv:hep-ex/0208037]"
+
+
+##########################################################
+#  Theory function settings
+##########################################################
+TheoryFunction		         fastNLO    # e.g. fastNLO, fastNLOalt, ...
+
+
+##########################################################
+#  fastNLO parameters, specific to this dataset
+#  not specified parameters are taken from default as
+#  specified in the global steering file
+##########################################################
+Filename			theoryfiles/fnh4301_I593409.tab
+Units				1      # 0: absoluteUnits, 1: PublicationUnits
+MuRFuncForm			3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+MuFFuncForm		        0      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+
+
+##########################################################
+#  Data table 
+#  
+#  Necessary keys are:
+#   + ErrorSet           (Specifies the 'set' of error, which may correlated to other data sets)
+#   + Data		 (the data table, bin boundaries, and errors)
+#   + Errors		 (specify the used errors, and its nature)
+#   + TheoryFactors     (multiplicative factors to be applied on theory) 
+#   + TheoryErrors	 (additional errors on the theory [as sepcified in 'Data'])
+# 
+##########################################################
+
+
+Data {{
+ q2min  q2max  etmin  etmax et Sigma stat     uncor   hfs   lumi   Z0Corr NPCorr kfac
+125.  250.    8.  10.   9.0  32.90   0.71    1.105   1.365   1.6   0.9983  0.9137  1.24
+125.  250.    10. 14.   12.0 13.02   0.32    0.24    0.71    1.6   1.001   0.9380  1.29
+125.  250.    14. 18.   16.0 3.75    0.16    0.045   0.235   1.6   1.004   0.9496  1.31
+125.  250.    18. 25.   21.5 0.895   0.059   0.043   0.053   1.6   0.9987  0.9394  1.29
+125.  250.    25. 100.  50.0 0.0197  0.0027  0.0001  0.0008  1.6   1.007   0.9162  1.17
+250.  500.    8.  10.   9.0   17.33   0.52    0.405   0.62    1.6   0.9985  0.9205  1.13
+250.  500.    10. 14.   12.0  8.57    0.28    0.165   0.35    1.6   1.004   0.9573  1.17
+250.  500.    14. 18.   16.0  3.64    0.18    0.19    0.165   1.6   1.002   0.9748  1.22
+250.  500.    18. 25.   21.5  1.007   0.072   0.0505  0.058   1.6   1.004   0.9685  1.24
+250.  500.    25. 100.  50.0  0.0294  0.0036  0.0017  0.00125 1.6   0.9943  0.9539  1.17
+500.  1000.   8.  10.   9.0   7.83    0.36    0.345   0.235   1.6   1.000   0.9205  1.04
+500.  1000.   10. 14.   12.0  3.77    0.18    0.075   0.13    1.6   1.000   0.9579  1.07
+500.  1000.   14. 18.   16.0  1.87    0.13    0.08    0.06    1.6   1.000   0.9877  1.12
+500.  1000.   18. 25.   21.5  0.713   0.062   0.047   0.0295  1.6   1.000   0.9888  1.15
+500.  1000.   25. 100.  50.0  0.0271  0.0037  0.0006  0.00125 1.6   1.000   0.9808  1.14
+1000. 2000.   8.  10.   9.0   2.80    0.22    0.04    0.06    1.6   0.9950  0.9170  0.97
+1000. 2000.   10. 14.   12.0  1.86    0.14    0.035   0.04    1.6   0.9962  0.9567  1.00
+1000. 2000.   14. 18.   16.0  1.006   0.099   0.0525  0.028   1.6   1.000   0.9856  1.03
+1000. 2000.   18. 25.   21.5  0.287   0.037   0.025   0.0095  1.6   1.000   0.9976  1.07
+1000. 2000.   25. 100.  50.0  0.0173  0.0030  0.00235 0.0006  1.6   0.9983  0.9946  1.07
+2000. 5000.   8.  10.   9.0   1.30    0.15    0.085   0.015   1.6   0.9712  0.9143  0.89
+2000. 5000.   10. 14.   12.0  0.724   0.081   0.086   0.0145  1.6   0.9738  0.9521  0.92
+2000. 5000.   14. 18.   16.0  0.318   0.051   0.195   0.0085  1.6   0.9797  0.9869  0.95
+2000. 5000.   18. 25.   21.5  0.209   0.035   0.235   0.002   1.6   0.9822  0.9955  0.98
+2000. 5000.   25. 100.  50.0  0.0167  0.0032  0.031   0.0007  1.6   0.9885  1.0022  1.00
+5000. 100000. 8.  10.   9.0   0.258   0.073   0.0285  0.006   1.6   0.8362  0.940   1.00
+5000. 100000. 10. 14.   12.0  0.162   0.042   0.0205  0.005   1.6   0.8405  0.958   0.88
+5000. 100000. 14. 18.   16.0  0.110   0.032   0.0045  0.0025  1.6   0.8432  0.9777  0.85
+5000. 100000. 18. 25.   21.5  0.055   0.018   0.0075  0.001   1.6   0.8424  0.9994  0.87
+5000. 100000. 25. 100.  50.0  0.0036  0.0014  0.00035 0.0001  1.6   0.8126  1.00291 0.90
+}}
+
+Subsets {
+  q2min etmin  
+}
+
+ErrorSet		"ZEUS-HERAI-9697-InclJets"   # errors are labelled as "<ErrorSet>_<Name>", and are correlated with other of the same name of other datasets 
+ErrorUnit		  Absolute         # Are errors given as: "Absolute", "Relative", "Percent"
+
+Errors {{
+  ErrorName      Column       Correlation      Nature
+    Stat          stat            0		P 
+    Uncorr        uncor           0		M
+   hfs	       hfs	  1			M 
+   Lumi	       lumi	  1			M 
+}}
+
+TheoryFactors { # a list 
+ "NPCorr" Z0Corr #npcorerr 
+}
+
+TheoryErrors {{
+  Name      Column     Correlation    Percent     DesiredTreatment   
+}}
+

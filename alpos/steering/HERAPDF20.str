@@ -1,0 +1,346 @@
+#! -*-sh-*- (colors for emacs)
+
+#################################################################
+#
+#  An example steering file for Alpos
+#
+#################################################################
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part I: Global Alpos settings
+#
+#  Alpos global settings
+#
+# --------------------------------------------------------------#
+ErrorSymmetrization       blabla  # not yet implemented: only hardcoded
+GlobalVerbosity           Info    # Possible options: Infom, Debug, Warning, Error
+InitSubsets               false   # Init subsets of datasets: true, false
+
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part II: Datasets 
+#
+#  Specify 'DataTheorySets', i.e. data-files containing
+#  data sets and their corresponding theory class
+#
+# --------------------------------------------------------------#
+
+DataTheorySets {{
+  AlposName                          SteerFile                                                       TheoryFunction
+# ---------                          ---------                                                       --------------
+  HERA-II-NCe+p-920                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e+p_920_Q2.gt.3.5.dat    QcdnumDISCS
+  HERA-II-NCe+p-820                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e+p_820_Q2.gt.3.5.dat    QcdnumDISCS
+  HERA-II-NCe+p-575                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e+p_575_Q2.gt.3.5.dat    QcdnumDISCS
+  HERA-II-NCe+p-460                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e+p_460_Q2.gt.3.5.dat    QcdnumDISCS
+  HERA-II-NCe-p-920                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e-p.dat                  QcdnumDISCS
+  HERA-II-CCe+p                      datafiles/h1zeus/1506.06042/HERA1+2_CC_e+p.dat                  QcdnumDISCS
+  HERA-II-CCe-p                      datafiles/h1zeus/1506.06042/HERA1+2_CC_e-p.dat                  QcdnumDISCS
+
+#  HERA-II-NCe+p-920                  datafiles/HERA1+2_NC_e+p_920.dat          
+#  HERA-II-NCe+p-820                  datafiles/HERA1+2_NC_e+p_820.dat          
+#  HERA-II-NCe+p-575                  datafiles/HERA1+2_NC_e+p_575.dat          
+#  HERA-II-NCe+p-460                  datafiles/HERA1+2_NC_e+p_460.dat          
+#  HERA-II-NCe-p-920                  datafiles/HERA1+2_NC_e-p.dat              
+#  HERA-II-CCe+p                      datafiles/HERA1+2_CC_e+p.dat              
+#  HERA-II-CCe-p                      datafiles/HERA1+2_CC_e-p.dat              
+}}
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part III: Tasks
+#
+#  Specify tasks and their name which should be executed by Alpos
+#
+# --------------------------------------------------------------#
+Tasks {{
+  TaskType               TaskName       
+# --------               --------
+#   PrintErrorSummary     PrintErrors          # print errors 
+#   PrintSteering	 PrintSt	 	   
+#   PrintTheorySet	 Print	 	   
+  AFitter		 MyFit		   
+  StatAnalysis	         Stat                  
+#  Chi2Scan               MyFit
+  SavePDFTGraph          SavePDFTGraph
+}}
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part IV: Task parameters
+#
+#  Specify parameters for each task
+#  The parameters must be related to the 'task type' and 
+#  must put into a namespace (i.e. '{{{' '}}}') with the
+#  'name' of the taks 
+#
+# --------------------------------------------------------------#
+SavePDFTGraph {{{
+   PDF                  QcdnumPDF
+   nx                   100
+   xmin                 1.e-6
+   Q2Values             { 1.9, 3, 4, 5, 10, 100, 6464, 8317, 10000 }
+   RootFilename         PDF_QCDNUM.root
+}}}
+
+# --------------------------------------------------------------#
+
+MyFit {{{
+   Minimizer                    TMinuit  # Minuit2 TMinuit
+   PrintLevel                   3 
+   Tolerance                    0.1  
+   Strategy                     1
+   Chisq		        HERAFitterDefault #ChisqCovariance #LogNormal #HERAFitterDefault #LogNormal
+   # Chisq options:
+   #    HERAFitterDefault 
+   #    HERAFitterFull
+   #    HERAFitterFullImproved
+   #    LogNormal
+   #    LogNormalNuisance
+   #    SimpleNuisance 
+   #    ChisqCovariance 
+   #    SimpleNuisanceBias 
+
+   FitParameters {
+#       "AlphasMz"
+PDFQ0_HERA.gB       
+PDFQ0_HERA.gC       
+PDFQ0_HERA.gAP      
+PDFQ0_HERA.gBP      
+#PDFQ0_HERA.gCP      
+PDFQ0_HERA.uvB      
+PDFQ0_HERA.uvC      
+PDFQ0_HERA.uvE      
+PDFQ0_HERA.dvB      
+PDFQ0_HERA.dvC      
+PDFQ0_HERA.UbarC    
+PDFQ0_HERA.UbarD   
+PDFQ0_HERA.DbarA    
+PDFQ0_HERA.DbarB    
+PDFQ0_HERA.DbarC    
+   }
+
+   # printing
+   PrintResults			true
+   PrintCovariance		false
+
+   # todo's
+   InputTheorySet		MyFit.Result
+   PrintCorrelations		true
+
+# --- Chi2Scan parameters
+   SigmaRange                   5
+   RootFilename                 test_chi2scan.hera2_LogN.5x2s.80.root
+   nPoints                      80
+   DoFit                        true  # repeat full fit for each scan point (may be time consuming. Requires parameters for AFitter)
+   Fitter                       MyFit
+
+}}}
+
+
+# --------------------------------------------------------------#
+
+Stat {{{
+   Chisq		        HERAFitterDefault #ChisqCovariance # LogNormal   # current choices: LogNormal, ChisqCovariance, LogNormalNuisance
+   ChisqStatUncorr	         #CovStatUncorr #LogNormalStatUncorr   # current choices: LogNormalStatUncorr, ChisqCovStatUncorr
+   DoChisq                      true
+   DoPValue                     true
+}}}
+
+# --------------------------------------------------------------#
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part V: Alpos theory settings
+#
+#  Specify 'theory' parameters
+#  These consists fo
+#     + functions
+#     + parameters
+#
+#  A theory function takes parameters and/or other functions
+#  as input to calculate output value(s), as for instance 
+#  cross sections (or PDFs). A parameter obviously always returns
+#  its value.
+#  
+#  Parameters can be made 'identical' by setting one value to
+#  the other, e.g.:
+#    AlphasMZ         AsMz
+#  This does not only 'copy' the value of the parameter, but also
+#  if the parameter is changed during the run, both parameters
+#  are updated simultaneously. If only the 'starting' value
+#  should be identical, then one could use the 'read_steer' feature
+#    AlphasMZ         ${AsMz}
+#
+#  Any function requires a particular set of input paramters,
+#  which can be looked up in the .cc file.
+#  The 'default' values can be specified like:
+#    <functiontype>.<parametername>    value
+#  
+#  A particular instantiation of a function takes the default 
+#  parameters. These may be replaced for each instance
+#  of a function by setting them explicitly, like e.g.:
+#    <functionname>.<parametername>    value
+#       
+#  By that, multiple instances of functions with different input
+#  parameters may be defined.
+#
+#  Some functions have 'integration' parameters, which have to
+#  set to a dummy value, like for instance a renormalization or
+#  factorization scale:
+#     QcdnumPDF.muf		       100
+#
+#  Please see the documentation of the individual functions for 
+#  more details on the parameters.
+#
+#  If the functions have a (non-object-oriented) implementation
+#  with e.g. fortran, one typically has a 'Init'-function, which 
+#  then is required by the actual function as input.
+#  
+#  If a function is accesses during runtime, which is not 
+#  initialized, this will cause a 'purely virtual function call' 
+#  error.
+#
+# --------------------------------------------------------------#
+
+
+AlposTheory {{{
+
+# --------------------------------------------------------------#
+#   Specify used functions.
+#   Give them a 'name' and specify the class
+# --------------------------------------------------------------#
+InitFunctions {{
+   FunctionName          FunctionType         # one line here! (header of 'table')
+   QcdnumInit            QcdnumInit
+   PDFQ0_HERA            PDFQ0_HERA 
+   QcdnumPDF             QcdnumPDF
+}}
+
+
+
+# --------------------------------------------------------------#
+# Useful parameter shorthand notations
+# --------------------------------------------------------------#
+iOrd                        1
+AlphasMz		    0.118000001 
+mZ                          91.1876
+
+# --------------------------------------------------------------#
+#  Theory defaults
+# --------------------------------------------------------------#
+
+# --------------------------------------------------------------#
+# QcdnumInit defaults
+QcdnumInit.AlphasMz                      AlphasMz
+QcdnumInit.Mz                            mZ
+QcdnumInit.iOrd                          iOrd
+QcdnumInit.PDFQ0Param                    PDFQ0_HERA
+
+QcdnumInit.mcharm                        1.47     #1.47  #1.3
+QcdnumInit.mbottom                       4.5    #4.5   #4.2
+QcdnumInit.mtop                          173     #173
+QcdnumInit.nfFix                         0       # 3,4,5,6 for FFNS, or '0' for VFNS mode
+QcdnumInit.InitEvolution                 1       # 0:false, 1: true   # init QCD evolution, or take external PDF
+# -- if InitEvolution=0: take external PDF
+QcdnumInit.PDF                           LHAPDF  #QcdnumPDF # PDF1
+# -- if InitEvolution=0: take interanl PDF
+QcdnumInit.Q0                            1.378405  # must below mcharm 
+QcdnumInit.nxGrid                        200 #200 # number of x-grid points
+QcdnumInit.nqGrid                        120 #120 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
+
+# QcdnumPDF defaults
+QcdnumPDF.QcdnumInit                     QcdnumInit   # one QcdnumInit function must made available
+QcdnumPDF.xp                             0.01
+QcdnumPDF.muf                            100
+
+# --------------------------------------------------------------#
+# PDFQ0_HERA (full) 
+PDFQ0_HERA.iPDF                           0         # dummy
+PDFQ0_HERA.xp                             0.1       # dummy
+PDFQ0_HERA.fs                             0.4
+
+PDFQ0_HERA.gA                             0         # if gA=0, then sumrules are applies
+PDFQ0_HERA.gB                             -0.014834
+PDFQ0_HERA.gC                             9.106839
+PDFQ0_HERA.gD                             0
+PDFQ0_HERA.gE                             0
+PDFQ0_HERA.gF                             0
+PDFQ0_HERA.gAP                            1.043590
+PDFQ0_HERA.gBP                            -0.166400
+PDFQ0_HERA.gCP                            25.000000
+
+PDFQ0_HERA.uvA                            0          #  if uvA=0, then sumrules are applies
+PDFQ0_HERA.uvB                            0.713453
+PDFQ0_HERA.uvC                            4.840721
+PDFQ0_HERA.uvD                            0
+PDFQ0_HERA.uvE                            13.405266
+PDFQ0_HERA.uvF                            0
+
+PDFQ0_HERA.dvA                            0          #  if dvA=0, then sumrules are applies
+PDFQ0_HERA.dvB                            0.805766 
+PDFQ0_HERA.dvC                            4.079602
+PDFQ0_HERA.dvD                            0
+PDFQ0_HERA.dvE                            0
+PDFQ0_HERA.dvF                            0
+
+PDFQ0_HERA.UbarA                          0          #  if UbarA=0, then sumrules are applies
+PDFQ0_HERA.UbarB                          PDFQ0_HERA.DbarB
+PDFQ0_HERA.UbarC                          8.055252
+PDFQ0_HERA.UbarD                          11.900269
+PDFQ0_HERA.UbarE                          0
+
+PDFQ0_HERA.DbarA                          0.175618
+PDFQ0_HERA.DbarB                          -0.172358
+PDFQ0_HERA.DbarC                          4.885482
+PDFQ0_HERA.DbarD                          0
+PDFQ0_HERA.DbarE                          0
+
+PDFQ0_HERA.seaA                           0
+PDFQ0_HERA.seaB                           0
+PDFQ0_HERA.seaC                           0
+PDFQ0_HERA.seaD                           0
+PDFQ0_HERA.seaE                           0
+
+
+# --------------------------------------------------------------#
+# fastNLODIS Norm and QCDNUM DISCS
+QcdnumDISCS.QcdnumInit                    QcdnumInit # PDF, alpha_s is provided through QCDNUM
+QcdnumDISCS.Mw                            80.385
+QcdnumDISCS.Mz                            mZ
+QcdnumDISCS.sin2thw                       0.23127 #0.2315 #0.23127 #0.2315
+QcdnumDISCS.Gf                            1.16638e-5
+QcdnumDISCS.au                            0.5
+QcdnumDISCS.ad                            -0.5
+QcdnumDISCS.vu0                           0.5
+QcdnumDISCS.vd0                           -0.5
+QcdnumDISCS.sin2thweffFix                 0 # set to 0 for non-ew version
+QcdnumDISCS.EPRC                          EPRC
+
+# --------------------------------------------------------------#
+#  Theory specializations
+# --------------------------------------------------------------#
+
+
+}}} # end of 'AlposTheory' namespace
+# --------------------------------------------------------------#
+
+
+
+

@@ -1,0 +1,47 @@
+# Makefile for Apccpp and examples
+# 
+# use: variable $EIGENDIR shoul point to your Eigen installation
+#      then do 
+#                make
+#                make install
+#	to install
+#	do
+#		make clean
+#	to delete all object files and the example executable
+#
+#       run ./example/example for a test
+#
+# D. Reichelt 16.09.2015
+
+
+CC = g++
+CFLAGS = -std=c++11 -Wall
+
+EigenPath = $$EIGENDIR
+ExamplePath = example/
+
+ApcObjects = Apccpp.o
+ExampleObjects = $(ExamplePath)Constraint.o $(ExamplePath)ExampleConstraints.o
+
+ExampleName = $(ExamplePath)example
+
+DEPENDFILE = .depend
+SRC = $(ApcObjects:%.o=%.cc) $(ExampleObjects:%.o=%.cc)
+
+all:  $(ExampleObjects) $(ApcObjects)
+
+install:  $(ExampleObjects) $(ApcObjects)
+	$(CC) $(CFLAGS) $(ApcObjects) $(ExampleObjects) -o $(ExampleName)
+
+
+dep: $(SRC)
+	 $(CC) -MM $(SRC) > $(DEPENDFILE)
+
+-include $(DEPENDFILE)
+
+%.o : %.cc
+	$(CC) $(CFLAGS) -I$(EIGENDIR) -c $< -o $(<:%.cc=%.o)
+
+.PHONY: clean
+clean: 
+	rm -f $(ApcObjects) $(ExampleObjects) $(ExampleName)

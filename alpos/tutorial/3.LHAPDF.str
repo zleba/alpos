@@ -1,0 +1,163 @@
+#! -*-sh-*- (colors for emacs)
+
+#################################################################
+#
+#  An example steering file for Alpos
+#
+#################################################################
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part I: Global Alpos settings
+#
+#  Alpos global settings
+#
+# --------------------------------------------------------------#
+ErrorSymmetrization       blabla  # not yet implemented: only hardcoded
+GlobalVerbosity           Info    # Possible options: Infom, Debug, Warning, Error
+InitSubsets               false   # Init subsets of datasets: true, false
+
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part II: Datasets 
+#
+#  Specify 'DataTheorySets', i.e. data-files containing
+#  data sets and their corresponding theory class
+#
+# --------------------------------------------------------------#
+
+DataTheorySets {{
+  AlposName                          SteerFile
+# ---------                          ---------
+}}
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part III: Tasks
+#
+#  Specify tasks and their name which should be executed by Alpos
+#
+# --------------------------------------------------------------#
+Tasks {{
+  TaskType               TaskName       
+  PrintTheorySet         PrintTheorySet
+}}
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part IV: Task parameters
+#
+#  Specify parameters for each task
+#  The parameters must be related to the 'task type' and 
+#  must put into a namespace (i.e. '{{{' '}}}') with the
+#  'name' of the taks 
+#
+# --------------------------------------------------------------#
+
+# --------------------------------------------------------------#
+
+SavePDFTGraph {{{
+   PDF                  LHAPDF
+   nx                   100
+   xmin                 1.e-6
+   Q2Values             { 1.9, 3, 4, 5, 10, 100, 6464, 8317, 10000 }
+   RootFilename         testPDF.root
+}}}
+
+# --------------------------------------------------------------#
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part V: Alpos theory settings
+#
+#  Specify 'theory' parameters
+#  These consists fo
+#     + functions
+#     + parameters
+#
+#  A theory function takes parameters and/or other functions
+#  as input to calculate output value(s), as for instance 
+#  cross sections (or PDFs). A parameter obviously always returns
+#  its value.
+#  
+#  Parameters can be made 'identical' by setting one value to
+#  the other, e.g.:
+#    AlphasMZ         AsMz
+#  This does not only 'copy' the value of the parameter, but also
+#  if the parameter is changed during the run, both parameters
+#  are updated simultaneously. If only the 'starting' value
+#  should be identical, then one could use the 'read_steer' feature
+#    AlphasMZ         ${AsMz}
+#
+#  Any function requires a particular set of input paramters,
+#  which can be looked up in the .cc file.
+#  The 'default' values can be specified like:
+#    <functiontype>.<parametername>    value
+#  
+#  A particular instantiation of a function takes the default 
+#  parameters. These may be replaced for each instance
+#  of a function by setting them explicitly, like e.g.:
+#    <functionname>.<parametername>    value
+#       
+#  By that, multiple instances of functions with different input
+#  parameters may be defined.
+#
+#  Some functions have 'integration' parameters, which have to
+#  set to a dummy value, like for instance a renormalization or
+#  factorization scale:
+#     QcdnumPDF.muf		       100
+#
+#  Please see the documentation of the individual functions for 
+#  more details on the parameters.
+#
+#  If the functions have a (non-object-oriented) implementation
+#  with e.g. fortran, one typically has a 'Init'-function, which 
+#  then is required by the actual function as input.
+#  
+#  If a function is accesses during runtime, which is not 
+#  initialized, this will cause a 'purely virtual function call' 
+#  error.
+#
+# --------------------------------------------------------------#
+
+
+AlposTheory {{{
+ 
+  InitFunctions {{
+     FunctionName          FunctionType 
+     LHAPDF                LHAPDF6 
+     PDF2                  LHAPDF6 
+  }} 
+  
+  # --------------------------------------------------------------#
+  # LHAPDF6 defaults
+  LHAPDF6.PDFSet                     0
+  LHAPDF6.LHAPDFFile                 CT10 
+  LHAPDF6.xp                         0.01
+  LHAPDF6.muf                        100
+ 
+  # --------------------------------------------------------------#
+  #  Theory specializations
+  PDF2.LHAPDFFile                    MSTW2008nlo68cl
+
+}}} # end of 'AlposTheory' namespace
+# --------------------------------------------------------------#
+
+
+
+

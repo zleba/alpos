@@ -1,0 +1,442 @@
+#! -*-sh-*- (colors for emacs)
+
+#################################################################
+#
+#  An example steering file for Alpos
+#
+#################################################################
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part I: Global Alpos settings
+#
+#  Alpos global settings
+#
+# --------------------------------------------------------------#
+ErrorSymmetrization       blabla  # not yet implemented: only hardcoded
+GlobalVerbosity           Info    # Possible options: Infom, Debug, Warning, Error
+InitSubsets               false   # Init subsets of datasets: true, false
+
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part II: Datasets 
+#
+#  Specify 'DataTheorySets', i.e. data-files containing
+#  data sets and their corresponding theory class
+#
+# --------------------------------------------------------------#
+
+DataTheorySets {{
+  AlposName                     SteerFile                                                TheoryFunction           CutsAndKeys
+# ---------                     ---------                                                --------------           -----------
+  H1-NC-e+p-94/97               datafiles/h1/9908059/H1-NC-e+p-94-97.dat                 QcdnumDISCS
+  H1-CC-e+p-94/97               datafiles/h1/9908059/H1-CC-e+p-94-97.dat                 QcdnumDISCS
+  H1-NC-e-p-98/99               datafiles/h1/0012052/H1-NC-e-p-98-99.dat                 QcdnumDISCS
+  H1-CC-e-p-98/99               datafiles/h1/0012052/H1-CC-e-p-98-99.dat                 QcdnumDISCS
+  H1-NC-e-p-98/99-high-y          datafiles/h1/0304003/H1-NC-e-p-98-99-high-y.dat         QcdnumDISCS
+  H1-NC-e+p-99/00                 datafiles/h1/0304003/H1-NC-e+p-99-00.dat                QcdnumDISCS
+  H1-CC-e+p-99/00                 datafiles/h1/0304003/H1-CC-e+p-99-00.dat                QcdnumDISCS
+#  H1_LowEp_460_575                datafiles/h1/1012.4355/H1_LowEp_460_575.dat             QcdnumDISCS             Q2>=10  
+#  H1_NC_ComboQ2_unpolarized       datafiles/h1/1012.4355/H1_NC_ComboQ2_unpolarized.dat    QcdnumDISCS             Q2>=10 
+  H1_LowEp_460_575                datafiles/h1/1012.4355/H1_LowEp_460_575.Q2gt10.dat             QcdnumDISCS
+  H1_NC_ComboQ2_unpolarized       datafiles/h1/1012.4355/H1_NC_ComboQ2_unpolarized.Q2gt10.dat    QcdnumDISCS
+
+  H1-HERAII-CC-e+p-LH-Pol-0p370       datafiles/h1/1206.7007/10_CC_dxdQ2_L_Pol-0.370.dat       QcdnumDISCS
+  H1-HERAII-CC-e+p-RH-Pol+0p325       datafiles/h1/1206.7007/10_CC_dxdQ2_R_Pol0.325.dat        QcdnumDISCS
+  H1-HERAII-CC-e-p-LH-Pol-0p258       datafiles/h1/1206.7007/9_CC_dxdQ2_L_Pol-0.258.dat        QcdnumDISCS
+  H1-HERAII-CC-e-p-RH-Pol+0p360       datafiles/h1/1206.7007/9_CC_dxdQ2_R_Pol0.360.dat         QcdnumDISCS
+  H1-HERAII-NC-e-p-Pol-0p258          datafiles/h1/1206.7007/EminusLH.DoubleQ2X.CombJets.Pol-25.84.dat       QcdnumDISCS
+  H1-HERAII-NC-e-p-Pol+0p360          datafiles/h1/1206.7007/EminusRH.DoubleQ2X.CombJets.Pol36.03.dat       QcdnumDISCS
+  H1-HERAII-NC-e+p-Pol-0p370          datafiles/h1/1206.7007/EplusLH.DoubleQ2X.CombJets.Pol-36.96.dat       QcdnumDISCS
+  H1-HERAII-NC-e+p-Pol+0p325          datafiles/h1/1206.7007/EplusRH.DoubleQ2X.CombJets.Pol32.50.dat       QcdnumDISCS
+  H1-HERAII-NC-e+p-high-y            datafiles/h1/1206.7007/xstable.e+.dat       QcdnumDISCS
+  H1-HERAII-NC-e-p-high-y            datafiles/h1/1206.7007/xstable.e-.dat       QcdnumDISCS
+
+#  PDG-mt                          datafiles/pdg/mt.dat                     SingleConstant
+#  PDG-mH                          datafiles/pdg/mH.dat                     SingleConstant      
+#  PDG-mW                          datafiles/pdg/mW.dat                     SingleConstant 
+  H1-polEmLH                      datafiles/h1/1206.7007/polEmLH.dat       SingleConstant
+  H1-polEmRH                      datafiles/h1/1206.7007/polEmRH.dat       SingleConstant
+  H1-polEpLH                      datafiles/h1/1206.7007/polEpLH.dat       SingleConstant
+  H1-polEpRH                      datafiles/h1/1206.7007/polEpRH.dat       SingleConstant
+}}
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part III: Tasks
+#
+#  Specify tasks and their name which should be executed by Alpos
+#
+# --------------------------------------------------------------#
+Tasks {{
+  TaskType               TaskName       
+# --------               --------
+   PrintSteering	 PrintSt	 	   
+   PrintErrorSummary     PrintErrors          # print errors 
+   PrintTheorySet	 Print	 	   
+   StatAnalysis	         Stat                  
+   AFitter		 MyFit		   
+   StatAnalysis	         Stat                  
+#   SavePDFTGraph         SavePDFTGraph
+#   Contour               ContourU
+#   Contour               ContourD
+}}
+
+
+# --------------------------------------------------------------# 
+
+ContourU {{{
+ par1               QcdnumDISCS.au
+ par2               QcdnumDISCS.vu0 
+ nPoints            20 #12
+ afitter            MyFit
+ RootFilename       contourU_Qcdnum_gDPDFFit_Lognormal_20pts.root
+}}}
+
+ContourD {{{
+ par1               QcdnumDISCS.ad
+ par2               QcdnumDISCS.vd0
+ nPoints            20 #12
+ afitter            MyFit
+ RootFilename       contourD_Qcdnum_gDPDF_Lognormal_20pts.root
+}}}
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part IV: Task parameters
+#
+#  Specify parameters for each task
+#  The parameters must be related to the 'task type' and 
+#  must put into a namespace (i.e. '{{{' '}}}') with the
+#  'name' of the taks 
+#
+# --------------------------------------------------------------#
+
+# --------------------------------------------------------------#
+
+SavePDFTGraph {{{
+   PDF                  QcdnumPDF
+   nx                   100
+   xmin                 1.e-6
+   Q2Values             { 1.9, 3, 4, 5, 10, 100, 6464, 8317, 10000 }
+   RootFilename         PDF_QCDNUM_H1PDF_test0.root
+}}}
+
+# --------------------------------------------------------------#
+
+MyFit {{{
+   Minimizer                    TMinuit  # Minuit2 TMinuit
+   PrintLevel                   3 
+   Tolerance                    1  
+   Strategy                     1
+   Chisq		        LogNormal #HERAFitterDefault #ChisqCovariance #LogNormal #HERAFitterDefault
+   # Chisq options:
+   #    HERAFitterDefault 
+   #    HERAFitterFull
+   #    HERAFitterFullImproved
+   #    LogNormal
+   #    LogNormalNuisance
+   #    SimpleNuisance 
+   #    ChisqCovariance 
+   #    SimpleNuisanceBias 
+
+   FitParameters {
+#       "AlphasMz"
+# mt mW
+ polEmLH polEmRH  polEpLH polEpRH
+#QcdnumDISCS.vu0 QcdnumDISCS.au
+#QcdnumDISCS.vd0 QcdnumDISCS.ad
+
+QcdnumDISCS.sin2thw QcdnumDISCS.sin2thweffFix
+
+#PDFQ0_HERA.gB  PDFQ0_HERA.gC 
+#PDFQ0_HERA.gD
+## PDFQ0_HERA.gAP  PDFQ0_HERA.gBP #PDFQ0_HERA.gCP  
+#PDFQ0_HERA.uvB  PDFQ0_HERA.uvC PDFQ0_HERA.uvE
+#PDFQ0_HERA.dvB  PDFQ0_HERA.dvC      
+#PDFQ0_HERA.UbarC  #PDFQ0_HERA.UbarD 
+#PDFQ0_HERA.DbarA  PDFQ0_HERA.DbarB  PDFQ0_HERA.DbarC
+
+   }
+
+   # printing
+   PrintResults			true
+   PrintCovariance		false
+
+   # todo's
+   InputTheorySet		MyFit.Result
+   PrintCorrelations		true
+
+}}}
+
+
+# --------------------------------------------------------------#
+
+Stat {{{
+   Chisq		        HERAFitterDefault #ChisqCovariance #ChisqCovariance # LogNormal   # current choices: LogNormal, ChisqCovariance, LogNormalNuisance
+   Chisq2         	        LogNormal #CovStatUncorr #LogNormalStatUncorr   # current choices: LogNormalStatUncorr, ChisqCovStatUncorr
+   DoChisq                      true
+   DoPValue                     true
+}}}
+
+# --------------------------------------------------------------#
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part V: Alpos theory settings
+#
+#  Specify 'theory' parameters
+#  These consists fo
+#     + functions
+#     + parameters
+#
+#  A theory function takes parameters and/or other functions
+#  as input to calculate output value(s), as for instance 
+#  cross sections (or PDFs). A parameter obviously always returns
+#  its value.
+#  
+#  Parameters can be made 'identical' by setting one value to
+#  the other, e.g.:
+#    AlphasMZ         AsMz
+#  This does not only 'copy' the value of the parameter, but also
+#  if the parameter is changed during the run, both parameters
+#  are updated simultaneously. If only the 'starting' value
+#  should be identical, then one could use the 'read_steer' feature
+#    AlphasMZ         ${AsMz}
+#
+#  Any function requires a particular set of input paramters,
+#  which can be looked up in the .cc file.
+#  The 'default' values can be specified like:
+#    <functiontype>.<parametername>    value
+#  
+#  A particular instantiation of a function takes the default 
+#  parameters. These may be replaced for each instance
+#  of a function by setting them explicitly, like e.g.:
+#    <functionname>.<parametername>    value
+#       
+#  By that, multiple instances of functions with different input
+#  parameters may be defined.
+#
+#  Some functions have 'integration' parameters, which have to
+#  set to a dummy value, like for instance a renormalization or
+#  factorization scale:
+#     QcdnumPDF.muf		       100
+#
+#  Please see the documentation of the individual functions for 
+#  more details on the parameters.
+#
+#  If the functions have a (non-object-oriented) implementation
+#  with e.g. fortran, one typically has a 'Init'-function, which 
+#  then is required by the actual function as input.
+#  
+#  If a function is accesses during runtime, which is not 
+#  initialized, this will cause a 'purely virtual function call' 
+#  error.
+#
+# --------------------------------------------------------------#
+
+
+AlposTheory {{{
+
+# --------------------------------------------------------------#
+#   Specify used functions.
+#   Give them a 'name' and specify the class
+# --------------------------------------------------------------#
+InitFunctions {{
+   FunctionName          FunctionType         # one line here! (header of 'table')
+   QcdnumInit            QcdnumInit
+   PDFQ0_HERA            PDFQ0_HERA
+   QcdnumPDF             QcdnumPDF            # needed for 'SavePDF'
+   EPRC                  EPRC
+}}
+
+
+
+# --------------------------------------------------------------#
+# Useful parameter shorthand notations
+# --------------------------------------------------------------#
+iOrd                                        1 # NNLO
+AlphasMz		                    0.11760001 #0.1180000012
+mZ                                          91.1876
+mW                                          80.385
+mu                                          0.067
+md                                          0.089
+ms                                          0.231
+mc                                          1.4
+mb                                          4.5
+mt                                          173.4                    
+
+# H1 polarisation: Measured in datafiles/h1/1206.7007 
+polEmLH                                     -0.258444
+polEmRH                                     0.360315
+polEpLH                                     -0.369616
+polEpRH                                     0.324957
+
+
+# --------------------------------------------------------------#
+#  Theory defaults
+# --------------------------------------------------------------#
+SingleConstant.theConst                 0
+
+# --------------------------------------------------------------#
+# QcdnumInit defaults
+QcdnumInit.AlphasMz                      AlphasMz
+QcdnumInit.Mz                            mZ
+QcdnumInit.iOrd                          iOrd
+QcdnumInit.PDFQ0Param                    PDFQ0_HERA
+QcdnumInit.ScaleFacMuR                   1
+QcdnumInit.ScaleFacMuF                   1
+
+QcdnumInit.mcharm                        mc
+QcdnumInit.mbottom                       mb
+QcdnumInit.mtop                          mt
+QcdnumInit.nfFix                         0       # 3,4,5,6 for FFNS, or '0' for VFNS mode
+QcdnumInit.InitEvolution                 1       # 0:false, 1: true   # init QCD evolution, or take external PDF
+# -- if InitEvolution=0: take external PDF
+QcdnumInit.PDF                           LHAPDF  #QcdnumPDF # PDF1
+# -- if InitEvolution=0: take interanl PDF
+QcdnumInit.Q0                            1.3784  # must below mcharm 
+QcdnumInit.nxGrid                        200 #60 # number of x-grid points
+QcdnumInit.nqGrid                        120 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
+
+# --------------------------------------------------------------#                                                                                                                                                                                           
+# PDFQ0_HERA (full) 
+PDFQ0_HERA.iPDF                           0         # dummy
+PDFQ0_HERA.xp                             0.1       # dummy
+PDFQ0_HERA.fs                             0.31
+
+PDFQ0_HERA.gA                             0         # if gA=0, then sumrules are applies
+PDFQ0_HERA.gB                             -0.256831 #-0.149024 #0.83656E-02
+PDFQ0_HERA.gC                             15.5427 #6.16817 #6.8749
+PDFQ0_HERA.gD                             79.1966 #0 # fit
+PDFQ0_HERA.gE                             0
+PDFQ0_HERA.gF                             0
+PDFQ0_HERA.gAP                            0 #0.46471
+PDFQ0_HERA.gBP                            0 #-0.23478
+PDFQ0_HERA.gCP                            0 #25.000000
+
+PDFQ0_HERA.uvA                            0          #  if uvA=0, then sumrules are applies
+PDFQ0_HERA.uvB                            0.737997 #0.658647 #0.71419
+PDFQ0_HERA.uvC                            4.712 #4.80616 #4.8542
+PDFQ0_HERA.uvD                            0
+PDFQ0_HERA.uvE                            9.80568 #15.1928 #11.628
+PDFQ0_HERA.uvF                            0
+
+PDFQ0_HERA.dvA                            0          #  if dvA=0, then sumrules are applies
+PDFQ0_HERA.dvB                            0.954997 #0.981525 #0.95211
+PDFQ0_HERA.dvC                            5.2291 #5.2291
+PDFQ0_HERA.dvD                            0
+PDFQ0_HERA.dvE                            0
+PDFQ0_HERA.dvF                            0
+
+PDFQ0_HERA.UbarA                          0          #  if UbarA=0, then sumrules are applies
+PDFQ0_HERA.UbarB                          PDFQ0_HERA.DbarB
+PDFQ0_HERA.UbarC                          3.42202 #4.55091 #3.1342
+PDFQ0_HERA.UbarD                          0 #11.900269
+PDFQ0_HERA.UbarE                          0
+
+PDFQ0_HERA.DbarA                          0.286635 #0.406593 #0.17192
+PDFQ0_HERA.DbarB                          -0.0372564 #0.0177993 # -0.15386
+PDFQ0_HERA.DbarC                          8.2647 #17.7989 #9.6615
+PDFQ0_HERA.DbarD                          0
+PDFQ0_HERA.DbarE                          0
+
+PDFQ0_HERA.seaA                           0
+PDFQ0_HERA.seaB                           0
+PDFQ0_HERA.seaC                           0
+PDFQ0_HERA.seaD                           0
+PDFQ0_HERA.seaE                           0
+
+
+# --------------------------------------------------------------#
+# fastNLODIS Norm and QCDNUM DISCS
+QcdnumDISCS.QcdnumInit                   QcdnumInit # PDF, alpha_s is provided through QCDNUM
+QcdnumDISCS.Mw                           80.41 #80.385 ?
+QcdnumDISCS.Mz                           mZ
+QcdnumDISCS.sin2thw                      0.2315
+QcdnumDISCS.sin2thweffFix                -0.01 # set to 0 for non-ew version, set to 1 to take EPRC prediction: otherwise fit sin2thweff-running
+QcdnumDISCS.Gf                           1.16637e-5
+QcdnumDISCS.au                           0.5
+QcdnumDISCS.ad                           -0.5
+QcdnumDISCS.vu0                          0.5
+QcdnumDISCS.vd0                          -0.5
+QcdnumDISCS.EPRC                         EPRC
+QcdnumDISCS.e-polarity                   1
+
+# --------------------------------------------------------------#
+# QcdnumPDF defaults
+QcdnumPDF.QcdnumInit                     QcdnumInit   # one QcdnumInit function must made available
+QcdnumPDF.xp                             0.01
+QcdnumPDF.muf                            100
+
+# --------------------------------------------------------------#
+# EPRC defaults
+EPRC.mur                                  100
+EPRC.LPAR1                                0         
+EPRC.LPAR2                                0         
+EPRC.LPAR3                                0         
+EPRC.LPAR4                                1         
+EPRC.LPAR5                                2         
+EPRC.LPAR6                                0         
+EPRC.LPAR7                                3         
+EPRC.LPAR8                                1         
+EPRC.LPAR9                                1         
+EPRC.LPAR10                               1         
+EPRC.LPAR11                               0         
+EPRC.LPAR12                               1         
+EPRC.LPAR13                               1         
+EPRC.LPAR14                               0         
+EPRC.LPAR15                               1         
+EPRC.LPAR16                               0         
+EPRC.LPAR17                               0         
+EPRC.LPAR18                               0         
+EPRC.LPAR19                               0         
+EPRC.LPAR20                               0         
+EPRC.me                                   0.51099906e-3   
+EPRC.mmu                                  0.105658387
+EPRC.mtau                                 1.77682
+EPRC.mu                                   mu
+EPRC.md                                   md
+EPRC.ms                                   ms
+EPRC.mc                                   mc
+EPRC.mb                                   mb
+EPRC.mt                                   mt
+EPRC.mZ                                   mZ    
+EPRC.mW                                   mW   
+EPRC.mH                                   125    
+EPRC.alpha                                7.29927e-3       
+EPRC.gf                                   1.166389e-5    
+EPRC.au                                   0.5
+EPRC.ad                                   -0.5
+EPRC.vu                                   0.2028037
+EPRC.vd                                   -0.35140185                                    
+#EPRC.convfac                              convfac
+
+
+# --------------------------------------------------------------#
+#  Theory specializations
+# --------------------------------------------------------------#
+
+
+}}} # end of 'AlposTheory' namespace
+# --------------------------------------------------------------#
+
+
+
+

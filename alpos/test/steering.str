@@ -1,0 +1,150 @@
+#! -*-sh-*- (colors for emacs)
+
+################################################################
+#
+#  A steering file for an example Alpos alpha_s fit
+#  DB Sep 2015
+#
+#################################################################
+
+# --------------------------------------------------------------#
+#  Specify 'DataTheorySets', i.e. data-files containing
+#  data sets and their corresponding theory class
+# --------------------------------------------------------------#
+DataTheorySets {{
+  AlposName                   SteerFile                                                    TheoryFunction       CutsAndParameters
+  H1-InclJet-HERAII           datafiles/h1/1406.4709/H1-HERAII-HighQ2-InclJets.dat         fastNLO              # ptmin>=11  
+}}
+
+
+# --------------------------------------------------------------#
+#  Specify tasks which should be executed by Alpos
+# --------------------------------------------------------------#
+Tasks {{
+   TaskType           TaskName                                  # first line is the 'header'
+   PrintTheorySet     PrintTheorySet
+   AFitter            MyFit	                                # Tasks with name(=steering namespace below)
+   PrintTheorySet     PrintTheorySet
+#   StatAnalysis       Stat                                      #
+}}
+
+# --------------------------------------------------------------#
+#  Alpos global settings
+# --------------------------------------------------------------#
+ErrorSymmetrization             SignImprovedQuadratic
+Output                          test/alpos.out.root             # commonoutput file for outputs of all tasks
+GlobalVerbosity                 Info                            # Debug, Warning, Error
+InitSubsets                     false                           # init subsets of datasets
+IgnoreTheoryErrors              true                            # Ignore all theory errors when calculating chi2 values
+# ALPOS_DIR                       <specify your directory>      # use env-variable ALPOS_DIR or specify it herewith
+MatrixInversionTolerance        1.e-6                           # Tolerance of matrix inversion algorithm 
+
+# --------------------------------------------------------------#
+#  Task parameters
+#    Put all parameters in a namespace with the task's name
+# --------------------------------------------------------------#
+
+MyFit {{{
+   Minimizer                    TMinuit
+   PrintLevel                   3 
+   Tolerance                    0.1
+   Strategy                     2
+   Chisq		        LogNormal #HERAFitterLogDefault 
+   # Covariance 
+   # NuisanceAdd
+   # NuisanceMult
+   # LogNormal
+   # LogNormalNuisance
+   # LogNormalNuisanceFit
+   # Simple
+   # SimpleNuisanceAddFit
+   # SimpleNuisanceMultFit
+   # HERAFitterDefaultFit
+
+   FitParameters { AlphasMz }
+
+   # printing
+   PrintResults			true
+   PrintCovariance		true
+
+}}}
+
+# --------------------------------------------------------------#
+
+Stat {{{
+   Chisq		        LogNormal
+   Chisq2	                LogNormalNuisance #HERAFitterDefault
+   DoChisq                      true
+   DoPValue                     true
+}}}
+# --------------------------------------------------------------#
+
+
+
+#################################################################
+#  Specify Alpos theory (in 'AlposTheory' namespace)
+#################################################################
+AlposTheory {{{
+
+# --------------------------------------------------------------#
+#   Specify used functions.
+#   Give them a 'name' and specify the class
+# --------------------------------------------------------------#
+InitFunctions {{                                                # Specify all needed alpos functions (name,type)
+   # one line here! (header of 'table')                         # One line 'header'
+  CRunDec                  CRunDec                              # Use name=type for convenience reason if only one instance of a function is used
+  LHAPDF6                  LHAPDF6                              # Use name=type
+}}
+
+
+
+# --------------------------------------------------------------#
+# Useful parameter shorthand notations
+# --------------------------------------------------------------#
+iOrd                        1                                   # iOrd
+AlphasMz		    0.1188888                           # Alpha_s
+mZ                          91.1876                             # mZ
+
+# --------------------------------------------------------------#
+#  Theory defaults
+# --------------------------------------------------------------#
+# CRunDec defaults
+CRunDec.AlphasMz                AlphasMz
+CRunDec.Mz                      mZ
+CRunDec.nFlavor                 5
+CRunDec.nLoop                   2
+CRunDec.mur                     100                             # default! Only used for internal calculation.
+# --------------------------------------------------------------#
+# LHAPDF6 defaults
+LHAPDF6.LHAPDFFile              MSTW2008nlo_asmzrange           # Chose a PDF: CT10,  MSTW2008nlo_asmzrange, NNPDF30_as_nlo_0118
+LHAPDF6.PDFSet                  9                               # PDFSet of the given file
+LHAPDF6.xp                      0.01                            # default! Only used for internal calculation.
+LHAPDF6.muf                     100                             # default! Only used for internal calculation.
+
+# --------------------------------------------------------------#
+# fastNLO default values (Many values often overwritten by data steering)
+fastNLO.Filename                table.tab                       # default value! Always overwritten by data steering
+fastNLO.ScaleFacMuR             1                               # default value! Often overwritten by data steering
+fastNLO.ScaleFacMuF             1                               #
+fastNLO.Units                   1                               # 0: absoluteUnits, 1: PublicationUnits
+fastNLO.iOrd                    iOrd                            #  
+fastNLO.iThr                    -1                              # usually overwritten by data steering
+# flexible-scale options
+fastNLO.MuRFuncForm             3                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
+fastNLO.MuFFuncForm             3                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
+fastNLO.PDF                     LHAPDF6                         # PDF function
+fastNLO.Alpha_s                 CRunDec                         # Alpha_s function
+fastNLO.PDFUncertainties        0                               # Calculate PDF uncertainties: 0=false, 1=true
+
+# --------------------------------------------------------------#
+#  Theory specializations
+# --------------------------------------------------------------#
+# --------------------------------------------------------------#
+
+
+}}} # end of 'AlposTheory' namespace
+# --------------------------------------------------------------#
+
+
+
+

@@ -1,0 +1,54 @@
+
+This is README for the apcalc-package.
+
+The file apcalc.tgz contains the following files:
+   apcmanual.pdf                    the manual
+   apcalc.F                         apc package
+   apcom.inc                        include file for common
+   apexample.F                      several example programs 
+   README                           this README
+   Maketar                          packing script
+
+Commands:
+   mkdir test                       make subdirectory test
+   cp apcalc.tgz test               copy tgz file to subdirectory test
+   cd test                          goto subdirectoy
+   tar -xzf  apcalc.tgz             extract into actual dir
+   gfortran apexample.F; ./a.out    compile and run apc examples
+
+Subprograms:
+
+      SUBROUTINE APCALC(INI,NX,X,VX, NF,F,A, DX,STATUS,IP,    W)
+         ENTRY APCLIN(INI,NX,X,DX,STATUS, W)  ! linear iteration
+         ENTRY APCNON(INI,NX,X,DX,STATUS, W)  ! non-linear iteration
+         ENTRY APCPAR(MAXITE,EPSITE) ! define MAXIT and EPSIT
+         ENTRY APCPUL(NX,X,VX,PULL, W) ! get pull
+         ENTRY APCOVA(NX,VX, W)          ! get covariance matrix
+         ENTRY APCRES(NX,X,VX, W) ! print start X and fitted X  with errors
+         ENTRY APCERO(NX,X,VX,NF,F)  ! zero
+      SUBROUTINE DCMINV(W,B,NARG, NRANK, AUX,NEXT) ! matrix inversion
+         ENTRY DXMINV(W,B,NX,NF, NRANK, AUX,NEXT)
+      SUBROUTINE APCDER(NX,X,NF,F,AJAC,ICON,W)
+         ENTRY APCEPS(ARG)             ! multiply REL by factor
+      SUBROUTINE PRODER(F,D,H)
+      SUBROUTINE APC(NX,X,VX,NF,F,STATUS, ISP,IST,W)
+
+      SUBROUTINE APCOPY(X,VX,IX,Y,VY,JY,NN)  ! copy symmetric matrix
+         ENTRY APRXVX(NX,X,VX) ! print X, VX with errors
+         ENTRY APCORR(NX,VX)   ! print correlations
+         ENTRY APDER(NX,NF,A)  ! print derivative matrix
+
+
+Author:
+Volker Blobel, University of Hamburg 
+
+Changes: add. entry with matrix inversion only
+to       description of linear constraint with DCMINV only
+be       check ndf
+done     check derivatives
+         TETIME entfernen
+         macro apcom.inc is only needed in examples
+
+
+
+

@@ -1,0 +1,319 @@
+
+
+   _______ ___     _______ _______ _______
+  /   _   Y   )   /   _   Y   _   Y   _   \
+  |   l   |   |   |   l   |   |   |   l___l
+  |   _   |   |___|   ____|   |   |____   |
+  |   |   |   l   |   |   |   l   |   l   |
+  l___|   |_______l___|   l_______l_______/
+      `---'
+  An object-oriented data to theory
+  comparison and fitting framework
+
+
+README v0.1
+
+
+ INSTALL
+------------------------------------------------
+Currently only a compilation using a Makefile is
+available. Please edit the Makefile for your needs.
+Following packages are required
+  +  gcc4.7 or higher
+  +  QCDNUM
+  +  LHAPDFv6
+  +  ROOT (v5 or higher)
+  +  fastNLO (svn trunk version, or pre-2087)
+  +  APFEL
+  +  Eigen
+ 
+The installation of LHAPDF6 further requires python v2.6
+and the boost libraries.
+
+For installation, please use cmake:
+  $ cmake .
+
+Add further arguments for your local installation:
+  + -DCMAKE_INSTALL_PREFIX=<your-dir>
+  + -DQCDNUM_PREFIX=<your-dir>
+  + -DLHAPDF_PREFIX=<your-dir>
+  + -DFNLO_PREFIX=<your-dir>
+  + -DAPFEL_PREFIX=<your-dir>
+
+
+or, for everything installed into the same "prefix" directory,
+  + -DPREFIX=<your-dir>
+
+For Eigen, either copy 'Eigen' into apccpp directory or create a link there.
+Alternatively, you can also define a path to your Eigen-directory in CMakeList.txt
+
+Continue with
+  $ make
+  $ make install
+
+It may be needed, that cmake links to non-desired default compilers.
+Therefore set the variables 'CC' and 'CXX', e.g. like:
+  $ export CC=`which gcc`
+  $ export CXX=`which g++`
+or directly specify their locations.
+
+
+This produces the executble ./src/alpos.
+To run Alpos, stay in the trunk directory and type
+
+  $ ./src/alpos steering/welcome.str
+
+This executes alpos with a very simple steering card.
+This will printout the welcome message and executes the welcome-steering
+task list. Some few info, and warning statements can be ignored.
+
+
+Execute a simple fit by:
+  $ ./src/alpos steering/H1InclJets.str
+
+This example will access PDFs from LHAPDF. Please make sure, that your LHAPDF_DATA_PATH
+points to a reasonable directory. Otherwise probably try:
+  $ export LHAPDF_DATA_PATH=/cvmfs/sft.cern.ch/lcg/external/lhapdfsets/current/
+
+Other examples for alpha_s fits are:
+  $ ./src/alpos steering/D0InclAlphas.str
+  $ ./src/alpos steering/CMSInclAlphas.str
+
+Run PDF fit using:
+  $ ./src/alpos steering/HERAPDF10.str
+  $ ./src/alpos steering/HERAPDF20.str
+
+
+
+ Alpos structure
+------------------------------------------------
+Alpos sets up a set of 'DataTheorySets'. These are
+datasets (i.e. cross sections with uncertatainties and
+parameters) together with some related theory
+calculation. The theory calculation may have parameters
+which may be fittable or otherway studyable.
+
+Then Alpos simply runs over a set of 'tasks' and
+running Init() and Execute() on each task.
+
+Alpos consists of five different constituents:
+  + data files and related input
+  + steering cards (for various jobs)
+  + Alpos functions: provide theory expressions
+  + Alpos tasks: perform tasks, like e.g. fits or statistical analyses
+  + Alpos core: the executable
+
+
+ Usage
+------------------------------------------------
+For a correct usage, please study the options in the
+alpos.str steering file. Start with simple tasks:
+
+ 1) Choose a different alpha_s evolution-code for this
+    alpha_s fit.
+
+ 2) Try calculating cross sections with a different
+    value of alpha_s(MZ)
+
+ 3) Change the chisq definition
+
+ 4) Try a fit, with two alpha_s evolutions and two values
+    of alpha_s(MZ), which are free paramters to the fit
+
+ 5) Switch on the usage of subsets and study
+    these chisq values
+
+
+ Your own contribution
+------------------------------------------------
+Itopn order to contribute to alpos, three main interfaces
+are defined:
+  +  Tasks
+  +  Functions
+  +  Datasets
+
+
+ Tasks
+------------------------------------------------
+A Task can modify and access all theory parameters
+and data-parameters. It further can obtain easily
+parameters from the steering.
+
+In order to implement your own task (i.e. a plotting
+tool or a fitter) write a new class, which inherits from
+'public ATask'. The new class must provide two methods
+  +  Init()
+  +  Execute()
+and a static function or member for a unique 'typename'
+  +  static const fTaskType
+
+While both are executed once (directly after each other)
+for every instance of the task as specified in the 'Task'
+steering-table.
+Then modify further
+  +  alpos/AFactory.cc
+and '#include' the new header and add the new task to the
+function 'AFactor::TaskFactory()'.
+Also edit the Makefile accordingly.
+
+If reasonable, a task may return an arbitrary number
+of results. Therefore please wrie a new class which
+inherits from ATaskResults.
+
+Tasks may require the results from previous executed tasks.
+
+Please try to think modular and put resonable code into
+new classes (which may inherit from AlposObject) and new
+function, which are called from 'Init' or 'Execute'.
+
+Good examples of a task are:
+  +  AExampleTask
+  +  AFitter
+
+
+ Functions
+------------------------------------------------
+A function may provide theory prediction for particlular
+datasets, or only ingredients for their calculations (such as
+a PDF or alpha_s evolution). A 'function' makes use of
+paramters or values obtained by other functions. While
+all needed (i.e. 'required') parameters and functions must
+be specified. Only these parameters are easily accessible
+in the function code.
+
+[Please: Try avoid the access to other theory parameters!]
+
+In order to implement your own function (i.e. an alpha_em
+or cross section calculation) write a new class, which
+inherits from 'public AFuncD'. The new class must
+provide two methods
+  +  Init()
+  +  Update()
+  +  GetRequirements()
+
+Init is called once for each function. Other than in the
+constructor, access to 'parameters' is available (i.e. through
+PAR(parname) or PAR_S(stringtype)).
+Access to other function values will fail!
+
+Within Update(), the member variable 'fValue' and 'fError' must
+be filled.
+Ideally, Update() has to make a 'full' update, i.e. that really a
+potential change of each parameter is checked!
+For a more efficient usage, one can use 'CHECK(parname)' to
+check if the parameter parname has been changed or not.
+
+Similar as for tasks,  a static function or public member with a unique
+function typename has to be provided and the function must be
+registered in ./alpos/AFactory.cc
+
+All 'required' paramters/functions must be initialized in the
+default steering with a reasonable value.
+
+Furthermore one or two of the functins 'GetQuick' may be implemented.
+This requires to know detailed about the Alpos structure!
+
+Good examples of a function are
+  +  AExampleFunction
+  +  ASingleConstant
+  +  AfastNLO
+  +  AfastNLOAlt
+
+[... more detailed explanation to come ...]
+
+
+ Steering
+------------------------------------------------
+Details on the steering can be found directly in
+the steering card ./steering/alpos.str and I think
+it is mostly self-explanatory.
+
+
+
+
+ Version history
+------------------------------------------------
+ v0.4, 25. Sep 2015, contact: daniel.britzger@desy.de
+     + Enable PDF fits: Tested HERAPDF1.0 and HERAPDF2.0
+       against HERAFitter
+     + New chisq definitions with analytic calculation of
+       nuisance parameters
+     + Write out PDF root-files for plotting (SavePDFTGraph)
+     + 2D contour scans (Contour)
+     + 1D chisq scans  (Chi2Scan)
+     + Apply cuts on data
+     + access PDF uncertainties from LHAPDF6
+     + Specify uncertainties directly as numerical value
+     + Pass steering parameters in command line
+     + Enable to pass error-'nature' through code
+     + bugfix for covariance matrix of subsets
+     + Clearer getters for errors (uncorr, stat, matrix-type)
+     + Dummies for APC, Bi-log PDF parameterization
+     + Full interface to EPRC (EPRC)
+     + Print error summary (PrintErrors)
+
+ v0.3, 24. Jul 2015, contact: daniel.britzger@desy.de
+     + version for summer students
+     + Tested and verified inclusive jet fits
+     + ...
+
+ v0.2, 15. Feb 2015, contact: daniel.britzger@desy.de
+    Update with relevant feature to exclude datapoints (to come)
+    and study ranges of data points
+     +  Verbosity steerable
+     +  error averaging steerable
+     +  Subsets of datapoints for each datatheory sets
+     +  AStatAnalysis: (chisq, pulls, p-value)
+          also for 'subsets'
+     +  Improved printout and verbosity-level
+     +  One minor bugfix in ARegisterRequirements() (default values no longer needed)
+     +  Calculation of Pull values
+     +  New Chisq's for uncor and stat uncertainties only
+     +  Simpler access to dataTheorysets from TheoryHandler: i.e.
+          return map<name,pair<AData*,AFuncD*>> // for 'full datasets'
+          return map<name,map<name<pair<AData*,AFuncD*>>> // for subsets
+     +  Init subsets in TheoryHandler
+
+
+ v0.1, 11. Feb 2015, contact: daniel.britzger@desy.de
+    First version available as tarball
+     +  Tasks, Functions and datasets available
+     +  Simple fitting Task AFitter
+     +  several chisq functions
+     +  Various treatments of uncertainties
+          corr, uncorr, stat, error-averaging, etc...
+     +  Many inclusive jet data tables (HERA,LHC,Tevatron)
+     +  SuperData and SuperTheory
+     +  fastNLO interface
+     +  QCDNUM init and alpha_s evolution
+     +  CRunDec alpha_s code
+     +  LHAPDF interface (PDFs and alpha_s)
+     +  TheoryHandler and all that parameter/function stuff
+     +  Alpha_s fit doable for 8 inclusive jet measurements
+     +  Short pdf-manual available
+     +
+
+
+ Todo's
+------------------------------------------------
+Apparent todo's
+  +  Tasks cannot yet access the previous results from previous tasks
+  +  'PrintTheorySet' crashes when being executed too early
+  +  Datapoints have to be excludable: Three different implementation are
+     thinkable:
+       -  Keep the number of datapoints, but set the 'removed' ones to '0',
+          their uncertainties to '0' and the covariance diagonal elements to 1.
+       -  Reduce the number of datapionts (i.e. the 'size' of the fValue array)
+       -  Introduce an additional uncertainty with VERY large values.
+  +  Re-implement the datasets (with full error-split up as provided in the publications)
+  +  Switches for 'threshold-corrections'
+  +  Doxygen documentation
+  +  autotool installation
+  +  Maybe the 'datatheory' steering should be somewhat separated, such that
+     different theory-function can be directly choosable without having an
+     own steering file with duplicated data
+  +  Plotting tools, etc...
+  + GetRequirements() should return 'const string&'
+  + Chisq's could be implemented as 'AFunctions' as well
+  + Chisq definitions, where chisq include direct calculation of nuisance parameters
+    -> nuisance parameters should then also be available in 'AStatAnalysis'

@@ -1,0 +1,384 @@
+#! -*-sh-*- (colors for emacs)
+
+#################################################################
+#
+#  An example steering file for Alpos
+#
+#################################################################
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part I: Global Alpos settings
+#
+#  Alpos global settings
+#
+# --------------------------------------------------------------#
+ErrorSymmetrization       blabla  # not yet implemented: only hardcoded
+GlobalVerbosity           Info    # Possible options: Infom, Debug, Warning, Error
+InitSubsets               false   # Init subsets of datasets: true, false
+
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part II: Datasets 
+#
+#  Specify 'DataTheorySets', i.e. data-files containing
+#  data sets and their corresponding theory class
+#
+# --------------------------------------------------------------#
+
+DataTheorySets {{
+  AlposName                          SteerFile                                                       TheoryFunction
+# ---------                          ---------                                                       --------------
+# -- HERA DIS data
+  HERA-II-NCe+p-920                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e+p_920_Q2.gt.3.5.dat    QcdnumDISCS
+  HERA-II-NCe+p-820                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e+p_820_Q2.gt.3.5.dat    QcdnumDISCS
+  HERA-II-NCe+p-575                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e+p_575_Q2.gt.3.5.dat    QcdnumDISCS
+  HERA-II-NCe+p-460                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e+p_460_Q2.gt.3.5.dat    QcdnumDISCS
+  HERA-II-NCe-p-920                  datafiles/h1zeus/1506.06042/HERA1+2_NC_e-p.dat                  QcdnumDISCS
+  HERA-II-CCe+p                      datafiles/h1zeus/1506.06042/HERA1+2_CC_e+p.dat                  QcdnumDISCS
+  HERA-II-CCe-p                      datafiles/h1zeus/1506.06042/HERA1+2_CC_e-p.dat                  QcdnumDISCS
+# -- jet data
+#  H1-InclJet-HERAII                  datafiles/h1/1406.4709/H1-HERAII-HighQ2-InclJets.dat             fastNLO        # ptmin>=11   #Correlated with HERA-data: use norm. jets instead! 
+  H1-NormInclJet-HERAII              datafiles/h1/1406.4709/H1-HERAII-HighQ2-NormInclJets.dat         fastNLOnormDIS
+  CMS-InclJets-7TeV-RunI             datafiles/cms/1212.6660/CMS_IncJets2011_QCD_11_004.dat           fastNLO    
+  D0-InclJet-RunII                   datafiles/d0/D0-InclJets-2009.dat                                fastNLO
+
+}}
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part III: Tasks
+#
+#  Specify tasks and their name which should be executed by Alpos
+#
+# --------------------------------------------------------------#
+Tasks {{
+  TaskType               TaskName       
+# --------               --------
+#   PrintErrorSummary     PrintErrors          # print errors 
+#   PrintSteering	 PrintSt	 	   
+#   PrintTheorySet	 Print	 	   
+  StatAnalysis	         Stat                  
+  AFitter		 MyFit		   
+  StatAnalysis	         Stat                  
+#  SavePDFTGraph          SavePDFTGraph
+}}
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part IV: Task parameters
+#
+#  Specify parameters for each task
+#  The parameters must be related to the 'task type' and 
+#  must put into a namespace (i.e. '{{{' '}}}') with the
+#  'name' of the taks 
+#
+# --------------------------------------------------------------#
+SavePDFTGraph {{{
+   PDF                  QcdnumPDF
+   nx                   100
+   xmin                 1.e-6
+   Q2Values             { 1.9, 3, 4, 5, 10, 100, 6464, 8317, 10000 }
+   RootFilename         PDF_QCDNUM.HERAII.NNLO.root
+}}}
+
+# --------------------------------------------------------------#
+
+MyFit {{{
+   Minimizer                    TMinuit  # Minuit2 TMinuit
+   PrintLevel                   3 
+   Tolerance                    0.1  
+   Strategy                     1
+   Chisq		        LogNormal
+   # Chisq options:
+   #    HERAFitterDefault 
+   #    HERAFitterFull
+   #    HERAFitterFullImproved
+   #    LogNormal
+   #    LogNormalNuisance
+   #    SimpleNuisance 
+   #    ChisqCovariance 
+   #    SimpleNuisanceBias 
+
+   FitParameters {
+#-- alpha_s
+    "AlphasMz"
+#-- PDF parameters
+#    PDFQ0_HERA.gB  PDFQ0_HERA.gC
+#    #PDFQ0_HERA.gD
+#    PDFQ0_HERA.gAP  PDFQ0_HERA.gBP #PDFQ0_HERA.gCP
+#    PDFQ0_HERA.uvB  PDFQ0_HERA.uvC PDFQ0_HERA.uvE
+#    PDFQ0_HERA.dvB  PDFQ0_HERA.dvC
+#    PDFQ0_HERA.UbarC  #PDFQ0_HERA.UbarD
+#    PDFQ0_HERA.DbarA  PDFQ0_HERA.DbarB  PDFQ0_HERA.DbarC
+   }
+
+   # printing
+   PrintResults			true
+   PrintCovariance		false
+
+   # todo's
+   InputTheorySet		MyFit.Result
+   PrintCorrelations		true
+
+# --- Chi2Scan parameters
+   SigmaRange                   5
+   RootFilename                 test_chi2scan.hera2_LogN.5x2s.80.root
+   nPoints                      80
+   DoFit                        true  # repeat full fit for each scan point (may be time consuming. Requires parameters for AFitter)
+   Fitter                       MyFit
+
+}}}
+
+
+# --------------------------------------------------------------#
+
+Stat {{{
+   Chisq		        HERAFitterDefault #ChisqCovariance # LogNormal   # current choices: LogNormal, ChisqCovariance, LogNormalNuisance
+   ChisqStatUncorr	         #CovStatUncorr #LogNormalStatUncorr   # current choices: LogNormalStatUncorr, ChisqCovStatUncorr
+   DoChisq                      true
+   DoPValue                     true
+}}}
+
+# --------------------------------------------------------------#
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part V: Alpos theory settings
+#
+#  Specify 'theory' parameters
+#  These consists fo
+#     + functions
+#     + parameters
+#
+#  A theory function takes parameters and/or other functions
+#  as input to calculate output value(s), as for instance 
+#  cross sections (or PDFs). A parameter obviously always returns
+#  its value.
+#  
+#  Parameters can be made 'identical' by setting one value to
+#  the other, e.g.:
+#    AlphasMZ         AsMz
+#  This does not only 'copy' the value of the parameter, but also
+#  if the parameter is changed during the run, both parameters
+#  are updated simultaneously. If only the 'starting' value
+#  should be identical, then one could use the 'read_steer' feature
+#    AlphasMZ         ${AsMz}
+#
+#  Any function requires a particular set of input paramters,
+#  which can be looked up in the .cc file.
+#  The 'default' values can be specified like:
+#    <functiontype>.<parametername>    value
+#  
+#  A particular instantiation of a function takes the default 
+#  parameters. These may be replaced for each instance
+#  of a function by setting them explicitly, like e.g.:
+#    <functionname>.<parametername>    value
+#       
+#  By that, multiple instances of functions with different input
+#  parameters may be defined.
+#
+#  Some functions have 'integration' parameters, which have to
+#  set to a dummy value, like for instance a renormalization or
+#  factorization scale:
+#     QcdnumPDF.muf		       100
+#
+#  Please see the documentation of the individual functions for 
+#  more details on the parameters.
+#
+#  If the functions have a (non-object-oriented) implementation
+#  with e.g. fortran, one typically has a 'Init'-function, which 
+#  then is required by the actual function as input.
+#  
+#  If a function is accesses during runtime, which is not 
+#  initialized, this will cause a 'purely virtual function call' 
+#  error.
+#
+# --------------------------------------------------------------#
+
+
+AlposTheory {{{
+
+# --------------------------------------------------------------#
+#   Specify used functions.
+#   Give them a 'name' and specify the class
+# --------------------------------------------------------------#
+InitFunctions {{
+   FunctionName          FunctionType         # one line here! (header of 'table')
+   QcdnumInit            QcdnumInit
+   PDFQ0_HERA            PDFQ0_HERA 
+   QcdnumPDF             QcdnumPDF
+   QcdnumAlphas          QcdnumAlphas
+   EPRC                  EPRC
+}}
+
+
+
+# --------------------------------------------------------------#
+# Useful parameter shorthand notations
+# --------------------------------------------------------------#
+iOrd                                       1
+AlphasMz		                   0.118000001 
+mZ                                         91.1876
+mW                                         80.385
+mu                                         0.067
+md                                         0.089
+ms                                         0.231
+mc                                         1.47
+mb                                         4.5
+mt                                         173.4                                         
+
+# --------------------------------------------------------------#
+#  Theory defaults
+# --------------------------------------------------------------#
+
+# --------------------------------------------------------------#
+# QcdnumInit defaults
+QcdnumInit.AlphasMz                        AlphasMz
+QcdnumInit.Mz                              mZ
+QcdnumInit.iOrd                            iOrd
+QcdnumInit.ScaleFacMuR                     1
+QcdnumInit.ScaleFacMuF                     1
+QcdnumInit.PDFQ0Param                      PDFQ0_HERA
+				        
+QcdnumInit.mcharm                          mc 
+QcdnumInit.mbottom                         mb
+QcdnumInit.mtop                            mt 
+QcdnumInit.nfFix                           0       # 3,4,5,6 for FFNS, or '0' for VFNS mode
+QcdnumInit.InitEvolution                   1       # 0:false, 1: true   # init QCD evolution, or take external PDF
+# -- if InitEvolution=0: take external   PDF
+QcdnumInit.PDF                             LHAPDF  #QcdnumPDF # PDF1
+# -- if InitEvolution=0: take interanl   PDF
+QcdnumInit.Q0                              1.378405  # must below mcharm 
+QcdnumInit.nxGrid                          200 #200 # number of x-grid points
+QcdnumInit.nqGrid                          120 #120 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
+				        
+# QcdnumPDF defaults		        
+QcdnumPDF.QcdnumInit                       QcdnumInit   # one QcdnumInit function must made available
+QcdnumPDF.xp                               0.01
+QcdnumPDF.muf                              100
+
+# --------------------------------------------------------------#
+# PDFQ0_HERA (full) 
+>>steering/default.PDFQ0_HERA.HERAII.str
+
+# --------------------------------------------------------------#
+# fastNLODIS Norm and QCDNUM DISCS
+QcdnumDISCS.QcdnumInit                     QcdnumInit # PDF, alpha_s is provided through QCDNUM
+QcdnumDISCS.Mw                             80.385
+QcdnumDISCS.Mz                             mZ
+QcdnumDISCS.sin2thw                        0.23127 #0.2315 #0.23127 #0.2315
+QcdnumDISCS.Gf                             1.16638e-5
+QcdnumDISCS.au                             0.5
+QcdnumDISCS.ad                             -0.5
+QcdnumDISCS.vu0                            0.5
+QcdnumDISCS.vd0                            -0.5
+QcdnumDISCS.sin2thweffFix                  0 # set to 0 for non-ew version
+QcdnumDISCS.EPRC                           EPRC
+QcdnumDISCS.e-polarity                     0
+
+# --------------------------------------------------------------#
+# QcdnumAlphas defaults
+QcdnumAlphas.QcdnumInitializer             QcdnumInit   # one QcdnumInit function must made available
+QcdnumAlphas.mur                           100      # temporary initialization value
+
+# --------------------------------------------------------------#
+# fastNLO default values (Many values often overwritten by data steering)
+fastNLO.Filename                           table.tab                       # default value! Always overwritten by data steering
+fastNLO.ScaleFacMuR                        1                               # default value! Often overwritten by data steering
+fastNLO.ScaleFacMuF                        1                               #
+fastNLO.Units                              1                               # 0: absoluteUnits, 1: PublicationUnits
+fastNLO.iOrd                               iOrd                            #  
+fastNLO.iThr                               -1                              # usually overwritten by data steering
+# flexible-scale options	           
+fastNLO.MuRFuncForm                        0                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
+fastNLO.MuFFuncForm                        0                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
+fastNLO.PDF                                QcdnumPDF                       # PDF function
+fastNLO.Alpha_s                            QcdnumAlphas                    # Alpha_s function
+fastNLO.PDFUncertainties                   0                               # Calculate PDF uncertainties: 0=false, 1=true
+
+
+# --------------------------------------------------------------#
+# fastNLOnormDIS defaults
+fastNLOnormDIS.QcdnumInit                   QcdnumInit
+fastNLOnormDIS.AemRun                       EPRC #AemRun
+fastNLOnormDIS.Alpha_s                      QcdnumAlphas
+fastNLOnormDIS.PDF                          QcdnumPDF
+fastNLOnormDIS.Filename                     table.tab
+fastNLOnormDIS.ScaleFacMuR                  1
+fastNLOnormDIS.ScaleFacMuF                  1
+fastNLOnormDIS.iOrd                         iOrd
+fastNLOnormDIS.MuRFuncForm                  0 # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+fastNLOnormDIS.MuFFuncForm                  0
+fastNLOnormDIS.iThr                         -1
+fastNLOnormDIS.nx                           22 # integration points  
+fastNLOnormDIS.nQ2                          22 # integration points
+fastNLOnormDIS.ymin                         0.2 # integration points
+fastNLOnormDIS.ymax                         0.7 # integration points
+fastNLOnormDIS.sqrts                        318.697 # integration points
+
+# --------------------------------------------------------------#
+# Eprc defaults
+EPRC.mur                                  0
+EPRC.LPAR1                                0         
+EPRC.LPAR2                                0         
+EPRC.LPAR3                                0         
+EPRC.LPAR4                                1         
+EPRC.LPAR5                                2         
+EPRC.LPAR6                                0         
+EPRC.LPAR7                                3         
+EPRC.LPAR8                                1         
+EPRC.LPAR9                                1         
+EPRC.LPAR10                               1         
+EPRC.LPAR11                               0         
+EPRC.LPAR12                               1         
+EPRC.LPAR13                               1         
+EPRC.LPAR14                               0         
+EPRC.LPAR15                               1         
+EPRC.LPAR16                               0         
+EPRC.LPAR17                               0         
+EPRC.LPAR18                               0         
+EPRC.LPAR19                               0         
+EPRC.LPAR20                               0         
+EPRC.me                                   0.51099906e-3   
+EPRC.mmu                                  0.105658387
+EPRC.mtau                                 1.77682
+EPRC.mu                                   mu
+EPRC.md                                   md
+EPRC.ms                                   ms
+EPRC.mc                                   mc
+EPRC.mb                                   mb
+EPRC.mt                                   mt
+EPRC.mZ                                   mZ    
+EPRC.mW                                   mW   
+EPRC.mH                                   125    
+EPRC.alpha                                7.29927e-3       
+EPRC.gf                                   1.166389e-5    
+EPRC.convfac                              convfac
+EPRC.au                                   0.5   
+EPRC.ad                                   -0.5   
+EPRC.vu                                   0.5   
+EPRC.vd                                   -0.5   
+
+}}} # end of 'AlposTheory' namespace
+# --------------------------------------------------------------#
+
+
+
+

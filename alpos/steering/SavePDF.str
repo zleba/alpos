@@ -1,0 +1,326 @@
+#! -*-sh-*- (colors for emacs)
+
+#################################################################
+#
+#  An example steering file for Alpos
+#
+#################################################################
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part I: Global Alpos settings
+#
+#  Alpos global settings
+#
+# --------------------------------------------------------------#
+ErrorSymmetrization       blabla  # not yet implemented: only hardcoded
+GlobalVerbosity           Info    # Possible options: Infom, Debug, Warning, Error
+InitSubsets               false   # Init subsets of datasets: true, false
+
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part II: Datasets 
+#
+#  Specify 'DataTheorySets', i.e. data-files containing
+#  data sets and their corresponding theory class
+#
+# --------------------------------------------------------------#
+
+DataTheorySets {{
+  AlposName                          SteerFile
+# ---------                          ---------
+}}
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part III: Tasks
+#
+#  Specify tasks and their name which should be executed by Alpos
+#
+# --------------------------------------------------------------#
+Tasks {{
+  TaskType               TaskName       
+# --------               --------
+  SavePDFTGraph          SavePDFTGraph
+}}
+
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part IV: Task parameters
+#
+#  Specify parameters for each task
+#  The parameters must be related to the 'task type' and 
+#  must put into a namespace (i.e. '{{{' '}}}') with the
+#  'name' of the taks 
+#
+# --------------------------------------------------------------#
+
+# --------------------------------------------------------------#
+
+SavePDFTGraph {{{
+   PDF                  LHAPDF
+   nx                   100
+   xmin                 1.e-6
+   Q2Values             { 1.9, 3, 4, 5, 10, 100, 6464, 8317, 10000 }
+   RootFilename         testPDF.root
+}}}
+
+# --------------------------------------------------------------#
+
+
+#################################################################
+# --------------------------------------------------------------#
+#
+#  Part V: Alpos theory settings
+#
+#  Specify 'theory' parameters
+#  These consists fo
+#     + functions
+#     + parameters
+#
+#  A theory function takes parameters and/or other functions
+#  as input to calculate output value(s), as for instance 
+#  cross sections (or PDFs). A parameter obviously always returns
+#  its value.
+#  
+#  Parameters can be made 'identical' by setting one value to
+#  the other, e.g.:
+#    AlphasMZ         AsMz
+#  This does not only 'copy' the value of the parameter, but also
+#  if the parameter is changed during the run, both parameters
+#  are updated simultaneously. If only the 'starting' value
+#  should be identical, then one could use the 'read_steer' feature
+#    AlphasMZ         ${AsMz}
+#
+#  Any function requires a particular set of input paramters,
+#  which can be looked up in the .cc file.
+#  The 'default' values can be specified like:
+#    <functiontype>.<parametername>    value
+#  
+#  A particular instantiation of a function takes the default 
+#  parameters. These may be replaced for each instance
+#  of a function by setting them explicitly, like e.g.:
+#    <functionname>.<parametername>    value
+#       
+#  By that, multiple instances of functions with different input
+#  parameters may be defined.
+#
+#  Some functions have 'integration' parameters, which have to
+#  set to a dummy value, like for instance a renormalization or
+#  factorization scale:
+#     QcdnumPDF.muf		       100
+#
+#  Please see the documentation of the individual functions for 
+#  more details on the parameters.
+#
+#  If the functions have a (non-object-oriented) implementation
+#  with e.g. fortran, one typically has a 'Init'-function, which 
+#  then is required by the actual function as input.
+#  
+#  If a function is accesses during runtime, which is not 
+#  initialized, this will cause a 'purely virtual function call' 
+#  error.
+#
+# --------------------------------------------------------------#
+
+
+AlposTheory {{{
+
+# --------------------------------------------------------------#
+#   Specify used functions.
+#   Give them a 'name' and specify the class
+# --------------------------------------------------------------#
+InitFunctions {{
+   FunctionName          FunctionType     # one line here! (header of 'table')
+  LHAPDF                 LHAPDF6 
+#  AsQCDNUM               QcdnumAlphas
+#  QcdnumInit             QcdnumInit
+#  QcdnumPDF             QcdnumPDF
+#  PDFQ0_HERA           PDFQ0_HERA
+}}
+
+
+
+# --------------------------------------------------------------#
+# Useful parameter shorthand notations
+# --------------------------------------------------------------#
+iOrd                        1
+AlphasMz		    0.11760001 #0.1180000012
+mZ                          91.1876
+
+# --------------------------------------------------------------#
+#  Theory defaults
+# --------------------------------------------------------------#
+
+# --------------------------------------------------------------#
+# LHAPDF6 defaults
+LHAPDF6.PDFSet                     0
+LHAPDF6.LHAPDFFile                 CT10 #NNPDF30_nnlo_as_0118 #HERAPDF20_NLO_EIG  #MSTW2008nlo_asmzrange #HERAPDF15NLO_EIG #HERAPDF MSTW2008nlo_asmzrange #"CT10"
+LHAPDF6.xp                         0.01
+LHAPDF6.muf                        100
+
+# --------------------------------------------------------------#
+# QcdnumInit defaults
+QcdnumInit.AlphasMz                AlphasMz
+QcdnumInit.Mz                      mZ
+QcdnumInit.iOrd                    iOrd
+
+QcdnumInit.mcharm                  1.4 #1.47  #1.3
+QcdnumInit.mbottom                 4.75 #4.5   #4.2
+QcdnumInit.mtop                    174 #173
+QcdnumInit.nfFix                   0     # 3,4,5,6 for FFNS, or '0' for VFNS mode
+
+QcdnumInit.InitEvolution           0 # 0:false, 1: true   # init QCD evolution, or take external PDF
+# -- if InitEvolution=0: take external PDF
+QcdnumInit.PDF                     LHAPDF #QcdnumPDF # PDF1
+# -- if InitEvolution=0: take interanl PDF
+QcdnumInit.PDFQ0Param              PDFQ0_HERA_10pts
+QcdnumInit.Q0                      1.3784 # must below mcharm 
+QcdnumInit.nxGrid                  200 #60 # number of x-grid points
+QcdnumInit.nqGrid                  120 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
+
+# --------------------------------------------------------------#
+# PDFQ0_LHAPDF
+PDFQ0_LHAPDF.PDF                   LHAPDF
+PDFQ0_LHAPDF.PDFLiCo               "HERA_10pts"
+PDFQ0_LHAPDF.iPDF                  0 # dummy
+PDFQ0_LHAPDF.xp                    0.1  # dummy
+PDFQ0_LHAPDF.Q0                    1  # dummy
+
+
+# --------------------------------------------------------------#
+# PDFQ0_HERA_10pts
+PDFQ0_HERA_10pts.iPDF              0 # dummy
+PDFQ0_HERA_10pts.xp                0.1  # dummy
+PDFQ0_HERA_10pts.Q0                1  # dummy
+PDFQ0_HERA_10pts.fs                0.31
+PDFQ0_HERA_10pts.gB                0.21385
+PDFQ0_HERA_10pts.gC                9.0138
+PDFQ0_HERA_10pts.uvB               0.66559
+PDFQ0_HERA_10pts.uvC               4.6522 
+PDFQ0_HERA_10pts.uvE               9.6938 
+PDFQ0_HERA_10pts.dvB               PDFQ0_HERA_10pts.uvB
+PDFQ0_HERA_10pts.dvC               4.2914
+PDFQ0_HERA_10pts.UbarB             PDFQ0_HERA_10pts.DbarB
+PDFQ0_HERA_10pts.UbarC             2.5820   
+PDFQ0_HERA_10pts.DbarA             0.16261   
+PDFQ0_HERA_10pts.DbarB             -0.16511   
+PDFQ0_HERA_10pts.DbarC             2.4048   
+
+# --------------------------------------------------------------#
+# PDFQ0_HERA (full)  
+PDFQ0_HERA.iPDF                           0 # dummy
+PDFQ0_HERA.xp                             0.1  # dummy
+PDFQ0_HERA.fs                             0.31
+#   gA from surules
+PDFQ0_HERA.gB                             0.21385
+PDFQ0_HERA.gC                             9.0138
+PDFQ0_HERA.gD                             0
+PDFQ0_HERA.gE                             0
+PDFQ0_HERA.gF                             0
+PDFQ0_HERA.gAP                            0
+PDFQ0_HERA.gBP                            0
+PDFQ0_HERA.gCP                            0
+
+#   uvA from surules
+PDFQ0_HERA.uvB                            0.66559 
+PDFQ0_HERA.uvC                            4.6522 
+PDFQ0_HERA.uvD                            0 
+PDFQ0_HERA.uvE                            9.6938 
+PDFQ0_HERA.uvF                            0 
+
+#   dvA from surules
+PDFQ0_HERA.dvB                            PDFQ0_HERA.uvB
+PDFQ0_HERA.dvC                            4.2914 
+PDFQ0_HERA.dvD                            0 
+PDFQ0_HERA.dvE                            0 
+PDFQ0_HERA.dvF                            0 
+
+#   ubA from surules
+PDFQ0_HERA.UbarB                          PDFQ0_HERA.DbarB   
+PDFQ0_HERA.UbarC                          2.5820  
+PDFQ0_HERA.UbarD                          0   
+PDFQ0_HERA.UbarE                          0   
+PDFQ0_HERA.UbarF                          0   
+
+PDFQ0_HERA.DbarA                          0.16261   
+PDFQ0_HERA.DbarB                          -0.16511   
+PDFQ0_HERA.DbarC                          2.4048   
+PDFQ0_HERA.DbarD                          0   
+PDFQ0_HERA.DbarE                          0   
+PDFQ0_HERA.DbarF                          0   
+
+PDFQ0_HERA.strA                           0
+PDFQ0_HERA.strB                           0
+PDFQ0_HERA.strC                           0
+PDFQ0_HERA.strD                           0
+PDFQ0_HERA.strE                           0
+PDFQ0_HERA.strF                           0
+
+
+# --------------------------------------------------------------#
+# QCDNUM DISCS
+QcdnumDISCS.QcdnumInit                     QcdnumInit   # QcdnumInit. Provides PDF and alpha_s and structure functions
+QcdnumDISCS.Mw                             80.385
+QcdnumDISCS.Mz                             mZ
+QcdnumDISCS.sin2thw                        0.2315
+QcdnumDISCS.Gf                             1.16637e-5
+
+
+
+# --------------------------------------------------------------#
+# QcdnumAlphas defaults
+QcdnumAlphas.QcdnumInitializer       QcdnumInit   # one QcdnumInit function must made available
+QcdnumAlphas.mur		     100      # temporary initialization value
+
+# --------------------------------------------------------------#
+# QcdnumPDF defaults
+QcdnumPDF.QcdnumInit           QcdnumInit   # one QcdnumInit function must made available
+QcdnumPDF.xp		       0.01      
+QcdnumPDF.muf		       100
+
+# --------------------------------------------------------------#
+# LHAPDF6Alphas defaults
+LHAPDF6Alphas.LHAPDFFile        CT10
+LHAPDF6Alphas.PDFSet            0
+LHAPDF6Alphas.mur               10
+# --------------------------------------------------------------#
+# fastNLO defaults
+fastNLO.Filename             table.tab
+fastNLO.ScaleFacMuR          1
+fastNLO.ScaleFacMuF          1
+fastNLO.Units                1      # 0: absoluteUnits, 1: PublicationUnits
+fastNLO.iOrd                 iOrd
+# flexible-scale options
+fastNLO.MuRFuncForm          0 # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+fastNLO.MuFFuncForm          0
+fastNLO.PDF                  LHAPDF # ApfelPDF #QcdnumPDF #PDF1
+fastNLO.Alpha_s              AsQCDNUM #AsRun #ApfelAs #AsQCDNUM #AsRun #AsLHAPDF
+
+
+
+# --------------------------------------------------------------#
+#  Theory specializations
+# --------------------------------------------------------------#
+# --------------------------------------------------------------#
+
+
+}}} # end of 'AlposTheory' namespace
+# --------------------------------------------------------------#
+
+
+
+

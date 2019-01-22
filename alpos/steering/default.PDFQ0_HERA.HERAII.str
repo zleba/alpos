@@ -1,0 +1,92 @@
+#! -*-sh-*- (colors for emacs)
+
+# --------------------------------------------------------------#
+#
+#  PDF at starting scale q2_0=1.9, as used in HERAPDF-1.0 fit
+#  Initialization in main steering file requires at least
+#     InitFunctions {{
+#        FunctionName          FunctionType      
+#        xyz                   PDFQ0_HERA 
+#     }}
+#  where 'xyz' may be conveniently chosen to be PDFQ0_HERA, or
+#  any other name, of there herein defined default parameters
+#  should be partially ignored.
+#
+#
+#  Free parameters in fit are then:
+#     PDFQ0_HERA.gB       
+#     PDFQ0_HERA.gC       
+#     PDFQ0_HERA.gAP      
+#     PDFQ0_HERA.gBP      
+#     PDFQ0_HERA.uvB      
+#     PDFQ0_HERA.uvC      
+#     PDFQ0_HERA.uvE      
+#     PDFQ0_HERA.dvB      
+#     PDFQ0_HERA.dvC      
+#     PDFQ0_HERA.UbarC    
+#     PDFQ0_HERA.UbarD   
+#     PDFQ0_HERA.DbarA    
+#     PDFQ0_HERA.DbarB    
+#     PDFQ0_HERA.DbarC    
+#
+#  where 'PDFQ0_HERA' has to be replace by xyz.
+#
+#  Parameters: gA, uvA, dvA and UbarA are taken from sumrules
+#
+# --------------------------------------------------------------#
+
+
+# --------------------------------------------------------------#
+# PDFQ0_HERA (full)  
+# --------------------------------------------------------------#
+PDFQ0_HERA.iPDF                           0 # dummy
+PDFQ0_HERA.xp                             0.1  # dummy
+
+PDFQ0_HERA.fs                             0.31
+
+PDFQ0_HERA.iPDF                           0         # dummy
+PDFQ0_HERA.xp                             0.1       # dummy
+PDFQ0_HERA.fs                             0.4
+
+PDFQ0_HERA.gA                             0         # if gA=0, then sumrules are applies
+PDFQ0_HERA.gB                             -0.014834
+PDFQ0_HERA.gC                             9.106839
+PDFQ0_HERA.gD                             0
+PDFQ0_HERA.gE                             0
+PDFQ0_HERA.gF                             0
+PDFQ0_HERA.gAP                            1.043590
+PDFQ0_HERA.gBP                            -0.166400
+PDFQ0_HERA.gCP                            25.000000
+
+PDFQ0_HERA.uvA                            0          #  if uvA=0, then sumrules are applies
+PDFQ0_HERA.uvB                            0.713453
+PDFQ0_HERA.uvC                            4.840721
+PDFQ0_HERA.uvD                            0
+PDFQ0_HERA.uvE                            13.405266
+PDFQ0_HERA.uvF                            0
+
+PDFQ0_HERA.dvA                            0          #  if dvA=0, then sumrules are applies
+PDFQ0_HERA.dvB                            0.805766 
+PDFQ0_HERA.dvC                            4.079602
+PDFQ0_HERA.dvD                            0
+PDFQ0_HERA.dvE                            0
+PDFQ0_HERA.dvF                            0
+
+PDFQ0_HERA.UbarA                          0          #  if UbarA=0, then sumrules are applies
+PDFQ0_HERA.UbarB                          PDFQ0_HERA.DbarB
+PDFQ0_HERA.UbarC                          8.055252
+PDFQ0_HERA.UbarD                          11.900269
+PDFQ0_HERA.UbarE                          0
+
+PDFQ0_HERA.DbarA                          0.175618
+PDFQ0_HERA.DbarB                          -0.172358
+PDFQ0_HERA.DbarC                          4.885482
+PDFQ0_HERA.DbarD                          0
+PDFQ0_HERA.DbarE                          0
+
+PDFQ0_HERA.seaA                           0
+PDFQ0_HERA.seaB                           0
+PDFQ0_HERA.seaC                           0
+PDFQ0_HERA.seaD                           0
+PDFQ0_HERA.seaE                           0
+

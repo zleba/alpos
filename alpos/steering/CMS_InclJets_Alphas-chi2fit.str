@@ -1,0 +1,151 @@
+#! -*-sh-*- (colors for emacs)
+
+################################################################
+#
+#  A steering file for an example Alpos alpha_s fit
+#  using the CMS inclusive jet data
+#  DB Feb 2015
+#
+#################################################################
+
+# --------------------------------------------------------------#
+#  Specify 'DataTheorySets', i.e. data-files containing
+#  data sets and their corresponding theory class
+# --------------------------------------------------------------#
+DataTheorySets {{
+  AlposName                 SteerFile                                               TheoryFunction   CutsAndParameters
+  CMS-InclJets-7TeV-RunI    datafiles/cms/1212.6660/CMS_IncJets2011_QCD_11_004.dat  fastNLO
+}}
+
+
+# --------------------------------------------------------------#
+#  Specify tasks which should be executed by Alpos
+# --------------------------------------------------------------#
+Tasks {{
+   TaskType           TaskName
+   ########           ########
+   Chi2FitPDFas       Chi2FitPDFas    # Calculate chi2 for several PDFs with different Alphas(M_Z) values
+}}
+
+# --------------------------------------------------------------#
+#  Alpos global settings
+# --------------------------------------------------------------#
+ErrorSymmetrization       blabla
+GlobalVerbosity           Info # Debug, Warning, Error
+InitSubsets               false  # inti subsets of datasets
+
+Chi2FitPDFas {{{
+    RootFilename        "CMS_InclJets_Alphas-chi2fit-CRunDec.root"             # store task output in ROOT file
+
+    Chisq               Covariance              # chisq definition to use
+    DoAlphasFit         false                   # don't run Fitter in every point! (if yes -> dependency of fit par to scan par)
+    #Fitter              AlphasFitter            # for fit in every point, use this fitter
+    PDF                 MyLHAPDF                # PDF Interface (i.e. LHAPDF6)
+
+    FitFunc             pol2                    # function to fit to chi2 points
+    PlotPoints          50                      # "support points" for FitFunc graph in ROOT file
+
+    ParameterPDFTable {{
+        AlphasMz  PDFSet              PDFMember
+        ########  ######              #########
+        0.112     CT10nlo_as_0112     0
+        0.113     CT10nlo_as_0113     0
+        0.114     CT10nlo_as_0114     0
+        0.115     CT10nlo_as_0115     0
+        0.116     CT10nlo_as_0116     0
+        0.117     CT10nlo_as_0117     0
+        0.118     CT10nlo_as_0118     0
+        0.119     CT10nlo_as_0119     0
+        0.120     CT10nlo_as_0120     0
+        0.121     CT10nlo_as_0121     0
+        0.122     CT10nlo_as_0122     0
+        0.123     CT10nlo_as_0123     0
+        0.124     CT10nlo_as_0124     0
+        0.125     CT10nlo_as_0125     0
+        0.126     CT10nlo_as_0126     0
+        0.127     CT10nlo_as_0127     0
+    }}
+}}}
+# --------------------------------------------------------------#
+
+
+#################################################################
+#  Specify Alpos theory (in 'AlposTheory' namespace)
+#################################################################
+AlposTheory {{{
+
+# --------------------------------------------------------------#
+#   Specify used functions.
+#   Give them a 'name' and specify the class
+# --------------------------------------------------------------#
+InitFunctions {{
+  Name                    Type
+  ####                    ####
+  AsRun                   CRunDec                # Use CRunDec Alphas evolution (specify Alphas(M_Z) as Alpos parameter)
+  #AsRun                   LHAPDF6Alphas          # Use LHAPDF6 Alphas evolution (gets Alphas(M_Z) directly from PDF)
+  MyLHAPDF                LHAPDF6                # Use LHAPDF6 to interface with PDFs
+}}
+
+
+
+# --------------------------------------------------------------#
+# Useful parameter shorthand notations
+# --------------------------------------------------------------#
+iOrd                        1
+mZ                          91.1876             # Z boson mass
+
+# --------------------------------------------------------------#
+#  Theory defaults
+# --------------------------------------------------------------#
+
+# --------------------------------------------------------------#
+# CRunDec: Alphas evolution code
+# --------------------------------------------------------------#
+# CRunDec defaults
+CRunDec.AlphasMz                0.118               # Use fit parameter AlphasMzFromFit as Alphas(M_Z) value for evolution in CRunDec
+CRunDec.Mz                      mZ                  # Use Z boson mass defined above in CRunDec
+CRunDec.nFlavor                 5
+CRunDec.nLoop                   2
+CRunDec.mur                     100                 # scale at which to get Alphas; temporary initialization value
+
+# --------------------------------------------------------------#
+# LHAPDF6: interface for access to PDFs
+# LHAPDF6Alphas: Alpos function to get Alphas evolution from LHAPDF6
+# --------------------------------------------------------------#
+# LHAPDF6 defaults
+LHAPDF6.PDFSet                  0                   # temporary initialization; Task Chi2FitPDFas sets this
+LHAPDF6.LHAPDFFile              CT10nlo             # temporary initialization; Task Chi2FitPDFas sets this
+LHAPDF6.xp                      0.01
+LHAPDF6.muf                     100
+# --------------------------------------------------------------#
+# LHAPDF6Alphas defaults
+LHAPDF6Alphas.AlphasMz          -1                  # LHAPDF outputs internal AlphasMz value to this parameter
+LHAPDF6Alphas.PDFSet            LHAPDF6.PDFSet      # Always use the same PDFSet as LHAPDF
+LHAPDF6Alphas.LHAPDFFile        LHAPDF6.LHAPDFFile  # Always use the same LHAPDFFile as LHAPDF
+LHAPDF6Alphas.mur               100                 # scale at which to get Alphas; temporary initialization value
+
+# --------------------------------------------------------------#
+# fastNLO: fast jet cross section evaluation
+# --------------------------------------------------------------#
+# fastNLO defaults
+#fastNLO.Filename                table.tab
+fastNLO.ScaleFacMuR             1
+fastNLO.ScaleFacMuF             1
+fastNLO.Units                   1      # 0: absoluteUnits, 1: PublicationUnits
+fastNLO.iOrd                    iOrd
+fastNLO.iThr                    -1
+# flexible-scale options
+fastNLO.MuRFuncForm             0 # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+fastNLO.MuFFuncForm             0
+fastNLO.PDF                     MyLHAPDF    # for Chi2InterpolPDF: get PDFs from LHAPDF
+fastNLO.Alpha_s                 AsRun       # which Alphas evolution code to use: AsRun is CRunDec or LHAPDF6Alphas
+fastNLO.PDFUncertainties        1
+
+# --------------------------------------------------------------#
+#  Theory specializations
+# --------------------------------------------------------------#
+# --------------------------------------------------------------#
+
+
+}}} # end of 'AlposTheory' namespace
+# --------------------------------------------------------------#

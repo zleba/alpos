@@ -1,0 +1,79 @@
+#! -*-sh-*- (colors for emacs)
+
+################################################################
+#
+#  An example steering file for Alpos
+#
+#################################################################
+
+# --------------------------------------------------------------#
+#  Specify 'DataTheorySets', i.e. data-files containing
+#  data sets and their corresponding theory class
+# --------------------------------------------------------------#
+DataTheorySets {{
+  AlposName                  SteerFile
+# nothing used here in the example
+}}
+
+
+# --------------------------------------------------------------#
+#  Specify tasks which should be executed by Alpos
+# --------------------------------------------------------------#
+Tasks {{
+  TaskName                TaskType
+# two tasks define here only
+    Welcome		  AExampleTask
+    WikiLink		  AExampleTask
+}}
+
+
+# --------------------------------------------------------------#
+#  Alpos global settings
+# --------------------------------------------------------------#
+ErrorSymmetrization       blabla
+GlobalVerbosity           Info # Debug, Warning, Error
+InitSubsets               false  # Init subsets of datasets
+
+
+# --------------------------------------------------------------#
+#  Task parameters
+#    Put all parameters in a namespace with the task's name
+# --------------------------------------------------------------#
+
+Welcome {{{ # three brackets denote a 'read_steer'-namespace
+  WelcomeString            "Welcome to Alpos!"
+}}}
+
+# --------------------------------------------------------------#
+
+WikiLink {{{
+  WelcomeString            "That's Alpos! Please read http://en.wikipedia.org/wiki/Alpos"
+}}}
+
+
+#################################################################
+#  Specify Alpos theory (in 'AlposTheory' namespace)
+#################################################################
+AlposTheory {{{
+
+# --------------------------------------------------------------#
+#   Specify used functions.
+#   Give them a 'name' and specify the class
+# --------------------------------------------------------------#
+InitFunctions {{
+  # one line here! (header of 'table')
+# no functions initialized
+}}
+
+# --------------------------------------------------------------#
+# Useful parameter shorthand notations
+# --------------------------------------------------------------#
+Pi                          3.1415
+
+
+}}} # end of 'AlposTheory' namespace
+# --------------------------------------------------------------#
+
+
+
+

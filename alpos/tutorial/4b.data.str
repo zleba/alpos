@@ -1,0 +1,121 @@
+#! -*-sh-*- (colors for emacs)
+
+################################################################
+#
+#  A steering file for an example Alpos alpha_s fit
+#  using the D0 inclusive jet data
+#  DB Feb 2015
+#
+#################################################################
+
+# --------------------------------------------------------------#
+#  Specify 'DataTheorySets', i.e. data-files containing
+#  data sets and their corresponding theory class
+# --------------------------------------------------------------#
+DataTheorySets {{
+  AlposName                   SteerFile                                                    TheoryFunction       CutsAndParameters
+  H1-InclJet-HERAII           datafiles/h1/1406.4709/H1-HERAII-HighQ2-InclJets.dat         fastNLO              q2min>=700 ptmax==11 ScaleFacMuR=0.5
+}}
+
+
+# --------------------------------------------------------------#
+#  Specify tasks which should be executed by Alpos
+# --------------------------------------------------------------#
+Tasks {{
+   TaskType           TaskName           
+#   PrintSteering      PrintSteering
+   PrintTheorySet     PrintTheorySet
+   PrintErrorSummary  PrintErrorSummary  
+   StatAnalysis       Stat             
+}}
+
+# --------------------------------------------------------------#
+#  Alpos global settings
+# --------------------------------------------------------------#
+ErrorSymmetrization       blabla
+GlobalVerbosity           Info # Debug, Warning, Error
+InitSubsets               false  # init subsets of datasets
+
+
+# --------------------------------------------------------------#
+#  Task parameters
+#    Put all parameters in a namespace with the task's name
+# --------------------------------------------------------------#
+
+# --------------------------------------------------------------#
+
+Stat {{{
+   Chisq		        LogNormal  
+   Chisq2	                Covariance 
+   DoChisq                      true
+   DoPValue                     true
+}}}
+
+# --------------------------------------------------------------#
+
+
+
+#################################################################
+#  Specify Alpos theory (in 'AlposTheory' namespace)
+#################################################################
+AlposTheory {{{
+
+# --------------------------------------------------------------#
+#   Specify used functions.
+#   Give them a 'name' and specify the class
+# --------------------------------------------------------------#
+InitFunctions {{
+  FunctionName            FunctionType  # one line here! (header of 'table')
+  CRunDec                 CRunDec
+  LHAPDF6                 LHAPDF6 
+}}
+
+
+
+# --------------------------------------------------------------#
+# Useful parameter shorthand notations
+# --------------------------------------------------------------#
+iOrd                        1
+
+# --------------------------------------------------------------#
+#  Theory defaults
+# --------------------------------------------------------------#
+# CRunDec defaults
+CRunDec.AlphasMz                0.1180
+CRunDec.Mz                      91.1876
+CRunDec.nFlavor                 5
+CRunDec.nLoop                   2
+CRunDec.mur                     100             # temporary initialization value
+# --------------------------------------------------------------#
+# LHAPDF6 defaults
+LHAPDF6.PDFSet                  9
+LHAPDF6.LHAPDFFile              MSTW2008nlo_asmzrange #CT10 #MSTW2008nlo_asmzrange #HERAPDF15NLO_EIG #HERAPDF MSTW2008nlo_asmzrange #"CT10"
+LHAPDF6.xp                      0.01
+LHAPDF6.muf                     100
+
+# --------------------------------------------------------------#
+# fastNLO defaults
+fastNLO.Filename                table.tab
+fastNLO.ScaleFacMuR             1
+fastNLO.ScaleFacMuF             1
+fastNLO.Units                   1      # 0: absoluteUnits, 1: PublicationUnits
+fastNLO.iOrd                    iOrd
+fastNLO.iThr                    -1
+# flexible-scale options
+fastNLO.MuRFuncForm          0 # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+fastNLO.MuFFuncForm          0
+fastNLO.PDF                  LHAPDF6
+fastNLO.Alpha_s              CRunDec
+
+# --------------------------------------------------------------#
+#  Theory specializations
+# --------------------------------------------------------------#
+# --------------------------------------------------------------#
+
+
+}}} # end of 'AlposTheory' namespace
+# --------------------------------------------------------------#
+
+
+
+
