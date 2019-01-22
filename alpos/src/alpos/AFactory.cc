@@ -48,6 +48,7 @@
 #include "alpos/functions/AQcdnumAlphas.h"
 #include "alpos/functions/AQcdnumPDF.h"
 #include "alpos/functions/AQcdnumDISCS.h"
+#include "alpos/functions/AQcdnumDDISCS.h"
 #include "alpos/functions/AQcdnumDISCSEWFit.h"
 #include "alpos/functions/AApfelDISCS.h"
 #include "alpos/functions/AApfelDISCSEWFit.h"
@@ -145,6 +146,8 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
    else if ( functype == AQcdnumAlphas::fFunctionName )     ptr = new AQcdnumAlphas(funcname);
    else if ( functype == AQcdnumPDF::fFunctionName )        ptr = new AQcdnumPDF(funcname);
    else if ( functype == AQcdnumDISCS::fFunctionName )      ptr = new AQcdnumDISCS(funcname);
+   else if ( functype == AQcdnumDDISCS::fFunctionName )     ptr = new AQcdnumDDISCS(funcname);
+
    else if ( functype == AQcdnumDISCSEWFit::fFunctionName ) ptr = new AQcdnumDISCSEWFit(funcname);
 #endif //_CMAKE_FOUND_QCDNUM
    else if ( functype == AAlphaEmRun::fFunctionName )       ptr = new AAlphaEmRun(funcname);

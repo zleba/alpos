@@ -3,4 +3,4 @@ export LHAPDF_DATA_PATH=/cvmfs/sft.cern.ch/lcg/external/lhapdfsets/current/:`lha
 
 export PATH=$PWD/qcdnumBuild/bin:$PATH
 export PATH=$PWD/fastnloBuild/bin:$PATH
-export PATH=$PWD/alposBuild/bin:$PATH
+export PATH=$PWD/alposBuild:$PATH
