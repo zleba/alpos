@@ -76,7 +76,20 @@ bool AfastNLOInterpolPDFasNormDIS::ReInit() {
    fGraphs.clear();
    // split lhapdfstring into vector<string>
    vector<string> lhapdfnames;
-   boost::split(lhapdfnames, lhapdfstring, boost::is_any_of(", "), boost::token_compress_on);
+   //boost::split(lhapdfnames, lhapdfstring, boost::is_any_of(", "), boost::token_compress_on);
+
+   //RADEK hack instead of boost
+   char *token;
+   char *str = new char[10000];
+   strcpy(str, lhapdfstring.c_str());
+   assert(str != NULL);
+   while ((token = strsep(&str, ",")) != NULL)
+       lhapdfnames.push_back(token);
+   delete [] str;
+
+
+
+
 
    // some PDFs are published as separate filesets for each value of alpha_s
    // e.g. for CT10..., which uses CT10..._as_0112 etc.

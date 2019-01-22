@@ -1,5 +1,5 @@
 wget -qO-  https://www.nikhef.nl/~h24/qcdnum-files/download/qcdnum170114.tar.gz | tar zxv
-mkdir -f qcdnumBuild
+mkdir -p qcdnumBuild
 pwd=$PWD
 mv qcdnum-17-01-14  qcdnum
 cd qcdnum

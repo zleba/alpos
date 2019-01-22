@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fastnlotk/read_steer.h>
 #include <alpos/functions/ALhapdf6.h>
-#include <boost/math/distributions/chi_squared.hpp>
+//#include <boost/math/distributions/chi_squared.hpp>
 #include <TSpline.h>
 #include "TF1.h"
 #include "TList.h"
@@ -677,9 +677,9 @@ void AfastNLOInterpolPDFas::CalcHessianPDFUncertaintiesAsEigenvectors(double cl)
 
    // handle error scaling, if necessary
    if (setCL * 100 != cl) {
-      boost::math::chi_squared chiSquareDistribution(1);
-      double qsetCL = boost::math::quantile(chiSquareDistribution, setCL);
-      double qreqCL = boost::math::quantile(chiSquareDistribution, cl/100.);
+      //boost::math::chi_squared chiSquareDistribution(1);
+      double qsetCL = TMath::ChisquareQuantile(setCL,1);// RADEK change   boost::math::quantile(chiSquareDistribution, setCL);
+      double qreqCL = TMath::ChisquareQuantile(cl/100,1); // RADEK boost::math::quantile(chiSquareDistribution, cl/100.);
       errScale = sqrt(qreqCL / qsetCL);
       debug["CalcSymHessianAndAddAsEigenvectors"] << "PDFSet CL is " << setCL * 100 << " %, but " << cl
       << " % was requested. " << "Errors will be scaled by a factor of "

@@ -33,6 +33,10 @@ include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/src/apccpp)
 set(FOUND_LIBRARIES aem apc apccpp gfortran)
 
 # -- system components (required)
+#find_package( Boost 1.66 COMPONENTS math REQUIRED )
+#include_directories( ${Boost_INCLUDE_DIR} )
+
+
 
 find_package(ROOT REQUIRED)
 include_directories(SYSTEM ${ROOT_INCLUDE_DIRS})
@@ -146,11 +150,11 @@ set_target_properties(libalpos PROPERTIES OUTPUT_NAME alpos)
 add_executable(alpos src/main.cc)
 
 # need C++11 standard
-set_property(TARGET alpos PROPERTY CXX_STANDARD 11)
+set_property(TARGET alpos PROPERTY CXX_STANDARD 17)
 set_property(TARGET alpos PROPERTY CXX_STANDARD_REQUIRED ON)
-set_property(TARGET libalpos PROPERTY CXX_STANDARD 11)
+set_property(TARGET libalpos PROPERTY CXX_STANDARD 17)
 set_property(TARGET libalpos PROPERTY CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11  -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++17  -g")
 
 # invoke linker from the C++ compiler
 set_target_properties(alpos PROPERTIES LINKER_LANGUAGE CXX)
