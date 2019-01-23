@@ -155,6 +155,7 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
    else if ( functype == APDFQ0_LHAPDF::fFunctionName )     ptr = new APDFQ0_LHAPDF(funcname);
    else if ( functype == APDFQ0_QcdnumExample::fFunctionName )     ptr = new APDFQ0_QcdnumExample(funcname);
    else if ( functype == APDFQ0_HERAStyle::fFunctionName )  ptr = new APDFQ0_HERAStyle(funcname);
+   else if ( functype == APDFQ0_diff::fFunctionName )       ptr = new APDFQ0_diff(funcname);
    else if ( functype == APDFQ0_HERA::fFunctionName )       ptr = new APDFQ0_HERA(funcname);
    else if ( functype == APDFQ0_BiLog::fFunctionName )      ptr = new APDFQ0_BiLog(funcname);
    else if ( functype == ATwoPomeronModel::fFunctionName )      ptr = new ATwoPomeronModel(funcname);
