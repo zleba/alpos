@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/zleba/alpos.svg?branch=master)](https://travis-ci.org/zleba/alpos)
+
 # Installation
 For a machine with cvmfs access 
 1. `git clone git@github.com:zleba/alpos.git`
@@ -13,3 +15,4 @@ To run diffractive fit:
 
 Make sure that the environment was set by `. ./setup.sh` before.  
 This will initialize ROOT and LHAPDF, so they don't need to be install.
+The `setup.sh` also initialize the new gcc compiler.
