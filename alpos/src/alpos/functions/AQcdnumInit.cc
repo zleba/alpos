@@ -26,6 +26,10 @@ extern "C" {
    void fillwt_(int* itype,int* id1,int* id2,int* nw);
    void zmfillw_(int* nw);
    void zswitch_(int* IPDFSET);
+   void hqfillw_(int *iF2FLsets, double *hqmass, double *aq2, double *bq2, int *nwords);
+   void hqreadw_(int *ilun, const char *hqname, int *nwords, int *ierr);
+   void hqparms_(double *qmas, double *a, double *b);
+
    void eprc_init_(int* boool);
    void zmstfun_(int* istf, double* def, double* x, double* Q2, double* f, int* n, int* nchk);
    void pdfinp_( void (*) (double*,double*,double*), int*,double*,double*,int*);
@@ -207,7 +211,7 @@ bool AQcdnumInit::Init() {
    // vector<double> dwgt = {1,4,2,1.5,1,1};
    map<double,double> q2map = {{1,1},{205000000.0,1}}; // ordered map for nodes and weights
    q2map[PAR(Q0)*PAR(Q0)] = 4;
-   if ( fabs(PAR(mcharm)-PAR(Q0)) > 1.e-3 )
+   if ( abs(PAR(mcharm)-PAR(Q0)) > 1.e-3 )
       q2map[PAR(mcharm)*PAR(mcharm)] = 2;
    q2map[PAR(mbottom)*PAR(mbottom)] = 1.5;
    q2map[PAR(mtop)*PAR(mtop)] = 1;
@@ -224,6 +228,38 @@ bool AQcdnumInit::Init() {
    int itype=0,id1,id2,nw;
    fillwt_(&itype,&id1,&id2,&nw); // calculate weight table
    zmfillw_(&nw); // fill weight table
+
+   if( PAR(nfFix) >= 4) { 
+       //Fill Structure functions for Charm & Bottm
+       double aq2 = 1., bq2 = 0.; //q2 = a*muF^2 + b, or muF = 1/a*q2 - b/a
+       int nwords; //output
+       double hqmass[] = { PAR(mcharm),  PAR(mbottom), 0. };
+       int iF2FLsets = 3; //fill F2 & FL
+
+       //Read weights from file to boost the execution
+            // Try to read the weight file and create one if that fails
+    string hqname = "hqstf.wgt";
+    int ilun = 22;
+    int ierr;
+    hqreadw_(&ilun,hqname.c_str(),&nwords,&ierr);
+    if(ierr == 0) {
+        double a, b;
+        double qmas[3];
+        hqparms_(qmas,&a,&b);
+        if(qmas[0] != hqmass[0]) ierr = 1;
+        if(qmas[1] != hqmass[1]) ierr = 1;
+        if(qmas[2] != hqmass[2]) ierr = 1;
+        if(a != aq2)             ierr = 1;
+        if(b != bq2)             ierr = 1;
+    }
+    if(ierr != 0) {
+        hqfillw_(&iF2FLsets,hqmass,&aq2,&bq2,&nwords);
+    }
+
+
+       //hqfillw_(&iF2FLsets,hqmass,&aq2,&bq2,&nwords);
+       cout << "In total nwords "<< nwords << " read" << endl;
+   }
 
    // --- set alpha_s MZ (we must use the internal alpha_s code)
    //     The internal alpha_s routine is available through 'AQcdnumAlphas'
@@ -339,9 +375,9 @@ void AQcdnumInit::SetAsMz(){
 // __________________________________________________________________________________________ //
 void AQcdnumInit::Setcbt(){
    // call setcbt with recent parameters.
-   double mc2 = PAR(mcharm)*PAR(mcharm);
-   double mb2 = PAR(mbottom)*PAR(mbottom);
-   double mt2 = PAR(mtop)*PAR(mtop);
+   double mc2 = pow(PAR(mcharm),  2);
+   double mb2 = pow(PAR(mbottom), 2);
+   double mt2 = pow(PAR(mtop),    2);
    int imc = iqfrmq_(&mc2);
    int imb = iqfrmq_(&mb2);
    int imt = iqfrmq_(&mt2);

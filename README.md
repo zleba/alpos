@@ -16,3 +16,9 @@ To run diffractive fit:
 Make sure that the environment was set by `. ./setup.sh` before.  
 This will initialize ROOT and LHAPDF, so they don't need to be install.
 The `setup.sh` also initialize the new gcc compiler.
+
+In case, that some changes were done in alpos, please recompile like
+1. `cd alposBuild`
+2. `make`
+
+Notice, that if new files were added, one needs to call `cmake` again, for example using `./installAlpos.sh`.
