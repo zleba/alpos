@@ -71,8 +71,6 @@ bool AQcdnumDDISCS::Update() {
    fValue.resize(q2.size());
    fError.resize(q2.size());
 
-   return true;
-
    //fValue[0] = PAR(Aq);
    //fValue[1] = PAR(Bq);
    //fValue[2] = PAR(Cq);
