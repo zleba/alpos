@@ -1,0 +1,16 @@
+sudo: required
+
+services:
+    - docker
+
+before_install:
+#    - Get Image with ROOT + LHAPDF
+    - docker pull zleba/rootlhapdf:system
+
+script:
+#Get and compile dependences
+    - ./rd ./installQCDnum.sh
+    - ./rd ./installFast.sh
+#Compile Alpos
+    - ./rd ./installAlpos.sh
+
