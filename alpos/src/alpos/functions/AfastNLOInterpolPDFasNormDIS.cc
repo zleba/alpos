@@ -5,7 +5,6 @@
 #include <iostream>
 #include <fastnlotk/read_steer.h>
 #include <alpos/functions/ALhapdf6.h>
-#include <boost/math/distributions/chi_squared.hpp>
 #include <TSpline.h>
 #include <alpos/functions/AfastNLOInterpolPDFas.h>
 #include "TF1.h"

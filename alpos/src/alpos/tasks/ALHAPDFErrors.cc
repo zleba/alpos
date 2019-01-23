@@ -5,7 +5,7 @@
 #include <alpos/functions/ALhapdf6.h>
 #include "alpos/tasks/ALHAPDFErrors.h"
 
-#include <boost/math/distributions/chi_squared.hpp>
+#include "TMath.h"
 #include <alpos/ASubsetFunction.h>
 
 /*!
@@ -270,9 +270,8 @@ bool ALHAPDFErrors::CalcAndAddAsCovariance(std::vector<AFuncD*> th_funcs) {
                                          << 100*reqCL << " % CL." << std::endl;
       }
       else if (setCL != reqCL) {
-         boost::math::chi_squared chiSquareDistribution(1);
-         double qsetCL = boost::math::quantile(chiSquareDistribution, setCL);
-         double qreqCL = boost::math::quantile(chiSquareDistribution, reqCL);
+         double qsetCL = TMath::ChisquareQuantile(setCL,1);
+         double qreqCL = TMath::ChisquareQuantile(reqCL,1);
          errScale = sqrt(qreqCL / qsetCL);
          debug["CalcAndAddAsCovariance"] << "PDFSet CL is " << setCL * 100 << " %, but " << reqCL * 100
                                          << " % was requested. " << "Errors will be scaled by a factor of "
@@ -371,9 +370,8 @@ bool ALHAPDFErrors::CalcHessianAndAddAsEigenvectors(std::vector<AFuncD*> th_func
 
       // handle error scaling, if necessary
       if (setCL != reqCL) {
-         boost::math::chi_squared chiSquareDistribution(1);
-         double qsetCL = boost::math::quantile(chiSquareDistribution, setCL);
-         double qreqCL = boost::math::quantile(chiSquareDistribution, reqCL);
+         double qsetCL =  TMath::ChisquareQuantile(setCL,1);
+         double qreqCL =  TMath::ChisquareQuantile(reqCL,1);
          errScale = sqrt(qreqCL / qsetCL);
          debug["CalcHessianAndAddAsEigenvectors"] << "PDFSet CL is " << setCL * 100 << " %, but " << reqCL * 100
                                                   << " % was requested. " << "Errors will be scaled by a factor of "
@@ -463,9 +461,8 @@ bool ALHAPDFErrors::CalcSymHessianAndAddAsEigenvectors(std::vector<AFuncD*> th_f
 
       // handle error scaling, if necessary
       if (setCL != reqCL) {
-         boost::math::chi_squared chiSquareDistribution(1);
-         double qsetCL = boost::math::quantile(chiSquareDistribution, setCL);
-         double qreqCL = boost::math::quantile(chiSquareDistribution, reqCL);
+         double qsetCL = TMath::ChisquareQuantile(setCL,1);
+         double qreqCL = TMath::ChisquareQuantile(reqCL,1);
          errScale = sqrt(qreqCL / qsetCL);
          debug["CalcSymHessianAndAddAsEigenvectors"] << "PDFSet CL is " << setCL * 100 << " %, but " << reqCL * 100
                                                      << " % was requested. " << "Errors will be scaled by a factor of "
