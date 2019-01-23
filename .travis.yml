@@ -7,10 +7,23 @@ before_install:
 #    - Get Image with ROOT + LHAPDF
     - docker pull zleba/rootlhapdf:system
 
-script:
-#Get and compile dependences
-    - ./rd ./installQCDnum.sh
-    - ./rd ./installFast.sh
-#Compile Alpos
-    - ./rd ./installAlpos.sh
+jobs:
+    include:
+        - stage: build Apos with dep.
+          script:
+          - ./rd ./installQCDnum.sh
+          - ./rd ./installFast.sh
+          #Compile Alpos
+          - ./rd ./installAlpos.sh
+        - stage: test
+          - cd alpos
+          - ./rd ../alposBuild/alpos  steering/H1diff.str
 
+
+        #script:
+        ##Get and compile dependences
+        #    - ./rd ./installQCDnum.sh
+        #    - ./rd ./installFast.sh
+        ##Compile Alpos
+        #    - ./rd ./installAlpos.sh
+        #
