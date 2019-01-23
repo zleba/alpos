@@ -69,12 +69,26 @@ InitFunctions {{
 # --------------------------------------------------------------#
 # Useful parameter shorthand notations
 # --------------------------------------------------------------#
+H1incDDIS.QcdnumInit        QcdnumInit # PDF, alpha_s is provided through QCDNUM
+
 QcdnumDDISCS.Aq               1.06
 QcdnumDDISCS.Bq               2.30
 QcdnumDDISCS.Cq               0.57
 QcdnumDDISCS.Ag               0.15
 QcdnumDDISCS.Bg               0.00
 QcdnumDDISCS.Cg              -0.95
+
+# Pomeron flux
+QcdnumDDISCS.a0_IP            1.1182
+QcdnumDDISCS.ap_IP            0.06
+QcdnumDDISCS.b0_IP            5.5
+
+# Reggeon flux
+QcdnumDDISCS.a0_IR            0.5
+QcdnumDDISCS.ap_IR            0.3
+QcdnumDDISCS.b0_IR            1.6
+QcdnumDDISCS.n_IR             0.0017
+
 
 Pi                          3.1415
 

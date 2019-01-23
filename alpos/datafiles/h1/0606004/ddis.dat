@@ -11,6 +11,7 @@ Description                    	"H1 DDIS NC e-p 98-99"
 Reference                       "Eur.Phys.J. C48 (2006) 715-748" 
 arXiv                           hep-ex/0606004
 Inspire                         718190
+Title                           "Measurement and QCD Analysis of the Diffractive Deep-Inelastic Scattering Cross Section at HERA"
 
 
 
@@ -39,12 +40,11 @@ IsNC                             true
 ##########################################################          
 
 #   ColumnType = 3*'Bin','Sigma',14*'Error'
-#   ColumnName = 'Q2','x','y','reduced x-section',2*'ignore','stat','uncor',2*'ignore','V2','H2','N1','B2','xlum_4','corlum'
-# Q2      x     ds/dxdq2  tot   stat  unc   u^h   cor    c^V+   c^h+   c^N+   c^B+ 1.72916 0.5
-#GeV^2          pb/GeV^2    %     %    %     %     %      %      %      %      % 1.72916 0.5
+#   ColumnName = 'xp','Q2','beta','reduced x-section','stat','sys','total','unc','lar','ele','theta','noise',xpom','beta','bg','Plug','Q2','spa' 
+#   Percent =  14*true
 
 Data {{
-xp       Q2          beta        Sigma      d(stat) d(sys) d(tot) d(unc) d(lar) d(ele) d(theta) d(noise) d(xpom) d(beta) d(bg) d(Plug) d(Q2) d(spa) 
+"xp"       "Q2"          "beta"        "Sigma"    "stat"  "sys" "tot" "unc" "lar" "ele" "theta" "noise" "xpom" "beta" "bg" "Plug" "Q2" "spa" 
 
 0.0003 		 3.5 		 0.17 		 0.0224 	 17.2 	 10.8 	 20.3 	 1.6 	 0.2 	 5.3 	 -1.7 	 -4.7 	 -0.6 	 -0.8 	 0.0 	 -0.0 	 3.0 	 1.7 
 0.0003 		 3.5 		 0.27 		 0.0262 	 7.6 	 6.4 	 9.9 	 1.6 	 0.2 	 1.3 	 2.7 	 -4.6 	 -0.4 	 -0.5 	 -0.1 	 -0.1 	 1.0 	 1.8 
@@ -338,16 +338,49 @@ ErrorUnit                  percent
 SysCorr                   1
 
 Errors {{
- ErrorName       Column           Correlation      Nature
-  Stat            stat              0               P
-  unc             unc               0               M
-#u^h
-#       cor
-  V2             c^V+              ${SysCorr}       M
-  H2             c^h+              ${SysCorr}       M
-  N1             c^N+              ${SysCorr}       M 
-  B2             c^B+              ${SysCorr}       M 
-  xlum_4         1.72916          ${SysCorr}       M
-  corlum         0.5              ${SysCorr}       M
+ ErrorName       Column           Type        
+  stat           stat             "SE"
+  sys            sys              "YE"
+  tot            tot              "YE"
+  unc            unc              "YE"
+  lar            lar              "YE"
+  ele            ele              "YE"
+  theta          theta            "YE"
+  noise          noise            "YE"
+  xpom           xpom             "YE"
+  beta           beta             "YE"
+  bg             bg               "YE"
+  Plug           Plug             "YE"
+  Q2             Q2               "YE"
+  spa            spa              "YE"
 }}
 
+
+#################################################################
+##  Specify Alpos theory (in 'AlposTheory' namespace)
+##################################################################
+AlposTheory {{{
+
+# --------------------------------------------------------------#
+#   Specify used functions.
+#   Give them a 'name' and specify the class
+# --------------------------------------------------------------#
+InitFunctions {{
+# one line here! (header of 'table')
+# no functions initialized
+}}
+
+# --------------------------------------------------------------#
+# Useful parameter shorthand notations
+# --------------------------------------------------------------#
+QcdnumDDISCS.Aq               1.06
+QcdnumDDISCS.Bq               2.30
+QcdnumDDISCS.Cq               0.57
+QcdnumDDISCS.Ag               0.15
+QcdnumDDISCS.Bg               0.00
+QcdnumDDISCS.Cg              -0.95
+
+Pi                          3.1415
+
+
+}}}
