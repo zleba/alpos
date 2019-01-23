@@ -356,31 +356,3 @@ Errors {{
 }}
 
 
-#################################################################
-##  Specify Alpos theory (in 'AlposTheory' namespace)
-##################################################################
-AlposTheory {{{
-
-# --------------------------------------------------------------#
-#   Specify used functions.
-#   Give them a 'name' and specify the class
-# --------------------------------------------------------------#
-InitFunctions {{
-# one line here! (header of 'table')
-# no functions initialized
-}}
-
-# --------------------------------------------------------------#
-# Useful parameter shorthand notations
-# --------------------------------------------------------------#
-QcdnumDDISCS.Aq               1.06
-QcdnumDDISCS.Bq               2.30
-QcdnumDDISCS.Cq               0.57
-QcdnumDDISCS.Ag               0.15
-QcdnumDDISCS.Bg               0.00
-QcdnumDDISCS.Cg              -0.95
-
-Pi                          3.1415
-
-
-}}}

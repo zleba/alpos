@@ -15,11 +15,11 @@ double rflux(double x_pom, double a0, double ap, double b0);
 
 using namespace std;
 
-const std::vector<std::string> AQcdnumDDISCS::fRequirements = {"Aq","Bq","Cq","Ag","Bg","Cg", //pdf parameters
+const std::vector<std::string> AQcdnumDDISCS::fRequirements = {"QcdnumInit",
+							       "Aq","Bq","Cq","Ag","Bg","Cg", //pdf parameters
                                                                "a0_IP", "ap_IP", "b0_IP",     //Pomeron flux
                                                                "a0_IR", "ap_IR", "b0_IR",     //Reggeon flux
                                                                "n_IR",                        //Reggeon suppression
-							       "QcdnumInit"
                                                                 }; //< List of all AParm's which this function depends on
 const std::vector<std::string> AQcdnumDDISCS::fStopFurtherNotification = {"blubb", "par4"}; //< List of Parm's which have changed, but this function does not notify further dependencies
 const std::string AQcdnumDDISCS::fFunctionName = "QcdnumDDISCS"; //< The function's name
@@ -45,7 +45,7 @@ AQcdnumDDISCS::~AQcdnumDDISCS() {
 
 // ___________________________________________________________________________________________ //
 bool AQcdnumDDISCS::Init() {
-    cout << "Init AQcdnumDDISCS" << endl;
+   debug["Update"] << "Init AQcdnumDDISCS. Nothing to do." << endl;
    //! Init is once called for each function
    //! return true if initialization was successful.
    return true;
@@ -54,14 +54,11 @@ bool AQcdnumDDISCS::Init() {
 
 // ___________________________________________________________________________________________ //
 bool AQcdnumDDISCS::Update() {
-   cout<<" AQcdnumDDISCS::Update(). GetAlposName:" <<GetAlposName()<<endl;
+   debug["Update"]<<" AQcdnumDDISCS::Update(). GetAlposName:" <<GetAlposName()<<endl;
 
    // 'Update' PDF and Alpha_s values to ensure that 'Quick'-access are correct.
-   UPDATE(QcdnumInit); 
-
-   fValue.resize(GetRequirements().size());
-   fError.resize(GetRequirements().size());
-
+   UPDATE(QcdnumInit);
+   
    vector<double> xpom   = DOUBLE_COL_NS(Data,xp,GetAlposName());
    vector<double> q2   = DOUBLE_COL_NS(Data,Q2,GetAlposName());
    vector<double> beta = DOUBLE_COL_NS(Data,beta,GetAlposName());
@@ -71,6 +68,10 @@ bool AQcdnumDDISCS::Update() {
    for(int i = 0; i < xpom.size(); ++i)
        cout << xpom[i] <<" "<<  q2[i] <<" "<< beta[i] <<" "<< sigmaVec[i]<<  endl;
 
+   fValue.resize(q2.size());
+   fError.resize(q2.size());
+
+   return true;
 
    //fValue[0] = PAR(Aq);
    //fValue[1] = PAR(Bq);
