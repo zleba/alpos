@@ -47,6 +47,7 @@ protected:
    double DefaultHERAParam(double x, double A,double B,double C,double D=0,double E=0,double F=0,double AP=0,double BP=0,double CP=0); //!< Default parametrisation as used at HERA
    double GetIntegralDefaultHERAParam(double A, double B, double C,double D=0,double E=0,double F=0,double AP=0,double BP=0,double CP=0); //! Calculate integral of 'DefaultHERAParam'
    double GetIntegralXHERA(double A, double B, double C,double D=0,double E=0,double F=0,double AP=0,double BP=0,double CP=0); //! Calculate integral of x*'DefaultHERAParam'
+   double DefaultDiffParam(double x, double A, double B, double C);
 
    // Sum rules...
    double CalcGluonASumRule(); // calc 'gA' parameter from sumrule

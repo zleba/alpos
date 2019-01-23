@@ -137,14 +137,14 @@ QcdnumDISCS.e-polarity                    0
 
 
 
-H1incDDIS.QcdnumInit        QcdnumInit # PDF, alpha_s is provided through QCDNUM
-
+QcdnumDDISCS.QcdnumInit        QcdnumInit # PDF, alpha_s is provided through QCDNUM
 QcdnumDDISCS.Aq               1.06
 QcdnumDDISCS.Bq               2.30
 QcdnumDDISCS.Cq               0.57
 QcdnumDDISCS.Ag               0.15
 QcdnumDDISCS.Bg               0.00
 QcdnumDDISCS.Cg              -0.95
+
 
 # Pomeron flux
 QcdnumDDISCS.a0_IP            1.1182

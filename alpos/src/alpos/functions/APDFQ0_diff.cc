@@ -59,6 +59,13 @@ std::vector<double> APDFQ0_diff::GetQuick(const vector<double>& ipdf_xp_q0) {
    double xp = ipdf_xp_q0[1];
    //double q0 = ipdf_xp_q0[2]; // q0 is ignored
 
+   double Ag = PAR(Ag);
+   double Bg = PAR(Bg);
+   double Cg = PAR(Cg);
+   double Aq = PAR(Aq);
+   double Bq = PAR(Bq);
+   double Cq = PAR(Cq);
+
    vector<double> ret(1);
    if(ipdf== 0) 
       ret[0] =   DefaultDiffParam(xp, Ag, Bg, Cg); //gluon

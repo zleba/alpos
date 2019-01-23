@@ -18,7 +18,8 @@ using namespace std;
 const std::vector<std::string> AQcdnumDDISCS::fRequirements = {"Aq","Bq","Cq","Ag","Bg","Cg", //pdf parameters
                                                                "a0_IP", "ap_IP", "b0_IP",     //Pomeron flux
                                                                "a0_IR", "ap_IR", "b0_IR",     //Reggeon flux
-                                                               "n_IR"                         //Reggeon suppression
+                                                               "n_IR",                        //Reggeon suppression
+							       "QcdnumInit"
                                                                 }; //< List of all AParm's which this function depends on
 const std::vector<std::string> AQcdnumDDISCS::fStopFurtherNotification = {"blubb", "par4"}; //< List of Parm's which have changed, but this function does not notify further dependencies
 const std::string AQcdnumDDISCS::fFunctionName = "QcdnumDDISCS"; //< The function's name

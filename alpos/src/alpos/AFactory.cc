@@ -49,6 +49,7 @@
 #include "alpos/functions/AQcdnumPDF.h"
 #include "alpos/functions/AQcdnumDISCS.h"
 #include "alpos/functions/AQcdnumDDISCS.h"
+#include "alpos/functions/APDFQ0_diff.h"
 #include "alpos/functions/AQcdnumDISCSEWFit.h"
 #include "alpos/functions/AApfelDISCS.h"
 #include "alpos/functions/AApfelDISCSEWFit.h"
