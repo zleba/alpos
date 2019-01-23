@@ -11,9 +11,9 @@ using namespace std;
 
 
 // ______________________________________________________________________________________ //
-const std::vector<std::string> APDFQ0_diff::fRequirements = {"xp","iPDF", "fs", "gB","gC", "uvB", "uvC", "uvE", "dvB", "dvC", "UbarB", "UbarC", "DbarA", "DbarB", "DbarC"}; //< List of all AParm's which this function depends on
+const std::vector<std::string> APDFQ0_diff::fRequirements = {"xp","iPDF", "Ag", "Bg", "Cg", "Aq", "Bq", "Cq"};//< List of all AParm's which this function depends on
 const std::vector<std::string> APDFQ0_diff::fStopFurtherNotification = {"mur"}; //< List of Parm's which have changed, but this function does not notify further dependencies
-const std::string APDFQ0_diff::fFunctionName = "PDFQ0_HERA_10pts"; //< The function's name
+const std::string APDFQ0_diff::fFunctionName = "PDFQ0_diff"; //< The function's name
 
 
 // ______________________________________________________________________________________ //
@@ -149,27 +149,36 @@ bool APDFQ0_diff::Update() {
 
       debug["Update"]<<"fgA="<<fgA<<"\tfdvA="<<fdvA<<"\tfuvA="<<fuvA<<"\tfUbarA="<<fUbarA<<endl;
 
+      double Ag = PAR(Ag);
+      double Bg = PAR(Bg);
+      double Cg = PAR(Cg);
+      double Aq = PAR(Aq);
+      double Bq = PAR(Bq);
+      double Cq = PAR(Cq);
+
+
+
       if(ipdf== 0) {
-	 double gA = fgA;
-	 fValue[0] = DefaultHERAParam(xp,gA,PAR(gB),PAR(gC)); //gl
+          double gA = fgA;
+          fValue[0] = DefaultDiffParam(xp, Ag, Bg, Cg); //gl
       }
       else if(ipdf== 1) {
-	 double dvA = fdvA;
-	 fValue[0] =  DefaultHERAParam(xp,dvA,PAR(dvB),PAR(dvC)); //dv
+          double dvA = fdvA;
+          fValue[0] =  0; //dv
       }
       else if(ipdf== 2) {
-	 double uvA = fuvA;
-	 fValue[0] =  DefaultHERAParam(xp,uvA,PAR(uvB),PAR(uvC),0,PAR(uvE)); //uv
+          double uvA = fuvA;
+          fValue[0] =  0; //uv
       }
       else if(ipdf== 3) {
-	 double fs = PAR(fs);
-	 fValue[0] =  2*fs*DefaultHERAParam(xp,PAR(DbarA),PAR(DbarB),PAR(DbarC));//dbar
+          //double fs = PAR(fs);
+          fValue[0] =  DefaultDiffParam(xp, Aq, Bq, Cq);//sbar
       }
       else if(ipdf== 4) {
-	 double UbarA = fUbarA;
-	 fValue[0] =  DefaultHERAParam(xp, UbarA ,PAR(UbarB),PAR(UbarC));//dbar
+          double UbarA = fUbarA;
+          fValue[0] =  DefaultDiffParam(xp, Aq, Bq, Cq);//dbar
       }
-      else if(ipdf== 5) fValue[0] = DefaultHERAParam(xp,PAR(DbarA),PAR(DbarB),PAR(DbarC));
+      else if(ipdf== 5) fValue[0] = DefaultDiffParam(xp, Aq, Bq, Cq);
       else if(ipdf== 6) fValue[0] = 0;
       else fValue[0] = 0;
       
@@ -182,7 +191,7 @@ bool APDFQ0_diff::Update() {
 // __________________________________________________________________________________________ // 
 double APDFQ0_diff::Get_UbarA(){
    //! return recent UbarA
-   return PAR(DbarA)*(1.-PAR(fs));// /(1.-0);
+   return 0;//PAR(DbarA)*(1.-PAR(fs));// /(1.-0);
 }
 
 
@@ -190,7 +199,7 @@ double APDFQ0_diff::Get_UbarA(){
 double APDFQ0_diff::Get_dvA(){
    //! return recent dvA
    //! sum rule: D - Dbar = 1 -> dvA
-   return 1./GetIntegralDefaultHERAParam(0,PAR(dvB),PAR(dvC));
+   return 0;//1./GetIntegralDefaultHERAParam(0,PAR(dvB),PAR(dvC));
 }
 
 
@@ -198,7 +207,7 @@ double APDFQ0_diff::Get_dvA(){
 double APDFQ0_diff::Get_uvA(){
    //! return recent uvA
    //! sum rule: U - Ubar = 2  -> uvA
-   return 2./GetIntegralDefaultHERAParam(0,PAR(uvB),PAR(uvC),0,PAR(uvE));
+   return 0;//2./GetIntegralDefaultHERAParam(0,PAR(uvB),PAR(uvC),0,PAR(uvE));
 }
 
 

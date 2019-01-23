@@ -1,11 +1,14 @@
 // DB 15.01.2015
 
+#include "QCDNUM/QCDNUM.h"
 #include "alpos/functions/AQcdnumInit.h"
 #include "alpos/ATheory.h"
 #include <cmath>
 #include <iostream>
+#include "TMatrixD.h"
 
 using namespace std;
+
 
 extern "C" {
    // call qcinit(6,' ');//        !initialize 
@@ -241,11 +244,11 @@ bool AQcdnumInit::Init() {
     string hqname = "hqstf.wgt";
     int ilun = 22;
     int ierr;
-    hqreadw_(&ilun,hqname.c_str(),&nwords,&ierr);
+    QCDNUM::hqreadw(ilun, hqname,  nwords, ierr);//nwords,ierr are outputs
     if(ierr == 0) {
         double a, b;
         double qmas[3];
-        hqparms_(qmas,&a,&b);
+        QCDNUM::hqparms(qmas, a, b);
         if(qmas[0] != hqmass[0]) ierr = 1;
         if(qmas[1] != hqmass[1]) ierr = 1;
         if(qmas[2] != hqmass[2]) ierr = 1;
@@ -253,7 +256,7 @@ bool AQcdnumInit::Init() {
         if(b != bq2)             ierr = 1;
     }
     if(ierr != 0) {
-        hqfillw_(&iF2FLsets,hqmass,&aq2,&bq2,&nwords);
+        QCDNUM::hqfillw(iF2FLsets, hqmass, aq2, bq2, nwords);//nwords is output
     }
 
 
@@ -324,13 +327,29 @@ bool AQcdnumInit::Update() {
       // Update for InitEvolution
       int IPDFSet = 1 ;//external PDF: 5
       zswitch_(&IPDFSet);
+      QCDNUM::hswitch(IPDFSet);
       // double offset = 0.001;
       // int nwds;
       // pdfinp_(AWrap::GetXFX, &IPDFSet, &offset,&epsi ,&nwds);
 
-      SET(PDFQ0Param.iPDF,-1,0); // set PDFQ0Param to 'def' mode.
+      SET(PDFQ0Param.iPDF,-2,0); // set PDFQ0Param to 'def' mode.
       //SET(PDFQ0Param.Q0,fQ0,0); 
       vector<double> def = VALUES(PDFQ0Param); // get 'def'
+
+      /*
+      TMatrixD mat(13,13);
+      assert(def.size() == 13*13);
+      cout << "Control output " << endl;
+      for(int i = 0; i < def.size(); ++i) {
+          int ii = i / 13;
+          int jj = i % 13;
+          mat(ii,jj) = def[i];
+      }
+      cout << mat.Determinant() << endl;
+      */
+      //for(auto  d : def)
+          //cout << d <<" "<< endl;
+
 
 
       double epsi;

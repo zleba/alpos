@@ -15,6 +15,18 @@ find_library(qcdnum_LIBRARY
   NAMES QCDNUM
   PATHS ${QCDNUM_PREFIX}/lib ${PREFIX}/lib /usr/lib /usr/local/lib
   )
+
+FIND_PATH(QCDNUM_INCLUDE_DIRS
+    NAMES QCDNUM/QCDNUM.h
+  PATHS
+  ${QCDNUM_PREFIX}/include
+  $ENV{HOME}/.local/include
+  /usr/local/include
+  /usr/include
+  )
+
+
+
 list(APPEND QCDNUM_LIBRARIES ${qcdnum_LIBRARY})
 
 #find_library(qcdnum_LIBRARY

@@ -79,7 +79,7 @@ AlposTheory {{{
 # --------------------------------------------------------------#
 InitFunctions {{
    FunctionName          FunctionType         # one line here! (header of 'table')
-   PDFQ0_HERA            PDFQ0_HERA
+   PDFQ0_diff            PDFQ0_diff
    QcdnumInit            QcdnumInit
 #   QcdnumPDF             QcdnumPDF
 }}
@@ -98,7 +98,7 @@ QcdnumInit.Mz                            mZ
 QcdnumInit.iOrd                          iOrd
 QcdnumInit.ScaleFacMuR                   1
 QcdnumInit.ScaleFacMuF                   1
-QcdnumInit.PDFQ0Param                    PDFQ0_HERA
+QcdnumInit.PDFQ0Param                    PDFQ0_diff
 
 QcdnumInit.mcharm                        1.4     #1.47  #1.3
 QcdnumInit.mbottom                       4.5     #4.5   #4.2
@@ -106,11 +106,11 @@ QcdnumInit.mtop                          174     #173
 QcdnumInit.nfFix                         5       # 3,4,5,6 for FFNS, or '0' for VFNS mode
 QcdnumInit.InitEvolution                 1       # 0:false, 1: true   # init QCD evolution, or take external PDF
 # -- if InitEvolution=0: take external PDF
-QcdnumInit.PDF                           PDFQ0_HERA # LHAPDF  #QcdnumPDF # PDF1
+QcdnumInit.PDF                           PDFQ0_diff # LHAPDF  #QcdnumPDF # PDF1
 # -- if InitEvolution=0: take interanl PDF
 QcdnumInit.Q0                            1.3784  # must below mcharm
-QcdnumInit.nxGrid                        200 #60 # number of x-grid points
-QcdnumInit.nqGrid                        120 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
+QcdnumInit.nxGrid                        50 #60 # number of x-grid points
+QcdnumInit.nqGrid                        60 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
 
 # QcdnumPDF defaults
 QcdnumPDF.QcdnumInit                     QcdnumInit   # one QcdnumInit function must made available
@@ -121,18 +121,18 @@ QcdnumPDF.muf                            100
 
 # --------------------------------------------------------------#
 # fastNLODIS Norm and QCDNUM DISCS
-QcdnumDISCS.QcdnumInit                    QcdnumInit # PDF, alpha_s is provided through QCDNUM
-QcdnumDISCS.Mw                            80.385
-QcdnumDISCS.Mz                            mZ
-QcdnumDISCS.sin2thw                       0.23127 #0.2315 #0.23127 #0.2315
-QcdnumDISCS.Gf                            1.16638e-5
-QcdnumDISCS.au                            0.5
-QcdnumDISCS.ad                            -0.5
-QcdnumDISCS.vu0                           0.5
-QcdnumDISCS.vd0                           -0.5
-QcdnumDISCS.sin2thweffFix                 0 # set to 0 for non-ew version
-QcdnumDISCS.EPRC                          EPRC
-QcdnumDISCS.e-polarity                    0
+#QcdnumDISCS.QcdnumInit                    QcdnumInit # PDF, alpha_s is provided through QCDNUM
+#QcdnumDISCS.Mw                            80.385
+#QcdnumDISCS.Mz                            mZ
+#QcdnumDISCS.sin2thw                       0.23127 #0.2315 #0.23127 #0.2315
+#QcdnumDISCS.Gf                            1.16638e-5
+#QcdnumDISCS.au                            0.5
+#QcdnumDISCS.ad                            -0.5
+#QcdnumDISCS.vu0                           0.5
+#QcdnumDISCS.vd0                           -0.5
+#QcdnumDISCS.sin2thweffFix                 0 # set to 0 for non-ew version
+#QcdnumDISCS.EPRC                          EPRC
+#QcdnumDISCS.e-polarity                    0
 
 
 
@@ -158,49 +158,60 @@ QcdnumDDISCS.b0_IR            1.6
 QcdnumDDISCS.n_IR             0.0017
 
 
+# PDFQ0_diff
+PDFQ0_diff.iPDF               0 # dummy
+PDFQ0_diff.xp                0.1  # dummy
+PDFQ0_diff.Aq               1.06
+PDFQ0_diff.Bq               2.30
+PDFQ0_diff.Cq               0.57
+PDFQ0_diff.Ag               0.15
+PDFQ0_diff.Bg               0.00
+PDFQ0_diff.Cg              -0.95
+
+
 # PDFQ0_HERA (full)  
-PDFQ0_HERA.iPDF                           0 # dummy
-PDFQ0_HERA.xp                             0.1  # dummy
-PDFQ0_HERA.fs                             0.31
-PDFQ0_HERA.gA                             0
-PDFQ0_HERA.gB                             0.21385
-PDFQ0_HERA.gC                             9.0138
-PDFQ0_HERA.gD                             0
-PDFQ0_HERA.gE                             0
-PDFQ0_HERA.gF                             0
-PDFQ0_HERA.gAP                            0
-PDFQ0_HERA.gBP                            0
-PDFQ0_HERA.gCP                            0
-PDFQ0_HERA.uvA                            0
-PDFQ0_HERA.uvB                            0.66559 
-PDFQ0_HERA.uvC                            4.6522 
-PDFQ0_HERA.uvD                            0 
-PDFQ0_HERA.uvE                            9.6938 
-PDFQ0_HERA.uvF                            0 
-PDFQ0_HERA.dvA                            0
-PDFQ0_HERA.dvB                            PDFQ0_HERA.uvB
-PDFQ0_HERA.dvC                            4.2914 
-PDFQ0_HERA.dvD                            0 
-PDFQ0_HERA.dvE                            0 
-PDFQ0_HERA.dvF                            0 
-PDFQ0_HERA.UbarA                          0
-PDFQ0_HERA.UbarB                          PDFQ0_HERA.DbarB   
-PDFQ0_HERA.UbarC                          2.5820  
-PDFQ0_HERA.UbarD                          0   
-PDFQ0_HERA.UbarE                          0   
-PDFQ0_HERA.UbarF                          0   
-PDFQ0_HERA.DbarA                          0.16261   
-PDFQ0_HERA.DbarB                          -0.16511   
-PDFQ0_HERA.DbarC                          2.4048   
-PDFQ0_HERA.DbarD                          0   
-PDFQ0_HERA.DbarE                          0   
-PDFQ0_HERA.DbarF                          0   
-PDFQ0_HERA.seaA                           0
-PDFQ0_HERA.seaB                           0
-PDFQ0_HERA.seaC                           0
-PDFQ0_HERA.seaD                           0
-PDFQ0_HERA.seaE                           0
-PDFQ0_HERA.seaF                           0
+#PDFQ0_HERA.iPDF                           0 # dummy
+#PDFQ0_HERA.xp                             0.1  # dummy
+#PDFQ0_HERA.fs                             0.31
+#PDFQ0_HERA.gA                             0
+#PDFQ0_HERA.gB                             0.21385
+#PDFQ0_HERA.gC                             9.0138
+#PDFQ0_HERA.gD                             0
+#PDFQ0_HERA.gE                             0
+#PDFQ0_HERA.gF                             0
+#PDFQ0_HERA.gAP                            0
+#PDFQ0_HERA.gBP                            0
+#PDFQ0_HERA.gCP                            0
+#PDFQ0_HERA.uvA                            0
+#PDFQ0_HERA.uvB                            0.66559 
+#PDFQ0_HERA.uvC                            4.6522 
+#PDFQ0_HERA.uvD                            0 
+#PDFQ0_HERA.uvE                            9.6938 
+#PDFQ0_HERA.uvF                            0 
+#PDFQ0_HERA.dvA                            0
+#PDFQ0_HERA.dvB                            PDFQ0_HERA.uvB
+#PDFQ0_HERA.dvC                            4.2914 
+#PDFQ0_HERA.dvD                            0 
+#PDFQ0_HERA.dvE                            0 
+#PDFQ0_HERA.dvF                            0 
+#PDFQ0_HERA.UbarA                          0
+#PDFQ0_HERA.UbarB                          PDFQ0_HERA.DbarB   
+#PDFQ0_HERA.UbarC                          2.5820  
+#PDFQ0_HERA.UbarD                          0   
+#PDFQ0_HERA.UbarE                          0   
+#PDFQ0_HERA.UbarF                          0   
+#PDFQ0_HERA.DbarA                          0.16261   
+#PDFQ0_HERA.DbarB                          -0.16511   
+#PDFQ0_HERA.DbarC                          2.4048   
+#PDFQ0_HERA.DbarD                          0   
+#PDFQ0_HERA.DbarE                          0   
+#PDFQ0_HERA.DbarF                          0   
+#PDFQ0_HERA.seaA                           0
+#PDFQ0_HERA.seaB                           0
+#PDFQ0_HERA.seaC                           0
+#PDFQ0_HERA.seaD                           0
+#PDFQ0_HERA.seaE                           0
+#PDFQ0_HERA.seaF                           0
 
 
 Pi                          3.1415
