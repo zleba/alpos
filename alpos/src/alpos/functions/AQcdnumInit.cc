@@ -29,9 +29,6 @@ extern "C" {
    void fillwt_(int* itype,int* id1,int* id2,int* nw);
    void zmfillw_(int* nw);
    void zswitch_(int* IPDFSET);
-   void hqfillw_(int *iF2FLsets, double *hqmass, double *aq2, double *bq2, int *nwords);
-   void hqreadw_(int *ilun, const char *hqname, int *nwords, int *ierr);
-   void hqparms_(double *qmas, double *a, double *b);
 
    void eprc_init_(int* boool);
    void zmstfun_(int* istf, double* def, double* x, double* Q2, double* f, int* n, int* nchk);
@@ -232,7 +229,7 @@ bool AQcdnumInit::Init() {
    fillwt_(&itype,&id1,&id2,&nw); // calculate weight table
    zmfillw_(&nw); // fill weight table
 
-   if( PAR(nfFix) >= 4) { 
+   if( PAR(nfFix) >= 4) { //needed only for FFNS
        //Fill Structure functions for Charm & Bottm
        double aq2 = 1., bq2 = 0.; //q2 = a*muF^2 + b, or muF = 1/a*q2 - b/a
        int nwords; //output
@@ -240,27 +237,28 @@ bool AQcdnumInit::Init() {
        int iF2FLsets = 3; //fill F2 & FL
 
        //Read weights from file to boost the execution
-            // Try to read the weight file and create one if that fails
-    string hqname = "hqstf.wgt";
-    int ilun = 22;
-    int ierr;
-    QCDNUM::hqreadw(ilun, hqname,  nwords, ierr);//nwords,ierr are outputs
-    if(ierr == 0) {
-        double a, b;
-        double qmas[3];
-        QCDNUM::hqparms(qmas, a, b);
-        if(qmas[0] != hqmass[0]) ierr = 1;
-        if(qmas[1] != hqmass[1]) ierr = 1;
-        if(qmas[2] != hqmass[2]) ierr = 1;
-        if(a != aq2)             ierr = 1;
-        if(b != bq2)             ierr = 1;
-    }
-    if(ierr != 0) {
-        QCDNUM::hqfillw(iF2FLsets, hqmass, aq2, bq2, nwords);//nwords is output
-    }
+       // Try to read the weight file and create one if that fails
+       string hqname = "hqstf.wgt";
+       int ilun = 22;
+       int ierr;
+       //Try to read the existing grid
+       QCDNUM::hqreadw(ilun, hqname,  nwords, ierr);//nwords,ierr are outputs
+       if(ierr == 0) {  //if reading OK, do some additional consistency checks
+           double a, b;
+           double qmas[3];
+           QCDNUM::hqparms(qmas, a, b);
+           if(qmas[0] != hqmass[0]) ierr = 1;
+           if(qmas[1] != hqmass[1]) ierr = 1;
+           if(qmas[2] != hqmass[2]) ierr = 1;
+           if(a != aq2)             ierr = 1;
+           if(b != bq2)             ierr = 1;
+       }
+       //if if grid reading failed, fill and write grid again
+       if(ierr != 0) {
+           QCDNUM::hqfillw(iF2FLsets, hqmass, aq2, bq2, nwords);//nwords is output
+           QCDNUM::hqdumpw(22, hqname);
+       }
 
-
-       //hqfillw_(&iF2FLsets,hqmass,&aq2,&bq2,&nwords);
        cout << "In total nwords "<< nwords << " read" << endl;
    }
 
