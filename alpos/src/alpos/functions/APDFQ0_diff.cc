@@ -70,16 +70,11 @@ std::vector<double> APDFQ0_diff::GetQuick(const vector<double>& ipdf_xp_q0) {
    if(ipdf== 0) 
       ret[0] =   DefaultDiffParam(xp, Ag, Bg, Cg); //gluon
    else if(ipdf== 1) 
-      ret[0] =  0; //d-val
+      ret[0] =  0; // singlet
    else if(ipdf== 2) 
-      ret[0] =  0; //u-val
-   else if(ipdf== 3) 
-      ret[0] =  DefaultDiffParam(xp, Aq, Bq, Cq); //dbar
-   else if(ipdf== 4) 
-      ret[0] =  DefaultDiffParam(xp, Aq, Bq, Cq); //dbar
-   else if(ipdf== 5) 
-      ret[0] =  DefaultDiffParam(xp, Aq, Bq, Cq); //dbar
-   else if(ipdf== 6) ret[0] = 0;
+      ret[0] =  0; //valence
+   else if(ipdf>= 3) 
+      ret[0] = 0;
    else ret[0] = 0;
 
    return ret;
@@ -185,39 +180,10 @@ bool APDFQ0_diff::Update() {
 
       debug["Update"]<<"fgA="<<fgA<<"\tfdvA="<<fdvA<<"\tfuvA="<<fuvA<<"\tfUbarA="<<fUbarA<<endl;
 
-      double Ag = PAR(Ag);
-      double Bg = PAR(Bg);
-      double Cg = PAR(Cg);
-      double Aq = PAR(Aq);
-      double Bq = PAR(Bq);
-      double Cq = PAR(Cq);
-
-
-
-      if(ipdf== 0) {
-          double gA = fgA;
-          fValue[0] = DefaultDiffParam(xp, Ag, Bg, Cg); //gl
-      }
-      else if(ipdf== 1) {
-          double dvA = fdvA;
-          fValue[0] =  0; //dv
-      }
-      else if(ipdf== 2) {
-          double uvA = fuvA;
-          fValue[0] =  0; //uv
-      }
-      else if(ipdf== 3) {
-          //double fs = PAR(fs);
-          fValue[0] =  DefaultDiffParam(xp, Aq, Bq, Cq);//sbar
-      }
-      else if(ipdf== 4) {
-          double UbarA = fUbarA;
-          fValue[0] =  DefaultDiffParam(xp, Aq, Bq, Cq);//dbar
-      }
-      else if(ipdf== 5) fValue[0] = DefaultDiffParam(xp, Aq, Bq, Cq);
-      else if(ipdf== 6) fValue[0] = 0;
-      else fValue[0] = 0;
+      vector<double> ipdf_xp_q0{double(ipdf),xp,0};
       
+      fValue = GetQuick(ipdf_xp_q0);
+      fError.resize(fValue.size());
    }
    return true;
 }

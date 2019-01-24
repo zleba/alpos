@@ -230,7 +230,7 @@ bool AQcdnumInit::Init() {
    fillwt_(&itype,&id1,&id2,&nw); // calculate weight table
    zmfillw_(&nw); // fill weight table
 
-   if( PAR(nfFix) >= 4) { //needed only for FFNS
+   if( PAR(nfFix) >= 3) { //needed only for FFNS
        //Fill Structure functions for Charm & Bottm
        double aq2 = 1., bq2 = 0.; //q2 = a*muF^2 + b, or muF = 1/a*q2 - b/a
        int nwords; //output
