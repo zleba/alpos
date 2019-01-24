@@ -330,7 +330,7 @@ bool AQcdnumInit::Update() {
       // int nwds;
       // pdfinp_(AWrap::GetXFX, &IPDFSet, &offset,&epsi ,&nwds);
 
-      SET(PDFQ0Param.iPDF,-2,0); // set PDFQ0Param to 'def' mode.
+      SET(PDFQ0Param.iPDF,-3,0); // set PDFQ0Param to 'def' mode.
       //SET(PDFQ0Param.Q0,fQ0,0); 
       vector<double> def = VALUES(PDFQ0Param); // get 'def'
 
@@ -348,7 +348,9 @@ bool AQcdnumInit::Update() {
       //for(auto  d : def)
           //cout << d <<" "<< endl;
 
-
+      cout<<"PDF param def:";
+      for ( auto i : def ) cout<<"\t"<<i;
+      cout<<endl;
 
       double epsi;
       double q02 = fQ0*fQ0;
@@ -357,6 +359,8 @@ bool AQcdnumInit::Update() {
       
       SET(PDFQ0Param.iPDF,0,0); // set PDFQ0Param to 'gluon' for update.
       PAR(PDFQ0Param); // update PDFQ0
+
+      cout<<"Calling evolfg_"<<endl;
       evolfg_( &iset, AWrap::pdfinput, &def[0], &iq0, &epsi );
 	 
 

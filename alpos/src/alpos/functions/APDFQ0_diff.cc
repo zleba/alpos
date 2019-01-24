@@ -93,6 +93,8 @@ bool APDFQ0_diff::Update() {
    debug["Update"]<<"ipdf="<<ipdf<<"\tx="<<PAR(xp)<<"\tCHECK(ipdf)="<<CHECK(iPDF)<<"\tCHECK(x)="<<CHECK(xp)<<endl;
    
    if ( ipdf == -1 ) {
+      error["Update"]<<"Error. ipdf=-1 not checked, supported and implemented, please use -3"<<endl;
+      exit(3);
       // return QCDNUM vector 'def'
       vector<double> def = {
 	 //tb  bb  cb  sb  ub  db   g   d   u   s   c   b   t 
@@ -111,6 +113,8 @@ bool APDFQ0_diff::Update() {
       fError.resize(fValue.size());
     }
    else if ( ipdf == -2 ) {
+      error["Update"]<<"Error. ipdf=-2 not checked, supported and implemented, please use -3"<<endl;
+      exit(3);
       // return vector 'def' for all flavors
       vector<double> def = {
          //tb  bb  cb  sb  ub  db   g   d   u   s   c   b   t 
@@ -135,6 +139,31 @@ bool APDFQ0_diff::Update() {
       //fValue.resize(13*13);
       fError.resize(fValue.size());
    }
+   else if ( ipdf == -3 ) {
+      // return QCDNUM vector 'def'
+      vector<double> def = {
+         //tb  bb  cb  sb  ub  db   g   d   u   s   c   b   t 
+         //-6  -5  -4  -3  -2  -1   0   1   2   3   4   5   6 
+         //0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., // gluon (QCDNUM does not request the gluon)
+         0., 0., 0., 0., 0.,-1., 0., 1., 0., 0., 0., 0., 0., // dval
+         0., 0., 0., 0.,-1., 0., 0., 0., 1., 0., 0., 0., 0., // uval
+         0., 0., 0., 1., 0., 0., 0., 0., 0., 1., 0., 0., 0., // s+sbar
+         // 0., 0., 1., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., // Ubar 
+         0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., // Ubar 
+         0., 0., 0., 1., 0., 1., 0., 0., 0., 0., 0., 0., 0., // Dbar 
+         0., 0., 0., -1., 0., 0., 0., 0., 0., 1., 0., 0., 0.,  //s-sbar 
+         // --- remaining linear combination
+         0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., // c+ 
+         0., 0.,-1., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., // c- 
+         0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., // b+ 
+         0.,-1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., // b- 
+         0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., // t+ 
+         -1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., // t-
+      };
+      fValue = def;
+      fValue.resize(13*12);
+      fError.resize(fValue.size());
+    }
    else { 
       fValue.resize(1);
       fError.resize(1);
