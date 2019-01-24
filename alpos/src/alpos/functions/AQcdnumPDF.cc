@@ -7,6 +7,7 @@
 using namespace std;
 
 extern "C" void fpdfxq_( int* iset, double* x, double* qmu2, double *pdfs, int *ichk );
+extern "C" void allfxq_( int* ityp, double* x, double* q, double* pdf, int *n, int* ichk);              //interpolate all pdf’s
 
 const std::vector<std::string> AQcdnumPDF::fRequirements = {"QcdnumInit","xp","muf"}; //< List of all AParm's which this function depends on
 const std::vector<std::string> AQcdnumPDF::fStopFurtherNotification = {"xp","muf"}; //< List of Parm's which have changed, but this function does not notify further dependencies
@@ -70,7 +71,9 @@ std::vector<double> AQcdnumPDF::GetQuick(const vector<double>& xp_muf) {
    double muf2 = xp_muf[1]*xp_muf[1];
    double xp  = xp_muf[0];
    int ichk;
-   fpdfxq_( &iset, &xp, &muf2, &ret[0], &ichk );
+   int nul = 0;
+   allfxq_( &iset, &xp, &muf2, &ret[0], &nul, &ichk );
+   //fpdfxq_( &iset, &xp, &muf2, &ret[0], &ichk );
 
    return ret;
   
@@ -88,7 +91,9 @@ bool AQcdnumPDF::Update() {
    double muf2 = PAR(muf)*PAR(muf);
    double xp = PAR(xp);
    int ichk;
-   fpdfxq_( &iset, &xp, &muf2, &fValue[0], &ichk );
+   int nul = 0;
+   allfxq_( &iset, &xp, &muf2, &fValue[0], &nul, &ichk );
+   //fpdfxq_( &iset, &xp, &muf2, &fValue[0], &ichk );
 
    return true;
 }

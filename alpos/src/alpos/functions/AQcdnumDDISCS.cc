@@ -5,6 +5,7 @@
 
 extern "C" void zmstfun_(int* istf, double* def, double* x, double* Q2, double* f, int* n, int* nchk);
 extern "C" void hqstfun_(int* istf, int *iflavour, double* def, double* x, double* Q2, double* f, int* n, int* nchk);
+extern "C" void allfxq_( int* ityp, double* x, double* q, double* pdf, int *n, int* ichk); 
 
   //hqstfun_(iF2, &icharm,&CEP2F[0],&beta[0],&q2[0],&F2c[0],&npts,&ichk);
 
@@ -59,9 +60,9 @@ bool AQcdnumDDISCS::Update() {
    // 'Update' PDF and Alpha_s values to ensure that 'Quick'-access are correct.
    UPDATE(QcdnumInit);
    
-   vector<double> xpom   = DOUBLE_COL_NS(Data,xp,GetAlposName());
-   vector<double> q2   = DOUBLE_COL_NS(Data,Q2,GetAlposName());
-   vector<double> beta = DOUBLE_COL_NS(Data,beta,GetAlposName());
+   vector<double> xpom     = DOUBLE_COL_NS(Data,xp,GetAlposName());
+   vector<double> q2       = DOUBLE_COL_NS(Data,Q2,GetAlposName());
+   vector<double> beta     = DOUBLE_COL_NS(Data,beta,GetAlposName());
    vector<double> sigmaVec = DOUBLE_COL_NS(Data,Sigma,GetAlposName());
    cout << "q2Vector size " << q2.size() << endl;
 
@@ -111,6 +112,22 @@ bool AQcdnumDDISCS::Update() {
    hqstfun_(&iF2, &ibottom,&CEP2F[0],&beta[0],&q2[0],&F2b[0],&npts,&ichk);//no check on nf = 4
    hqstfun_(&iFL, &ibottom,&CEP2F[0],&beta[0],&q2[0],&FLb[0],&npts,&ichk);//no check on nf = 4
 
+   { // ugly check:a
+      vector<double> qqq{1.75,8.5,20,800};
+      int iset=1;//5; // iset: 5 is external PDF                                                    
+      double xp  = 0.1;
+      int ichk;
+      int nul = 0;
+      vector<double> xfx(13);
+      for ( auto qq : qqq ) {
+	 double muf2 = qq;
+	 allfxq_( &iset, &xp, &muf2, &xfx[0], &nul, &ichk );
+	 cout<<"q2= "<<muf2<<": ";
+	 for ( auto p : xfx ) cout<<"\t"<<p;
+	 cout<<endl;
+      }
+   }
+   //exit(3);
 
 
    const double mp2 = pow(0.92, 2);
@@ -135,6 +152,19 @@ bool AQcdnumDDISCS::Update() {
        double flxIP = rflux(xpom[i], a0_IP, ap_IP, b0_IP);
 
        fValue[i] = flxIP * (F2  - y*y/yplus*FL);
+
+       double redfac = (2*M_PI*(1./137)*(1./137) / (x*q2[i]*q2[i]) );
+
+       cout<<"fValue="<<fValue[i]<<"\tsigma="<<sigmaVec[i]<<"\tratio="<<fValue[i]/sigmaVec[i]
+	   <<"\tq2="<<q2[i]
+	   <<"\tflxIP="<<flxIP
+	   <<"\tx="<<x
+	   <<"\ty="<<y
+	   <<"\tb="<<beta[i]
+	   <<"\txp="<<xpom[i]
+	   <<"\tredfac = "<<redfac<<"\t inv="<<1./redfac<<endl;
+
+
    }
 
    return true;
