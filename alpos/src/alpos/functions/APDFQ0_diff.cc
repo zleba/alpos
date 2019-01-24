@@ -42,28 +42,33 @@ bool APDFQ0_diff::Init() {
    CONST(sTF1);
    CONST(vTF1);
 
-   { // check validity of TF1's
+   { // init and check validity of TF1's
 
-      fgTF1 = TF1("g",TString(PAR_S(gTF1)),0,1);
-      fsTF1 = TF1("s",TString(PAR_S(sTF1)),0,1);
-      fvTF1 = TF1("v",TString(PAR_S(vTF1)),0,1);
-
-      fgTF1.SetParameters(PAR(g0),PAR(g1),PAR(g2),PAR(g3),PAR(g4));
-      fsTF1.SetParameters(PAR(s0),PAR(s1),PAR(s2),PAR(s3),PAR(s4));
-      fvTF1.SetParameters(PAR(v0),PAR(v1),PAR(v2),PAR(v3),PAR(v4));
-   
-
-      if ( std::isnan(fgTF1.Eval(0.01)) || std::isnan(fgTF1.Eval(PAR(xp) ))  ) {
-	 error["Init"]<<"Funtion gTF1 is not a valid formula for a TF1: "<< PAR_S(gTF1) <<endl;
-	 exit(3);
+      if ( TString(PAR_S(gTF1))!="default" ) {
+	 fgTF1 = TF1("g",TString(PAR_S(gTF1)),0,1);
+	 fgTF1.SetParameters(PAR(g0),PAR(g1),PAR(g2),PAR(g3),PAR(g4));
+	 if ( std::isnan(fgTF1.Eval(0.01)) || std::isnan(fgTF1.Eval(PAR(xp) ))  ) {
+	    error["Init"]<<"Funtion gTF1 is not a valid formula for a TF1: "<< PAR_S(gTF1) <<endl;
+	    exit(3);
+	 }
       }
-      if ( std::isnan(fsTF1.Eval(0.01)) || std::isnan(fsTF1.Eval(PAR(xp) ))  ) {
-	 error["Init"]<<"Funtion sTF1 is not a valid formula for a TF1: "<< PAR_S(sTF1) <<endl;
-	 exit(3);
+
+      if ( TString(PAR_S(sTF1))!="default" ) {
+	 fsTF1 = TF1("s",TString(PAR_S(sTF1)),0,1);
+	 fsTF1.SetParameters(PAR(s0),PAR(s1),PAR(s2),PAR(s3),PAR(s4));
+	 if ( std::isnan(fsTF1.Eval(0.01)) || std::isnan(fsTF1.Eval(PAR(xp) ))  ) {
+	    error["Init"]<<"Funtion sTF1 is not a valid formula for a TF1: "<< PAR_S(sTF1) <<endl;
+	    exit(3);
+	 }
       }
-      if ( std::isnan(fvTF1.Eval(0.01)) || std::isnan(fvTF1.Eval(PAR(xp) ))  ) {
-	 error["Init"]<<"Funtion vTF1 is not a valid formula for a TF1: "<< PAR_S(vTF1) <<endl;
-	 exit(3);
+
+      if ( TString(PAR_S(vTF1))!="default" ) {
+	 fvTF1 = TF1("v",TString(PAR_S(vTF1)),0,1);
+	 fvTF1.SetParameters(PAR(v0),PAR(v1),PAR(v2),PAR(v3),PAR(v4));
+	 if ( std::isnan(fvTF1.Eval(0.01)) || std::isnan(fvTF1.Eval(PAR(xp) ))  ) {
+	    error["Init"]<<"Funtion vTF1 is not a valid formula for a TF1: "<< PAR_S(vTF1) <<endl;
+	    exit(3);
+	 }
       }
    }
 
@@ -97,11 +102,11 @@ std::vector<double> APDFQ0_diff::GetQuick(const vector<double>& ipdf_xp_q0) {
 
    vector<double> ret(1);
    if(ipdf== 0) 
-      ret[0] =   fgTF1.Eval(xp); // gluon
+      ret[0] = fgTF1.IsValid() ? fgTF1.Eval(xp) : DefaultDiffParam(xp,PAR(g0),PAR(g1),PAR(g2)); // gluon
    else if(ipdf== 1) 
-      ret[0] =   fsTF1.Eval(xp); // singlet
+      ret[0] = fsTF1.IsValid() ? fsTF1.Eval(xp) : DefaultDiffParam(xp,PAR(s0),PAR(s1),PAR(s2)); // singlet
    else if(ipdf== 2) 
-      ret[0] =   fvTF1.Eval(xp); //valence
+      ret[0] = fvTF1.IsValid() ? fvTF1.Eval(xp) : DefaultDiffParam(xp,PAR(v0),PAR(v1),PAR(v2)); //valence
    else if(ipdf>= 3) // all other cases
       ret[0] = 0;
    else ret[0] = 0;
@@ -116,54 +121,7 @@ bool APDFQ0_diff::Update() {
    int ipdf = PAR(iPDF);
    debug["Update"]<<"ipdf="<<ipdf<<"\tx="<<PAR(xp)<<"\tCHECK(ipdf)="<<CHECK(iPDF)<<"\tCHECK(x)="<<CHECK(xp)<<endl;
    
-   if ( ipdf == -1 ) {
-      error["Update"]<<"Error. ipdf=-1 not checked, supported and implemented, please use -3"<<endl;
-      exit(3);
-      // return QCDNUM vector 'def'
-      vector<double> def = {
-	 //tb  bb  cb  sb  ub  db   g   d   u   s   c   b   t 
-	 //-6  -5  -4  -3  -2  -1   0   1   2   3   4   5   6 
-	 0., 0., 0., 0., 0.,-1., 0., 1., 0., 0., 0., 0., 0., // dval
-	 0., 0., 0., 0.,-1., 0., 0., 0., 1., 0., 0., 0., 0., // uval
-	 0., 0., 0., 1., 0., 0., 0., 0., 0., 1., 0., 0., 0., // s+sbar
-	 // 0., 0., 1., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., // Ubar 
-	 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., // Ubar 
-	 0., 0., 0., 1., 0., 1., 0., 0., 0., 0., 0., 0., 0., // Dbar 
-	 0., 0., 0., -1., 0., 0., 0., 0., 0., 1., 0., 0., 0.,  //s-sbar 
-	 // 0., 0., -1., 0., 1., 0., 0., 0., 0., 0., 1., 0., 0., // 
-      };
-      fValue = def;
-      fValue.resize(13*12);
-      fError.resize(fValue.size());
-    }
-   else if ( ipdf == -2 ) {
-      error["Update"]<<"Error. ipdf=-2 not checked, supported and implemented, please use -3"<<endl;
-      exit(3);
-      // return vector 'def' for all flavors
-      vector<double> def = {
-         //tb  bb  cb  sb  ub  db   g   d   u   s   c   b   t 
-         //-6  -5  -4  -3  -2  -1   0   1   2   3   4   5   6 
-         0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., // gluon
-         0., 0., 0., 0., 0.,-1., 0., 1., 0., 0., 0., 0., 0., // dval
-         0., 0., 0., 0.,-1., 0., 0., 0., 1., 0., 0., 0., 0., // uval
-         0., 0., 0., 1., 0., 0., 0., 0., 0., 1., 0., 0., 0., // s+sbar
-         // 0., 0., 1., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., // Ubar 
-         0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., // Ubar 
-         0., 0., 0., 1., 0., 1., 0., 0., 0., 0., 0., 0., 0., // Dbar 
-         0., 0., 0., -1., 0., 0., 0., 0., 0., 1., 0., 0., 0.,  //s-sbar 
-         // --- remaining linear combination
-         0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., // c+ 
-         0., 0.,-1., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., // c- 
-         0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., // b+ 
-         0.,-1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., // b- 
-         0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., // t+ 
-         -1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., // t-
-      };
-      fValue = def;
-      //fValue.resize(13*13);
-      fError.resize(fValue.size());
-   }
-   else if ( ipdf == -3 ) {
+   if ( ipdf == -3 ) {
       // return QCDNUM vector 'def'
       vector<double> def = {
 	 //tb  bb  cb  sb  ub  db   g   d   u   s   c   b   t 
@@ -194,22 +152,28 @@ bool APDFQ0_diff::Update() {
       fValue = def;
       fValue.resize(13*12,0);
       fError.resize(fValue.size());
-    }
-   else { 
+   }
+   else if ( ipdf>= 0 ) { 
       fValue.resize(1);
       fError.resize(1);
       
       double xp = PAR(xp);
       //double q0 = PAR(Q0);
 
-      fgTF1.SetParameters(PAR(g0),PAR(g1),PAR(g2),PAR(g3),PAR(g4));
-      fsTF1.SetParameters(PAR(s0),PAR(s1),PAR(s2),PAR(s3),PAR(s4));
-      fvTF1.SetParameters(PAR(v0),PAR(v1),PAR(v2),PAR(v3),PAR(v4));
+      if ( fgTF1.IsValid() )
+	 fgTF1.SetParameters(PAR(g0),PAR(g1),PAR(g2),PAR(g3),PAR(g4));
+      if ( fsTF1.IsValid() )
+	 fsTF1.SetParameters(PAR(s0),PAR(s1),PAR(s2),PAR(s3),PAR(s4));
+      if ( fvTF1.IsValid() )
+	 fvTF1.SetParameters(PAR(v0),PAR(v1),PAR(v2),PAR(v3),PAR(v4));
 
       vector<double> ipdf_xp_q0{double(ipdf),xp,0};
       
       fValue = GetQuick(ipdf_xp_q0);
       fError.resize(fValue.size());
+   }
+   else {
+      error["Update"]<<"Wrong ipdf: "<<ipdf<<endl;
    }
    return true;
 }

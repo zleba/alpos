@@ -162,8 +162,10 @@ QcdnumDDISCS.n_IR             0.0017
 PDFQ0_diff.iPDF               0 # dummy
 PDFQ0_diff.xp                0.1  # dummy
 
-PDFQ0_diff.gTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2])"
-PDFQ0_diff.sTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2])"
+#PDFQ0_diff.gTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2])"
+#PDFQ0_diff.sTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2])"
+PDFQ0_diff.gTF1             default
+PDFQ0_diff.sTF1             "default"
 PDFQ0_diff.vTF1             "x*0"
 
 #   1   A_glu       0.36781       0.16744E-01   
