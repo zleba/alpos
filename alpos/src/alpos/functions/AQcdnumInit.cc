@@ -6,6 +6,7 @@
 #include <cmath>
 #include <iostream>
 #include "TMatrixD.h"
+#include "TSystem.h"
 
 using namespace std;
 
@@ -238,7 +239,9 @@ bool AQcdnumInit::Init() {
 
        //Read weights from file to boost the execution
        // Try to read the weight file and create one if that fails
-       string hqname = "hqstf.wgt";
+       string dirName = Alpos::Current()->Settings()->Alpos_dir+"/temp";
+       gSystem->mkdir(dirName.c_str(), true);
+       string hqname = dirName + "/hqstf.wgt";
        int ilun = 22;
        int ierr;
        //Try to read the existing grid
