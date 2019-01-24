@@ -7,6 +7,12 @@ extern "C" void zmstfun_(int* istf, double* def, double* x, double* Q2, double* 
 extern "C" void hqstfun_(int* istf, int *iflavour, double* def, double* x, double* Q2, double* f, int* n, int* nchk);
 extern "C" void allfxq_( int* ityp, double* x, double* q, double* pdf, int *n, int* ichk); 
 
+extern "C" {
+    void qcd_2006_(double *z,double *q2, int *ifit, double *xPq, double *f2, double *fl, double *c2, double *cl);
+    void h12006flux_(double *xpom, double *t, int *Int, int *ifit, int *ipom, double *flux);
+}
+
+
   //hqstfun_(iF2, &icharm,&CEP2F[0],&beta[0],&q2[0],&F2c[0],&npts,&ichk);
 
 double rflux(double x_pom, double a0, double ap, double b0);
@@ -65,6 +71,7 @@ bool AQcdnumDDISCS::Update() {
    vector<double> beta     = DOUBLE_COL_NS(Data,beta,GetAlposName());
    vector<double> sigmaVec = DOUBLE_COL_NS(Data,Sigma,GetAlposName());
 
+
    // cout << "q2Vector size " << q2.size() << endl;
    // for(int i = 0; i < xpom.size(); ++i)
    //     cout << xpom[i] <<" "<<  q2[i] <<" "<< beta[i] <<" "<< sigmaVec[i]<<  endl;
@@ -84,6 +91,11 @@ bool AQcdnumDDISCS::Update() {
    const double ap_IP = PAR(ap_IP);
    const double b0_IP = PAR(b0_IP);
 
+   const double a0_IR = PAR(a0_IR);
+   const double ap_IR = PAR(ap_IR);
+   const double b0_IR = PAR(b0_IR);
+
+   const double n_IR  = PAR(n_IR);
 
 
    int iFL=1, iF2=2, nchk=0;
@@ -129,6 +141,8 @@ bool AQcdnumDDISCS::Update() {
    // //exit(3);
 
 
+
+
    const double mp2 = pow(0.92, 2);
 
    // ------ calc reduced CS
@@ -150,8 +164,30 @@ bool AQcdnumDDISCS::Update() {
        //Pomeron flux
        double flxIP = rflux(xpom[i], a0_IP, ap_IP, b0_IP);
 
-       //fValue[i] = flxIP * (F2  - y*y/yplus*FL);
-       fValue[i] = flxIP*xpom[i] * (F2  - y*y/yplus*FL);
+       //Reduced x-section for pomeron
+       double xpSigRed_IP =  flxIP*xpom[i] * (F2  - y*y/yplus*FL);
+
+
+       //Reggeon flux
+       double flxIR = rflux(xpom[i], a0_IR, ap_IR, b0_IR);
+
+       //Get the Reggeon structure function from the H12006
+       static bool isFirst = true; //hack for faster calculation
+       int ifit = 0;
+       if(isFirst) { ifit = 1; isFirst = false; } //Reggeon should be the same for both FitA and FitB
+
+       double xPq[13];
+       double f2FitA[2], flFitA[2]; //0 = pomeron, 1 = reggeon
+       double c2FitA[2], clFitA[2];
+       qcd_2006_(&beta[i], &q2[i],  &ifit, xPq, f2FitA, flFitA, c2FitA, clFitA);
+       double F2r = f2FitA[1];
+       double FLr = flFitA[1];
+
+       //Reduced x-section for reggeon
+       double xpSigRed_IR =  flxIR*xpom[i] * (F2r  - y*y/yplus*FLr);
+
+
+       fValue[i] = xpSigRed_IP + n_IR*xpSigRed_IR;
 
 
        // double sRedP = (f2[0]) - y*y/(1 + pow(1-y,2)) * (fl[0]);
