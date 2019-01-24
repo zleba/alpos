@@ -161,12 +161,34 @@ QcdnumDDISCS.n_IR             0.0017
 # PDFQ0_diff
 PDFQ0_diff.iPDF               0 # dummy
 PDFQ0_diff.xp                0.1  # dummy
-PDFQ0_diff.Aq               1.06
-PDFQ0_diff.Bq               2.30
-PDFQ0_diff.Cq               0.57
-PDFQ0_diff.Ag               0.15
-PDFQ0_diff.Bg               0.00
-PDFQ0_diff.Cg              -0.95
+
+PDFQ0_diff.gTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2])"
+PDFQ0_diff.sTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2])"
+PDFQ0_diff.vTF1             "x*0"
+
+#   1   A_glu       0.36781       0.16744E-01   
+#   2   A_quark     0.69876       0.106092   
+#   3   B_quark      1.5024       0.11929       
+#   4   C_quark     0.44690       0.85678E-01   
+
+PDFQ0_diff.g0               0.36781
+PDFQ0_diff.g1               0
+PDFQ0_diff.g2               0
+PDFQ0_diff.g3               0
+PDFQ0_diff.g4               0
+
+PDFQ0_diff.s0               0.69876
+PDFQ0_diff.s1               1.5024
+PDFQ0_diff.s2               0.44690
+PDFQ0_diff.s3               0
+PDFQ0_diff.s4               0
+
+PDFQ0_diff.v0               0
+PDFQ0_diff.v1               0
+PDFQ0_diff.v2               0
+PDFQ0_diff.v3               0
+PDFQ0_diff.v4               0
+
 
 
 # PDFQ0_HERA (full)  

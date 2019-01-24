@@ -2,7 +2,8 @@
 
 #include <iostream>
 //#include "TMathBase.h"
-#include "TMath.h"
+#include <TMath.h>
+#include <TF1.h>
 #include "Math/WrappedTF1.h"
 #include "Math/GaussIntegrator.h"
 #include "Math/GaussLegendreIntegrator.h"
@@ -11,7 +12,12 @@ using namespace std;
 
 
 // ______________________________________________________________________________________ //
-const std::vector<std::string> APDFQ0_diff::fRequirements = {"xp","iPDF", "Ag", "Bg", "Cg", "Aq", "Bq", "Cq"};//< List of all AParm's which this function depends on
+const std::vector<std::string> APDFQ0_diff::fRequirements = {"xp","iPDF", 
+							     "gTF1","sTF1","vTF1",
+							     "g0", "g1", "g2", "g3", "g4",
+							     "s0", "s1", "s2", "s3", "s4",
+							     "v0", "v1", "v2", "v3", "v4",
+};//< List of all AParm's which this function depends on
 const std::vector<std::string> APDFQ0_diff::fStopFurtherNotification = {"mur"}; //< List of Parm's which have changed, but this function does not notify further dependencies
 const std::string APDFQ0_diff::fFunctionName = "PDFQ0_diff"; //< The function's name
 
@@ -31,6 +37,36 @@ APDFQ0_diff::~APDFQ0_diff() {
 bool APDFQ0_diff::Init() {
    //! Init is once called for each function
    //! return true if initialization was successful.
+
+   CONST(gTF1);
+   CONST(sTF1);
+   CONST(vTF1);
+
+   { // check validity of TF1's
+
+      fgTF1 = TF1("g",TString(PAR_S(gTF1)),0,1);
+      fsTF1 = TF1("s",TString(PAR_S(sTF1)),0,1);
+      fvTF1 = TF1("v",TString(PAR_S(vTF1)),0,1);
+
+      fgTF1.SetParameters(PAR(g0),PAR(g1),PAR(g2),PAR(g3),PAR(g4));
+      fsTF1.SetParameters(PAR(s0),PAR(s1),PAR(s2),PAR(s3),PAR(s4));
+      fvTF1.SetParameters(PAR(v0),PAR(v1),PAR(v2),PAR(v3),PAR(v4));
+   
+
+      if ( std::isnan(fgTF1.Eval(0.01)) || std::isnan(fgTF1.Eval(PAR(xp) ))  ) {
+	 error["Init"]<<"Funtion gTF1 is not a valid formula for a TF1: "<< PAR_S(gTF1) <<endl;
+	 exit(3);
+      }
+      if ( std::isnan(fsTF1.Eval(0.01)) || std::isnan(fsTF1.Eval(PAR(xp) ))  ) {
+	 error["Init"]<<"Funtion sTF1 is not a valid formula for a TF1: "<< PAR_S(sTF1) <<endl;
+	 exit(3);
+      }
+      if ( std::isnan(fvTF1.Eval(0.01)) || std::isnan(fvTF1.Eval(PAR(xp) ))  ) {
+	 error["Init"]<<"Funtion vTF1 is not a valid formula for a TF1: "<< PAR_S(vTF1) <<endl;
+	 exit(3);
+      }
+   }
+
    fValue.resize(1);
    fError.resize(1);
    return true;
@@ -59,21 +95,14 @@ std::vector<double> APDFQ0_diff::GetQuick(const vector<double>& ipdf_xp_q0) {
    double xp = ipdf_xp_q0[1];
    //double q0 = ipdf_xp_q0[2]; // q0 is ignored
 
-   double Ag = PAR(Ag);
-   double Bg = PAR(Bg);
-   double Cg = PAR(Cg);
-   double Aq = PAR(Aq);
-   double Bq = PAR(Bq);
-   double Cq = PAR(Cq);
-
    vector<double> ret(1);
    if(ipdf== 0) 
-      ret[0] =   DefaultDiffParam(xp, Ag, Bg, Cg); //gluon
+      ret[0] =   fgTF1.Eval(xp); // gluon
    else if(ipdf== 1) 
-      ret[0] =  0; // singlet
+      ret[0] =   fsTF1.Eval(xp); // singlet
    else if(ipdf== 2) 
-      ret[0] =  0; //valence
-   else if(ipdf>= 3) 
+      ret[0] =   fvTF1.Eval(xp); //valence
+   else if(ipdf>= 3) // all other cases
       ret[0] = 0;
    else ret[0] = 0;
 
@@ -173,12 +202,9 @@ bool APDFQ0_diff::Update() {
       double xp = PAR(xp);
       //double q0 = PAR(Q0);
 
-      fgA = CalcGluonASumRule();
-      fdvA = Get_dvA();
-      fuvA = Get_uvA();
-      fUbarA = Get_UbarA();
-
-      debug["Update"]<<"fgA="<<fgA<<"\tfdvA="<<fdvA<<"\tfuvA="<<fuvA<<"\tfUbarA="<<fUbarA<<endl;
+      fgTF1.SetParameters(PAR(g0),PAR(g1),PAR(g2),PAR(g3),PAR(g4));
+      fsTF1.SetParameters(PAR(s0),PAR(s1),PAR(s2),PAR(s3),PAR(s4));
+      fvTF1.SetParameters(PAR(v0),PAR(v1),PAR(v2),PAR(v3),PAR(v4));
 
       vector<double> ipdf_xp_q0{double(ipdf),xp,0};
       
@@ -191,71 +217,6 @@ bool APDFQ0_diff::Update() {
 
 
 // __________________________________________________________________________________________ // 
-double APDFQ0_diff::Get_UbarA(){
-   //! return recent UbarA
-   return 0;//PAR(DbarA)*(1.-PAR(fs));// /(1.-0);
-}
-
-
-// __________________________________________________________________________________________ // 
-double APDFQ0_diff::Get_dvA(){
-   //! return recent dvA
-   //! sum rule: D - Dbar = 1 -> dvA
-   return 0;//1./GetIntegralDefaultHERAParam(0,PAR(dvB),PAR(dvC));
-}
-
-
-// __________________________________________________________________________________________ // 
-double APDFQ0_diff::Get_uvA(){
-   //! return recent uvA
-   //! sum rule: U - Ubar = 2  -> uvA
-   return 0;//2./GetIntegralDefaultHERAParam(0,PAR(uvB),PAR(uvC),0,PAR(uvE));
-}
-
-
-
-// __________________________________________________________________________________________ // 
-TF1& APDFQ0_diff::GetTF1(double A, double B, double C,double D,double E,double F,double AP,double BP,double CP){
-   //! return suitable TF1
-   if ( AP==0 &&  BP==0 &&  CP== 0 ){
-      if ( D==0 && E==0 && F==0 )
-	 return fTF1Def3;
-      else 
-	 return fTF1Def6;
-   }
-   else return fTF1Def9;
-}
-
-
-//not needed
-// __________________________________________________________________________________________ // 
-double APDFQ0_diff::GetIntegralXHERA(double A, double B, double C,double D,double E,double F,double AP,double BP,double CP){
-   return 0;
-}
-
-
-//not needed
-// __________________________________________________________________________________________ // 
-double APDFQ0_diff::GetIntegralDefaultHERAParam(double A, double B, double C,double D,double E,double F,double AP,double BP,double CP){
-    return 0;
-}
-
-// __________________________________________________________________________________________ // 
-//Not needed
-double APDFQ0_diff::CalcIntegral(double alpha, double beta){
-   return 0;
-}
-
-// __________________________________________________________________________________________ // 
-
-//Not needed
-double APDFQ0_diff::CalcGluonASumRule(){
-   return 0;
-}
-
-
-// __________________________________________________________________________________________ // 
-
 double APDFQ0_diff::DefaultDiffParam(double x, double A, double B, double C) {
    //! standard-like parameterization as used in HERAFitter: 
    //! (following is taken from HERAFitter) 
@@ -263,13 +224,6 @@ double APDFQ0_diff::DefaultDiffParam(double x, double A, double B, double C) {
    //! C     - (ap*x**bp)*(1-x)**cp
    double xf = A*pow(x,B) * pow(1-x,C);
    return xf;
-}
-
-
-
-//Not needed
-double APDFQ0_diff::DefaultHERAParam(double x, double A,double B,double C,double D,double E,double F, double AP,double BP,double CP) {
-   return 0;
 }
 
 // ______________________________________________________________________________________ //

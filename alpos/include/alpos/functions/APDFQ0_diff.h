@@ -18,8 +18,8 @@
 
 
 #include "alpos/ATheory.h"
-#include "TF1.h"
-#include "TString.h"
+#include <TF1.h>
+#include <TString.h>
 
 
 //class APDFQ0_diff : public AParmFuncBase<double> {
@@ -44,27 +44,12 @@ private:
 
 protected:
 
-   double DefaultHERAParam(double x, double A,double B,double C,double D=0,double E=0,double F=0,double AP=0,double BP=0,double CP=0); //!< Default parametrisation as used at HERA
-   double GetIntegralDefaultHERAParam(double A, double B, double C,double D=0,double E=0,double F=0,double AP=0,double BP=0,double CP=0); //! Calculate integral of 'DefaultHERAParam'
-   double GetIntegralXHERA(double A, double B, double C,double D=0,double E=0,double F=0,double AP=0,double BP=0,double CP=0); //! Calculate integral of x*'DefaultHERAParam'
+   TF1 fgTF1;
+   TF1 fsTF1;
+   TF1 fvTF1;
+
    double DefaultDiffParam(double x, double A, double B, double C);
 
-   // Sum rules...
-   double CalcGluonASumRule(); // calc 'gA' parameter from sumrule
-   double Get_UbarA();
-   double Get_dvA();
-   double Get_uvA();
-   double CalcIntegral(double alpha, double beta);
-
-   double fgA=0;
-   double fdvA=0;
-   double fuvA=0;
-   double fUbarA=0;
-
-   TF1& GetTF1(double A, double B, double C,double D=0,double E=0,double F=0,double AP=0,double BP=0,double CP=0);
-   TF1 fTF1Def3 = TF1("HERA 3 param", "[0]*pow(x,[1]) * pow(1-x,[2]) ", 1e-7, 1);
-   TF1 fTF1Def6 = TF1("HERA 6 param", "[0]*pow(x,[1]) * pow(1-x,[2]) * (1 + [3]*x + [4]*pow(x,2)+ [5]*pow(x,3))", 1e-7, 1);
-   TF1 fTF1Def9 = TF1("HERA 9 param", "[0]*pow(x,[1]) * pow(1-x,[2]) * (1 + [3]*x + [4]*pow(x,2)+ [5]*pow(x,3)) - [6]*pow(x,[7])*pow(1-x,[8])", 1e-7, 1);
 };
 
 
