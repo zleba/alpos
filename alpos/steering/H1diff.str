@@ -24,9 +24,9 @@ DataTheorySets {{
 Tasks {{
   TaskType                TaskName
    PrintTheorySet         PrintTheorySet
-#   AFitter                MyFit                                     # Tasks with name(=steering namespace below)
-#   StatAnalysis           Stat
-   SavePDFTGraph         SavePDFTGraph
+   AFitter                MyFit
+   StatAnalysis           Stat
+   SavePDFTGraph          SavePDFTGraph
 }}
 
 
@@ -56,6 +56,7 @@ MyFit {{{
    
    FitParameters { 
        PDFQ0_diff.g0  
+       PDFQ0_diff.g2
        PDFQ0_diff.s0  
        PDFQ0_diff.s1  
        PDFQ0_diff.s2  
@@ -122,7 +123,7 @@ QcdnumInit.InitEvolution                 1       # 0:false, 1: true   # init QCD
 QcdnumInit.PDF                           PDFQ0_diff # LHAPDF  #QcdnumPDF # PDF1
 # -- if InitEvolution=0: take interanl PDF
 QcdnumInit.Q0                            1.323  # FitB=1.5811, FitA=1.323 must below mcharm
-QcdnumInit.nxGrid                        50 #60 # number of x-grid points
+QcdnumInit.nxGrid                        60 #60 # number of x-grid points
 QcdnumInit.nqGrid                        60 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
 
 # QcdnumPDF defaults
@@ -175,8 +176,8 @@ QcdnumDDISCS.n_IR             0.0017
 PDFQ0_diff.iPDF               0 # dummy
 PDFQ0_diff.xp                0.1  # dummy
 
-#PDFQ0_diff.gTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2])"
-#PDFQ0_diff.sTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2])"
+#PDFQ0_diff.gTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2]) * exp(-0.01/(1-x)) )"
+#PDFQ0_diff.sTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2]) * exp(-0.01/(1-x)) "
 PDFQ0_diff.gTF1             default
 PDFQ0_diff.sTF1             "default"
 PDFQ0_diff.vTF1             "x*0"

@@ -64,10 +64,10 @@ bool AQcdnumDDISCS::Update() {
    vector<double> q2       = DOUBLE_COL_NS(Data,Q2,GetAlposName());
    vector<double> beta     = DOUBLE_COL_NS(Data,beta,GetAlposName());
    vector<double> sigmaVec = DOUBLE_COL_NS(Data,Sigma,GetAlposName());
-   cout << "q2Vector size " << q2.size() << endl;
 
-   for(int i = 0; i < xpom.size(); ++i)
-       cout << xpom[i] <<" "<<  q2[i] <<" "<< beta[i] <<" "<< sigmaVec[i]<<  endl;
+   // cout << "q2Vector size " << q2.size() << endl;
+   // for(int i = 0; i < xpom.size(); ++i)
+   //     cout << xpom[i] <<" "<<  q2[i] <<" "<< beta[i] <<" "<< sigmaVec[i]<<  endl;
 
    fValue.resize(q2.size());
    fError.resize(q2.size());
@@ -112,22 +112,21 @@ bool AQcdnumDDISCS::Update() {
    hqstfun_(&iF2, &ibottom,&CEP2F[0],&beta[0],&q2[0],&F2b[0],&npts,&ichk);//no check on nf = 4
    hqstfun_(&iFL, &ibottom,&CEP2F[0],&beta[0],&q2[0],&FLb[0],&npts,&ichk);//no check on nf = 4
 
-   { // ugly check:a
-      vector<double> qqq{1.75,8.5,20,800};
-      int iset=1;//5; // iset: 5 is external PDF                                                    
-      double xp  = 0.1;
-      int ichk;
-      int nul = 0;
-      vector<double> xfx(13);
-      for ( auto qq : qqq ) {
-	 double muf2 = qq;
-	 allfxq_( &iset, &xp, &muf2, &xfx[0], &nul, &ichk );
-	 cout<<"q2= "<<muf2<<": ";
-	 for ( auto p : xfx ) cout<<"\t"<<p;
-	 cout<<endl;
-      }
-   }
-   //exit(3);
+   // { // ugly check:a
+   //    vector<double> qqq{1.75,8.5,20,800};
+   //    int iset=1;//5; // iset: 5 is external PDF                                                //    double xp  = 0.1;
+   //    int ichk;
+   //    int nul = 0;
+   //    vector<double> xfx(13);
+   //    for ( auto qq : qqq ) {
+   // 	 double muf2 = qq;
+   // 	 allfxq_( &iset, &xp, &muf2, &xfx[0], &nul, &ichk );
+   // 	 cout<<"q2= "<<muf2<<": ";
+   // 	 for ( auto p : xfx ) cout<<"\t"<<p;
+   // 	 cout<<endl;
+   //    }
+   // }
+   // //exit(3);
 
 
    const double mp2 = pow(0.92, 2);
@@ -151,18 +150,27 @@ bool AQcdnumDDISCS::Update() {
        //Pomeron flux
        double flxIP = rflux(xpom[i], a0_IP, ap_IP, b0_IP);
 
-       fValue[i] = flxIP * (F2  - y*y/yplus*FL);
+       //fValue[i] = flxIP * (F2  - y*y/yplus*FL);
+       fValue[i] = flxIP*xpom[i] * (F2  - y*y/yplus*FL);
 
-       double redfac = (2*M_PI*(1./137)*(1./137) / (x*q2[i]*q2[i]) );
 
-       cout<<"fValue="<<fValue[i]<<"\tsigma="<<sigmaVec[i]<<"\tratio="<<fValue[i]/sigmaVec[i]
-	   <<"\tq2="<<q2[i]
-	   <<"\tflxIP="<<flxIP
-	   <<"\tx="<<x
-	   <<"\ty="<<y
-	   <<"\tb="<<beta[i]
-	   <<"\txp="<<xpom[i]
-	   <<"\tredfac = "<<redfac<<"\t inv="<<1./redfac<<endl;
+       // double sRedP = (f2[0]) - y*y/(1 + pow(1-y,2)) * (fl[0]);
+       // double sRedR = (f2[1]) - y*y/(1 + pow(1-y,2)) * (fl[1]);
+       // double sRedC = (c2[0]) - y*y/(1 + pow(1-y,2)) * (cl[0]); //should not be included
+       // fValue[i]= xpom*(sRedP+sRedR);
+
+
+       //double redfac = (2*M_PI*(1./137)*(1./137) / (x*q2[i]*q2[i]) );
+
+       // cout<<"fValue="<<fValue[i]<<"\tsigma="<<sigmaVec[i]<<"\tratio="<<fValue[i]/sigmaVec[i]
+       // 	   <<"\tq2="<<q2[i]
+       // 	   <<"\tflxIP="<<flxIP
+       // 	   <<"\tx="<<x
+       // 	   <<"\ty="<<y
+       // 	   <<"\tb="<<beta[i]
+       // 	   <<"\txp="<<xpom[i]
+       // 	  //<<"\tredfac = "<<redfac<<"\t inv="<<1./redfac
+       // 	   <<endl;
 
 
    }

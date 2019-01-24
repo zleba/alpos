@@ -101,7 +101,9 @@ std::vector<double> APDFQ0_diff::GetQuick(const vector<double>& ipdf_xp_q0) {
    //double q0 = ipdf_xp_q0[2]; // q0 is ignored
 
    vector<double> ret(1);
-   if(ipdf== 0) 
+   if ( xp==1 )
+      ret[0] = 0;
+   else if(ipdf== 0) 
       ret[0] = fgTF1.IsValid() ? fgTF1.Eval(xp) : DefaultDiffParam(xp,PAR(g0),PAR(g1),PAR(g2)); // gluon
    else if(ipdf== 1) 
       ret[0] = fsTF1.IsValid() ? fsTF1.Eval(xp) : DefaultDiffParam(xp,PAR(s0),PAR(s1),PAR(s2)); // singlet
@@ -186,7 +188,8 @@ double APDFQ0_diff::DefaultDiffParam(double x, double A, double B, double C) {
    //! (following is taken from HERAFitter) 
    //! C  AF = (a*x**b)*(1 - x)**c*(1 + d*x + e*x**2+f*x**3)- 
    //! C     - (ap*x**bp)*(1-x)**cp
-   double xf = A*pow(x,B) * pow(1-x,C);
+   if ( x==1 ) return 0;
+   double xf = A*pow(x,B) * pow(1-x,C) * exp(-0.01/(1-x));
    return xf;
 }
 
