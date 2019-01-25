@@ -1,7 +1,7 @@
 pwd=$PWD
 mkdir -p apfelxx
 cd apfelxx
-git clone --depth 1 git@github.com:vbertone/apfelxx.git
+git clone --depth 1 https://github.com/vbertone/apfelxx.git
 cd apfelxx
 echo $PWD
 #echo "set_property(TARGET dis PROPERTY POSITION_INDEPENDENT_CODE ON) " >> apfelxx/src/dis/CMakeLists.txt
