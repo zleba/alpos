@@ -83,6 +83,8 @@
 #include "alpos/tasks/AReplaceDataWithTheoryValues.h"
 #include "alpos/tasks/AApcFitter.h"
 #include "alpos/tasks/ASavePDFTGraph.h"
+#include "alpos/tasks/ASaveDataTheory.h"
+
 #include "alpos/tasks/AScaleUncertainty.h"
 #include "alpos/tasks/APDFUncer.h"
 #include "alpos/tasks/ALHAPDFErrors.h"
@@ -200,6 +202,7 @@ ATask* AFactory::TaskFactory(const std::string& tname, const std::string& ttype)
    else if ( ttype == AReplaceDataWithTheoryValues::fTaskType )           return new AReplaceDataWithTheoryValues(tname);
    else if ( ttype == AApcFitter::fTaskType )         return new AApcFitter(tname);
    else if ( ttype == ASavePDFTGraph::fTaskType )     return new ASavePDFTGraph(tname);
+   else if ( ttype == ASaveDataTheory::fTaskType )    return new ASaveDataTheory(tname);
    else if ( ttype == AScaleUncertainty::fTaskType )  return new AScaleUncertainty(tname);
    else if ( ttype == APDFUncer::fTaskType )          return new APDFUncer(tname);
    else if ( ttype == ALHAPDFErrors::fTaskType )      return new ALHAPDFErrors(tname);
