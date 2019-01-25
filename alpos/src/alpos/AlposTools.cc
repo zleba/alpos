@@ -369,7 +369,7 @@ std::vector<double> AlposTools::LicoApfelxxToLha(const std::vector<double>& LiCo
 
 
 //____________________________________________________________________________________ //
-std::unordered_map<int,double> AlposTools::LicoLhaToApfelxxMap(const std::vector<double>& LiCoLha ) {
+std::map<int,double> AlposTools::LicoLhaToApfelxxMap(const std::vector<double>& LiCoLha ) {
    //! calculate PDF linear combination as input to Apfel++
    //! Input vector denots PDFs like in LHAPDF: tb...g d u s c b t (0...6...12)
    
@@ -390,7 +390,7 @@ std::unordered_map<int,double> AlposTools::LicoLhaToApfelxxMap(const std::vector
       { -5, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,-5,}, // T35 = u^+ + d^+ + s^+ + c^+ + b^+ - 5 t^+
       {  5,-1,-1,-1,-1,-1, 0, 1, 1, 1, 1, 1,-5,}  // V35 = u^- + d^- + s^- + c^- + b^- - 5 t^-
    };
-   std::unordered_map<int,double> apfl;
+   std::map<int,double> apfl;
    apfl.insert({0,LiCoLha[6]});
    for ( int i = 1 ; i<13; i++ ) {
       double f = 0;
@@ -403,7 +403,7 @@ std::unordered_map<int,double> AlposTools::LicoLhaToApfelxxMap(const std::vector
 }
 
 //____________________________________________________________________________________ //
-std::unordered_map<int,double> AlposTools::LicoApfelxxToLhaMap(const std::vector<double>& LiCoApfl ) {
+std::map<int,double> AlposTools::LicoApfelxxToLhaMap(const std::vector<double>& LiCoApfl ) {
    //! calculate PDF linear combination as input to Apfel++
    //! Input vector denots PDFs like in LHAPDF: tb...g d u s c b t (0...6...12)
    
@@ -425,7 +425,7 @@ std::unordered_map<int,double> AlposTools::LicoApfelxxToLhaMap(const std::vector
       { 0, 1./12,  1./12,     0,     0,     0,     0,     0,   0,  0,  0, -1./12, -1./12  }
    };
 
-   std::unordered_map<int,double> lha;
+   std::map<int,double> lha;
    for ( int i = 0 ; i<13; i++ ) {
       double f = 0;
       for ( int j = 0 ; j<13; j++ ) {

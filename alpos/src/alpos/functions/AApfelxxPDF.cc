@@ -69,7 +69,10 @@ bool AApfelxxPDF::Init() {
 		     apfel::SubGrid{int(PAR(nx4)),PAR(xmin4),int(PAR(intdegree4))}, 
 			}));
    //fDglap = unique_ptr<apfel::Dglap>(&new apfel::DglapBuildQCD());
-   fDglapObj = apfel::InitializeDglapObjectsQCD(*fGrid);
+   //const vector<double> Masses = {0, 0, 0, sqrt(2), 4.5, 175};
+   const vector<double> Masses = {0, 0, 0, PAR(mc),PAR(mb),PAR(mt)};
+   const vector<double> Thresholds = Masses;
+   fDglapObj = apfel::InitializeDglapObjectsQCD(*fGrid, Masses, Thresholds);
 
    CONST(mu0);
    CONST(iOrd);
@@ -193,7 +196,7 @@ bool AApfelxxPDF::Update() {
    const auto asalpos = [&] (double const& mu) -> double{ return fAs->GetQuick(vector<double>{mu})[0]; };
    //const auto pdfmu0  = [&] (int const& i, double const& x, double const& ) -> double{ return fPDFmu0->GetQuick(1,mu)[0]; };
    //fDglap = apfel::DglapBuildQCD(*fGrid, LHToyPDFs, mu0, Masses, Thresholds, PerturbativeOrder, asalpos);
-   const auto pdf0alpos = [&] (double const& x, double const& mu) -> unordered_map<int,double>{
+   const auto pdf0alpos = [&] (double const& x, double const& mu) -> map<int,double>{
       static const vector<bool> found{true,true,true,true,true,true,true,true,true,true,true,true,true};
       vector<double> xfpdf0(13);
       for ( int ii = 0 ; ii<13 ;ii++ ) {
@@ -203,14 +206,15 @@ bool AApfelxxPDF::Update() {
       vector<double> xf13(13);
       AlposTools::Calc13partonsFromLico(xf13,fPdf0ToApfl,xfpdf0,found);
       
-      unordered_map<int,double> xf13map;
+      map<int,double> xf13map;
       for ( int ii = 0 ; ii<13 ;ii++ )
 	 xf13map.insert({ii,xf13[ii]});
       return xf13map;
    };
    //fDglap = apfel::DglapBuildQCD(*fGrid, pdf0alpos, mu0, Masses, Thresholds, PerturbativeOrder, asalpos);
    //apfel::DglapObjects fDglapObj = InitializeDglapObjectsQCD(*fGrid);
-   fDglap = apfel::DglapBuild(fDglapObj, pdf0alpos, mu0, Masses, Thresholds, PerturbativeOrder, asalpos);
+   //fDglap = apfel::DglapBuild(fDglapObj, pdf0alpos, mu0, Masses, Thresholds, PerturbativeOrder, asalpos);
+   fDglap = apfel::BuildDglap(fDglapObj, pdf0alpos, mu0, PerturbativeOrder, asalpos);
 
    // Tabulate PDFs
    //const apfel::TabulateObject<apfel::Set<apfel::Distribution>> TabulatedPDFs{*fDglap, 50, 1, 1000, 3};

@@ -14,6 +14,7 @@
 #include <apfel/tools.h>
 #include <apfel/alphaqcd.h>
 #include <apfel/tabulateobject.h>
+#include <apfel/constants.h>
 
 using namespace std;
 
@@ -112,9 +113,10 @@ bool AApfelxxDISCS::Init() { //alpos
 	    apfel::SubGrid{50,6e-1,3}, 
 	    apfel::SubGrid{50,8e-1,3}
 	 }));
-   fF2Obj = InitializeF2ObjectsZM(*fGrid);
-   fFLObj = InitializeFLObjectsZM(*fGrid);
-   fF3Obj = InitializeF3ObjectsZM(*fGrid);
+   const vector<double> Thresholds = {0, 0, 0, PAR(mc), PAR(mb), PAR(mt)};
+   fF2Obj = apfel::InitializeF2NCObjectsZM(*fGrid, Thresholds);
+   fFLObj = apfel::InitializeFLNCObjectsZM(*fGrid, Thresholds);
+   fF3Obj = apfel::InitializeF3NCObjectsZM(*fGrid, Thresholds);
 
    return true;
 }
@@ -175,7 +177,7 @@ bool AApfelxxDISCS::Update() {  //alpos
    //};
    // const auto PDFsalpos = [&] (int const& i, double const& x, double const& mu) -> double{ 
    //    return AlposTools::LicoLhaToApfelxx(fPDF->GetQuick({x,mu}))[i];
-   const auto PDFsalpos = [&] (double const& x, double const& mu) -> unordered_map<int,double>{
+   const auto PDFsalpos = [&] (double const& x, double const& mu) -> map<int,double>{
       return AlposTools::LicoLhaToApfelxxMap(fPDF->GetQuick({x,mu}));
       // vector<double> xfx = fPDF->GetQuick({x,mu});
       // vector<double> xfxApfl = ;
@@ -243,9 +245,13 @@ bool AApfelxxDISCS::Update() {  //alpos
 
    // --- Apfel++ following structurefunction_test.cc
    //  Initialize structure functions
-   const auto F2 = apfel::StructureFunctionBuildNC(fF2Obj, PDFsalpos, Thresholds, PerturbativeOrder, asalpos, fBq);
-   const auto FL = apfel::StructureFunctionBuildNC(fFLObj, PDFsalpos, Thresholds, PerturbativeOrder, asalpos, fBq);
-   const auto F3 = apfel::StructureFunctionBuildNC(fF3Obj, PDFsalpos, Thresholds, PerturbativeOrder, asalpos, fDq);
+   // const auto F2 = apfel::StructureFunctionBuildNC(fF2Obj, PDFsalpos, Thresholds, PerturbativeOrder, asalpos, fBq);
+   // const auto FL = apfel::StructureFunctionBuildNC(fFLObj, PDFsalpos, Thresholds, PerturbativeOrder, asalpos, fBq);
+   // const auto F3 = apfel::StructureFunctionBuildNC(fF3Obj, PDFsalpos, Thresholds, PerturbativeOrder, asalpos, fDq);
+   const auto F2 = apfel::BuildStructureFunctions(fF2Obj, PDFsalpos, PerturbativeOrder, asalpos, fBq);
+   const auto FL = apfel::BuildStructureFunctions(fFLObj, PDFsalpos, PerturbativeOrder, asalpos, fBq);
+   const auto F3 = apfel::BuildStructureFunctions(fF3Obj, PDFsalpos, PerturbativeOrder, asalpos, fDq);
+
 
    // ------ calc structure functions
    for ( unsigned int i =0 ; i<q2.size() ; i++ ) {

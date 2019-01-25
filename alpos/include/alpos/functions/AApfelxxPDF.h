@@ -8,8 +8,8 @@
 
 
 #include "alpos/ATheory.h"
-#include "apfel/grid.h"
-#include "apfel/dglap.h"
+#include <apfel/grid.h>
+#include <apfel/dglap.h>
 #include <apfel/tabulateobject.h>
 #include <apfel/dglapbuilder.h>
 #include <apfel/tools.h>
@@ -36,10 +36,10 @@ private:
    static const std::vector<std::string> fStopFurtherNotification; //< List of Parm's which have changed, but this function does not notify further dependencies
 
 protected:
-   unique_ptr<const apfel::Grid> fGrid;
-   apfel::DglapObjects fDglapObj;
-   unique_ptr<apfel::Dglap> fDglap;
-   unique_ptr<apfel::TabulateObject<apfel::Set<apfel::Distribution>>> fTabulatedPDFs;
+   std::unique_ptr<const apfel::Grid> fGrid;
+   std::map<int, apfel::DglapObjects> fDglapObj;
+   std::unique_ptr<apfel::Dglap<apfel::Distribution>> fDglap;
+   std::unique_ptr<apfel::TabulateObject<apfel::Set<apfel::Distribution>>> fTabulatedPDFs;
    AFuncD* fAs  = NULL;
    AFuncD* fPDF0  = NULL;
    TMatrixD fPdf0ToApfl;

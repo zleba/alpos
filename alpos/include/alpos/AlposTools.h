@@ -9,7 +9,7 @@
 #include <vector>
 #include <set>
 #include <iostream>
-#include <unordered_map>
+#include <map>
 
 namespace AlposTools {
 
@@ -35,8 +35,8 @@ namespace AlposTools {
    void CalcLicoFrom13partons(std::vector<double>& LiCo, const std::vector<double>& def, const std::vector<double>& xfx13 );
    std::vector<double> LicoApfelxxToLha(const std::vector<double>& LiCoApfl );
    std::vector<double> LicoLhaToApfelxx(const std::vector<double>& LiCoLha  );
-   std::unordered_map<int,double> LicoApfelxxToLhaMap(const std::vector<double>& LiCoApfl );
-   std::unordered_map<int,double> LicoLhaToApfelxxMap(const std::vector<double>& LiCoLha  );
+   std::map<int,double> LicoApfelxxToLhaMap(const std::vector<double>& LiCoApfl );
+   std::map<int,double> LicoLhaToApfelxxMap(const std::vector<double>& LiCoLha  );
    
    //! --- useful (but ambivalent) vector operations 
    //! Multiply element by element

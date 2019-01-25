@@ -44,10 +44,13 @@ protected:
    AFuncD* fPDF = NULL;
    AFuncD* fAs  = NULL;
 
-   unique_ptr<const apfel::Grid> fGrid;
-   apfel::StructureFunctionObjects fF2Obj;
-   apfel::StructureFunctionObjects fFLObj;
-   apfel::StructureFunctionObjects fF3Obj;
+   std::unique_ptr<const apfel::Grid> fGrid;
+   std::function<apfel::StructureFunctionObjects(const double&, const std::vector<double>&)> fF2Obj;
+   std::function<apfel::StructureFunctionObjects(const double&, const std::vector<double>&)> fFLObj;
+   std::function<apfel::StructureFunctionObjects(const double&, const std::vector<double>&)> fF3Obj;
+   /* apfel::StructureFunctionObjects fF2Obj; */
+   /* apfel::StructureFunctionObjects fFLObj; */
+   /* apfel::StructureFunctionObjects fF3Obj; */
 
 };
 
