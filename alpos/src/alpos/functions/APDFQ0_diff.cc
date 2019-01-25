@@ -123,7 +123,29 @@ bool APDFQ0_diff::Update() {
    int ipdf = PAR(iPDF);
    debug["Update"]<<"ipdf="<<ipdf<<"\tx="<<PAR(xp)<<"\tCHECK(ipdf)="<<CHECK(iPDF)<<"\tCHECK(x)="<<CHECK(xp)<<endl;
    
-   if ( ipdf == -3 ) {
+   if ( ipdf == -2 ) {
+      // return vector 'def' for all flavors to Apfel++
+      vector<double> def = {
+	 //tb  bb  cb  sb  ub  db   g   d   u   s   c   b   t
+	 //-6  -5  -4  -3  -2  -1   0   1   2   3   4   5   6
+	 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., // gluon
+	 0., 0., 0., 1., 1., 1., 0., 1., 1., 1., 0., 0., 0., // light singlet
+	 0., 0., 0., -1., -1., -1., 0., 1., 1., 1., 0., 0., 0., // valence
+	 0, 0, 0, 0, 1,-1, 0,-1, 1, 0, 0, 0, 0, // T3  = u^+ - d^+
+	 0, 0, 0, 0,-1, 1, 0,-1, 1, 0, 0, 0, 0, // V3  = u^- - d^-
+	 0, 0, 0,-2, 1, 1, 0, 1, 1,-2, 0, 0, 0, // T8  = u^+ + d^+ - 2 s^+
+	 0, 0, 0, 2,-1,-1, 0, 1, 1,-2, 0, 0, 0, // V8  = u^- + d^- - 2 s^-
+	 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., // c+ 
+	 0., 0.,-1., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., // c- 
+	 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., // b+ 
+	 0.,-1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., // b- 
+	 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., // t+ 
+	-1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., // t-
+      };
+      fValue = def;
+      fError.resize(fValue.size());
+   }
+   else if ( ipdf == -3 ) {
       // return QCDNUM vector 'def'
       vector<double> def = {
 	 //tb  bb  cb  sb  ub  db   g   d   u   s   c   b   t 
@@ -176,6 +198,7 @@ bool APDFQ0_diff::Update() {
    }
    else {
       error["Update"]<<"Wrong ipdf: "<<ipdf<<endl;
+      exit(3);
    }
    return true;
 }

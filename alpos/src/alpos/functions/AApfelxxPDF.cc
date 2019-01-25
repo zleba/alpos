@@ -139,17 +139,24 @@ bool AApfelxxPDF::Update() {
    if ( fPdf0ToApfl.GetNcols() == 0 ) {
       // --- get linear combination of inital PDF
       //vector<double> def = {0,0,0,0,0,0,1,0,0,0,0,0,0}; // gluon is by definition 0th element
-      SET_ANY(this->GetAlposName()+".PDFmu0.iPDF",-2,0); // -2 ! this returns full linear-combination including gluon
-      vector<double> def = VALUES_ANY(this->GetAlposName()+".PDFmu0");
-      SET_ANY(this->GetAlposName()+".PDFmu0.iPDF",6,0); //reset     
+      //SET_ANY(this->GetAlposName()+".PDFmu0.iPDF",-2,0); // -2 ! this returns full linear-combination including gluon
+
+      SET(PDFmu0.iPDF,-2,0); // set PDFQ0Param to 'def' mode. 
+      vector<double> def = VALUES(PDFmu0);
+
+      // vector<double> def = VALUES_ANY(this->GetAlposName()+".PDFmu0");
+      
+      SET(PDFmu0.iPDF,6,0); //reset
+      //SET_ANY(this->GetAlposName()+".PDFmu0.iPDF",6,0); //reset     
+
       TMatrixD LiCo(13,13,&def[0]);
-      // cout<<"LiCo: "<<endl;
-      // LiCo.Print();
+      // cout<<"LiCo: "<<endl; //debug
+      // LiCo.Print(); //debug
       TMatrixD InvLiCo(13,13);
       InvLiCo = AlposTools::InvertLU(LiCo);
       // cout<<"InvLiCo: "<<endl;
       // InvLiCo.Print();
-
+      
       static const std::vector<std::vector<double> > LhToApfl {
 	 {  0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,}, // gluon
 	 {  1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1,}, // SIGMA = \sum_q q^+     

@@ -35,6 +35,7 @@ extern "C" {
    void zmstfun_(int* istf, double* def, double* x, double* Q2, double* f, int* n, int* nchk);
    void pdfinp_( void (*) (double*,double*,double*), int*,double*,double*,int*);
    void pdfext_( void (*) (double*,double*,double*), int*,int*,double*,double*);
+   void extpdf_(double (*)(int*, double* ,double* ,bool*), int*, int*, double*, double*);
    void zmdefq2_(double* a, double* b);   
    void setabr_(double* a, double* b);
    void evolfg_( int* itype, double (*) (int* ipdf, double* x), double* def, int* iq0, double* epsi );
@@ -50,6 +51,30 @@ namespace AWrap {
       //cout<<"GetXFXL x,mu: "<<*x<<"\t"<<q<<endl;
       vector<double> xxx = TheoryHandler::Handler()->GetFuncD(AQcdnumInit::fFunctionName+".PDF")->GetQuick(2,*x,q); // never 'specialize' the QcdnumInit instance
       for ( int i = 0 ; i<13 ; i++ ) xfx[i] = xxx[i];
+   }
+
+   // adopted from qcdnum/testjobsCxx/pdfsetsCxx.cc
+   /*----------------------------------------------------------------------
+    * Return q,qbar,g for ipdf = [-6:6], proton singlet [7], nonsinglet [8]
+    *----------------------------------------------------------------------
+    */
+   double fimport(int* ii, double* xx, double* qq, bool* fst) {
+      static double proton[13];
+      double q = sqrt(*qq);
+      vector<double> xxx = TheoryHandler::Handler()->GetFuncD(AQcdnumInit::fFunctionName+".PDF")->GetQuick(2,*xx,q); // never 'specialize' the QcdnumInit instance
+      int ipdf = *ii;
+      
+      bool first = *fst;
+      if(first) {
+	 for(int i=1; i<=13; i++) { QCDNUM::qstore("Read",i,proton[i-1]); }
+      }
+      double f = 0;
+      if(ipdf >= -6 && ipdf <= 6) f = QCDNUM::fvalxq(1,ipdf,*xx,q,1);
+      if(ipdf == 7)               f = QCDNUM::sumfxq(1,proton,2,*xx,q,1);
+      if(ipdf == 8)               f = QCDNUM::sumfxq(1,proton,3,*xx,q,1);
+      cout<<"THIS PIECE OF CODE IS NOT FUNCTIONAL !!"<<endl;
+      exit(4);
+      return f;
    }
 
    double pdfinputQCDNUMExample(int* ipdf, double* xptr){
@@ -321,7 +346,8 @@ bool AQcdnumInit::Update() {
       int nExtraPDF = 0;      
       int nwds;
       //pdfinp_(AWrap::GetXFX, &IPDFSet, &offset,&epsi ,&nwds);
-      pdfext_(AWrap::GetXFX, &IPDFSet, &nExtraPDF, &offset,&epsi);
+      //pdfext_(AWrap::GetXFX, &IPDFSet, &nExtraPDF, &offset,&epsi); // QCDNUM earlier versions
+      extpdf_(AWrap::fimport, &IPDFSet, &nExtraPDF, &offset,&epsi);
       zswitch_(&IPDFSet);
    }
    else {
@@ -351,9 +377,9 @@ bool AQcdnumInit::Update() {
       //for(auto  d : def)
           //cout << d <<" "<< endl;
 
-      cout<<"PDF param def:";
-      for ( auto i : def ) cout<<"\t"<<i;
-      cout<<endl;
+      // cout<<"PDF param def:";
+      // for ( auto i : def ) cout<<"\t"<<i;
+      // cout<<endl;
 
       double epsi;
       double q02 = fQ0*fQ0;
@@ -363,7 +389,7 @@ bool AQcdnumInit::Update() {
       SET(PDFQ0Param.iPDF,0,0); // set PDFQ0Param to 'gluon' for update.
       PAR(PDFQ0Param); // update PDFQ0
 
-      cout<<"Calling evolfg_"<<endl;
+      debug["Update"]<<"Calling evolfg_"<<endl;
       evolfg_( &iset, AWrap::pdfinput, &def[0], &iq0, &epsi );
 	 
 
