@@ -354,7 +354,8 @@ bool AQcdnumInit::Update() {
       // Update for InitEvolution
       int IPDFSet = 1 ;//external PDF: 5
       zswitch_(&IPDFSet);
-      QCDNUM::hswitch(IPDFSet);
+      if(PAR(nfFix) >= 3)
+          QCDNUM::hswitch(IPDFSet);
       // double offset = 0.001;
       // int nwds;
       // pdfinp_(AWrap::GetXFX, &IPDFSet, &offset,&epsi ,&nwds);

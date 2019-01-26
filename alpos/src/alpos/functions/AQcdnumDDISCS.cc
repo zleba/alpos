@@ -99,9 +99,9 @@ bool AQcdnumDDISCS::Update() {
 
 
    int iFL=1, iF2=2, nchk=0;
-   vector<double> FLl(q2.size()), F2l(q2.size());
-   vector<double> FLc(q2.size()), F2c(q2.size());
-   vector<double> FLb(q2.size()), F2b(q2.size());
+   vector<double> FLl(q2.size(),0.), F2l(q2.size(),0.);
+   vector<double> FLc(q2.size(),0.), F2c(q2.size(),0.);
+   vector<double> FLb(q2.size(),0.), F2b(q2.size(),0.);
 
    int npts=int(q2.size());
 
@@ -114,15 +114,17 @@ bool AQcdnumDDISCS::Update() {
    zmstfun_(&iF2,&CEP2F[0],&beta[0],&q2[0],&F2l[0], &npts,&ichk);
    zmstfun_(&iFL,&CEP2F[0],&beta[0],&q2[0],&FLl[0], &npts,&ichk);
 
-   int icharm = 1, ibottom = -2;
+   if(PAR(QcdnumInit.nfFix) >= 3) {
+       int icharm = 1, ibottom = -2;
+       cout << "Radek inside " << endl;
+       //charm
+       hqstfun_(&iF2, &icharm,&CEP2F[0],&beta[0],&q2[0],&F2c[0],&npts,&ichk);
+       hqstfun_(&iFL, &icharm,&CEP2F[0],&beta[0],&q2[0],&FLc[0],&npts,&ichk);
 
-   //charm
-   hqstfun_(&iF2, &icharm,&CEP2F[0],&beta[0],&q2[0],&F2c[0],&npts,&ichk);
-   hqstfun_(&iFL, &icharm,&CEP2F[0],&beta[0],&q2[0],&FLc[0],&npts,&ichk);
-
-   //bottom
-   hqstfun_(&iF2, &ibottom,&CEP2F[0],&beta[0],&q2[0],&F2b[0],&npts,&ichk);//no check on nf = 4
-   hqstfun_(&iFL, &ibottom,&CEP2F[0],&beta[0],&q2[0],&FLb[0],&npts,&ichk);//no check on nf = 4
+       //bottom
+       hqstfun_(&iF2, &ibottom,&CEP2F[0],&beta[0],&q2[0],&F2b[0],&npts,&ichk);//no check on nf = 4
+       hqstfun_(&iFL, &ibottom,&CEP2F[0],&beta[0],&q2[0],&FLb[0],&npts,&ichk);//no check on nf = 4
+   }
 
    // { // ugly check:a
    //    vector<double> qqq{1.75,8.5,20,800};
