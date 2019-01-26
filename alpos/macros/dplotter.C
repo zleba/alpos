@@ -27,7 +27,7 @@ TString rn() {return Form("%d",rand());}
 struct point {
     double xp,  q2,  beta, xpSig;
     double th, thErr;
-    double thOrg;
+    double thOrgA, thOrgB;
     double errStat, errSys, errTot, errUnc;
     std::vector<double> errs;//10 items
 };
@@ -83,6 +83,10 @@ void dPlotter::readData(TString inFile)
     tuple->SetBranchAddress("xpSigDataErr",&pt.errTot);
     tuple->SetBranchAddress("xpSigTh",&pt.th);
     tuple->SetBranchAddress("xpSigThErr",&pt.thErr);
+
+    tuple->SetBranchAddress("xpSigThOrgA",&pt.thOrgA);
+    tuple->SetBranchAddress("xpSigThOrgB",&pt.thOrgB);
+
 
     Int_t nentries = (Int_t)tuple->GetEntries();
     for (Int_t i=0;i<nentries;i++) {
@@ -147,15 +151,23 @@ void dPlotter::plotBeta(double xpom)
         hFr->Draw("axis");
         
 
-        TGraph *gThOrg = new TGraph(points.size());
+        TGraph *gThOrgA = new TGraph(points.size());
+        TGraph *gThOrgB = new TGraph(points.size());
         TGraph *gTh    = new TGraph(points.size());
         for(int j = 0; j < points.size(); ++j) {
-            gThOrg->SetPoint(j, points[j].beta, points[j].thOrg);
+            gThOrgA->SetPoint(j, points[j].beta, points[j].thOrgA);
+            gThOrgB->SetPoint(j, points[j].beta, points[j].thOrgB);
             gTh->SetPoint(j, points[j].beta, points[j].th);
         }
-        gThOrg->SetLineColor(kBlue);
-        gThOrg->SetMarkerColor(kBlue);
-        gThOrg->Draw("l* same");
+        gThOrgA->SetLineColor(kBlue);
+        gThOrgA->SetMarkerColor(kBlue);
+        gThOrgA->Draw("l* same");
+
+        gThOrgB->SetLineColor(kBlue);
+        gThOrgB->SetMarkerColor(kBlue);
+        gThOrgB->SetLineStyle(2);
+        gThOrgB->Draw("l* same");
+
 
         //MyTheory
         gTh->SetLineColor(kGreen);
@@ -196,10 +208,27 @@ void dPlotter::plotBeta(double xpom)
         if(i == dataMap.size() -1)
             GetXaxis()->SetTitle("#beta");
 
+        if(i == 0) {
+            can->cd();
+            TLegend *leg = new TLegend(0.4, 1-can->GetTopMargin(), 0.9, 1);
+            leg->SetBorderSize(0);
+            leg->SetNColumns(2);
+            leg->AddEntry(gData, "H1 Data", "pe");
+            leg->AddEntry(gThOrgA,   "Fit A", "lp");
+            leg->AddEntry(gTh,       "Our Fit", "lp");
+            leg->AddEntry(gThOrgB,   "Fit B", "lp");
+            leg->Draw();
+        }
+
+
         ++i;
     }
 
     DrawLatexUp(can->GetPad(1), 1.1, Form("x_{IP} = %g", xpom), -1, "l");
+
+    can->cd();
+    TLegend *leg = new TLegend(0.4, 1-can->GetTopMargin(), 0.9, 1);
+
 
     can->SaveAs(Form(outDir + "/xpom%g.pdf", xpom));
 
@@ -277,15 +306,22 @@ void dPlotter::plotQ2(double xpom)
         
 
         TGraph *gTh = new TGraph(points.size());
-        TGraph *gThOrg = new TGraph(points.size());
+        TGraph *gThOrgA = new TGraph(points.size());
+        TGraph *gThOrgB = new TGraph(points.size());
         for(int j = 0; j < points.size(); ++j) {
             gTh->SetPoint(j, points[j].q2, fac*points[j].th);
-            gThOrg->SetPoint(j, points[j].q2, fac*points[j].thOrg);
+            gThOrgA->SetPoint(j, points[j].q2, fac*points[j].thOrgA);
+            gThOrgB->SetPoint(j, points[j].q2, fac*points[j].thOrgB);
         }
 
-        gThOrg->SetLineColor(kBlue);
-        gThOrg->SetMarkerColor(kBlue);
-        gThOrg->Draw("l* same");
+        gThOrgA->SetLineColor(kBlue);
+        gThOrgA->SetMarkerColor(kBlue);
+        gThOrgA->Draw("l* same");
+
+        gThOrgB->SetLineColor(kBlue);
+        gThOrgB->SetMarkerColor(kBlue);
+        gThOrgB->SetLineStyle(2);
+        gThOrgB->Draw("l* same");
 
         gTh->SetLineColor(kGreen);
         gTh->SetMarkerColor(kGreen);
@@ -304,6 +340,20 @@ void dPlotter::plotQ2(double xpom)
         lat->SetTextSize(PxFontToRel(16));
         lat->SetTextAlign(12);
         lat->DrawLatex(xT*1.3, yT, Form("#beta=%g (i=%lu)", beta, dataMap.size() - 1 - i));
+
+
+        if(i == 0) {
+            can->cd();
+            TLegend *leg = new TLegend(0.4, 1-can->GetTopMargin(), 0.9, 1);
+            leg->SetBorderSize(0);
+            leg->SetFillStyle(0);
+            leg->SetNColumns(2);
+            leg->AddEntry(gData, "H1 Data", "pe");
+            leg->AddEntry(gThOrgA,   "Fit A", "lp");
+            leg->AddEntry(gTh,       "Our Fit", "lp");
+            leg->AddEntry(gThOrgB,   "Fit B", "lp");
+            leg->Draw();
+        }
 
 
         ++i;

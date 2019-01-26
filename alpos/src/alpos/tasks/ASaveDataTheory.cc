@@ -14,8 +14,43 @@
 #include "TNtuple.h"
 
 
+extern "C" {
+    void qcd_2006_(double *z,double *q2, int *ifit, double *xPq, double *f2, double *fl, double *c2, double *cl);
+    void h12006flux_(double *xpom, double *t, int *Int, int *ifit, int *ipom, double *flux);
+}
+
+//Multiplied by xPom
+double getSigRed2006(int ifit, double xpom, double q2, double z) //1==FitA, 2==FitB
+{
+    double xPq[13], f2[2], fl[2], c2[2], cl[2];
+    qcd_2006_(&z,&q2, &ifit, xPq, f2, fl, c2, cl);
+
+    double t = -1;
+    int Int = 1;
+    int ipom;
+
+    double fluxIP, fluxIR;
+    ipom = 1;
+    h12006flux_(&xpom, &t, &Int, &ifit, &ipom, &fluxIP);
+    ipom = 2;
+    h12006flux_(&xpom, &t, &Int, &ifit, &ipom, &fluxIR);
 
 
+    double Ep = (q2 < 120) ? 820 : 920;
+    double Ee = 27.5;
+    const double s = 4*Ep * Ee;
+
+    const double mp2 = pow(0.92, 2);
+    double x = z*xpom;
+    double y = q2/(s-mp2)/x;
+    double yplus  = 1+pow(1-y,2);
+
+
+    double xpSigRed_IP =  fluxIP*xpom * (f2[0]  - y*y/yplus*fl[0]);
+    double xpSigRed_IR =  fluxIR*xpom * (f2[1]  - y*y/yplus*fl[1]);
+
+    return xpSigRed_IP  + xpSigRed_IR;
+}
 
 /* 
  ATask
@@ -84,6 +119,8 @@ bool ASaveDataTheory::Execute(){
    TTree *ThDataTab = new TTree("ThDataTab","table with data and theory");
 
    double xp_, q2_, beta_, xpSigData_, xpSigDataErr_, xpSigTh_, xpSigThErr_;
+   double xpSigThOrgA_, xpSigThOrgB_;
+
    ThDataTab->Branch("xp",&xp_,"xp/D");
    ThDataTab->Branch("Q2",&q2_,"Q2/D");
    ThDataTab->Branch("beta",&beta_,"beta/D");
@@ -91,6 +128,11 @@ bool ASaveDataTheory::Execute(){
    ThDataTab->Branch("xpSigDataErr",&xpSigDataErr_,"xpSigDataErr/D");
    ThDataTab->Branch("xpSigTh",&xpSigTh_,"xpSigTh/D");
    ThDataTab->Branch("xpSigThErr",&xpSigThErr_,"xpSigThErr/D");
+
+   ThDataTab->Branch("xpSigThOrgA",&xpSigThOrgA_,"xpSigThOrgA/D");
+   ThDataTab->Branch("xpSigThOrgB",&xpSigThOrgB_,"xpSigThOrgB/D");
+
+
 
    for(int i = 0; i < dataPts->size(); ++i) {
        //cout << " "<<beta[i] <<" "<< q2[i] <<" "<<  xpom[i] <<" : "<< dataPts->at(i) << endl;
@@ -101,6 +143,10 @@ bool ASaveDataTheory::Execute(){
        xpSigDataErr_ = dataUnc[i] * 0.01; //from % to relErr
        xpSigTh_ = theoPts->at(i);
        xpSigThErr_ = 0;
+
+       xpSigThOrgA_ = getSigRed2006(1, xp_, q2_, beta_);
+       xpSigThOrgB_ = getSigRed2006(2, xp_, q2_, beta_);
+
        ThDataTab->Fill();
    }
    //cout << "Helenka " << endl;
