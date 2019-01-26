@@ -9,3 +9,4 @@ export PATH=$PWD/qcdnumBuild/bin:$PATH
 export PATH=$PWD/fastnloBuild/bin:$PATH
 export PATH=$PWD/alposBuild:$PATH
 export ALPOS_DIR=$PWD/alpos
+export PlH_DIR=$PWD/PlottingHelper

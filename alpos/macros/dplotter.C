@@ -1,5 +1,6 @@
-#include "../../PlottingHelper/plottingHelper.h"
-R__LOAD_LIBRARY(../../PlottingHelper/plottingHelper_C.so)
+R__ADD_INCLUDE_PATH($PlH_DIR/PlottingHelper)
+R__LOAD_LIBRARY($PlH_DIR/plottingHelper_C.so)
+#include "plottingHelper.h"
 using namespace PlottingHelper;
 
 
@@ -34,8 +35,9 @@ struct point {
 
 struct dPlotter {
     std::vector<point> data;
+    TString outDir;
 
-    void readData();
+    void readData(TString inFile);
     void plotBeta(double xpom);
     void plotQ2(double xpom);
     void plotXpom();
@@ -44,11 +46,10 @@ struct dPlotter {
 
 
 
-void dplotter()
+void dplotter(TString inFile = "test/alpos.out.root")
 {
     dPlotter dplt;
-    dplt.readData();
-    gSystem->mkdir("dPlots", true);
+    dplt.readData(inFile);
     dplt.plotBeta(0.0003);
     dplt.plotBeta(0.001);
     dplt.plotBeta(0.003);
@@ -68,9 +69,9 @@ void dplotter()
 
 }
 
-void dPlotter::readData()
+void dPlotter::readData(TString inFile)
 {
-    TFile *file = TFile::Open("../test/alpos.out.root");
+    TFile *file = TFile::Open(inFile);
     TNtuple *tuple = (TNtuple*) file->Get("ASaveDataTheory/ThDataTab");
 
 
@@ -90,6 +91,10 @@ void dPlotter::readData()
         data.push_back(pt);
     }
 
+    outDir =  inFile(0, inFile.Last('/'));
+    outDir += "/dPlots";
+
+    gSystem->mkdir(outDir, true);
 
 }
 
@@ -196,7 +201,7 @@ void dPlotter::plotBeta(double xpom)
 
     DrawLatexUp(can->GetPad(1), 1.1, Form("x_{IP} = %g", xpom), -1, "l");
 
-    can->SaveAs(Form("dPlots/xpom%g.pdf", xpom));
+    can->SaveAs(Form(outDir + "/xpom%g.pdf", xpom));
 
 }
 
@@ -307,7 +312,7 @@ void dPlotter::plotQ2(double xpom)
     DrawLatexUp(1, Form("x_{IP} = %g",xpom), -1, "l");
 
 
-    can->SaveAs(Form("dPlots/q2%g.pdf", xpom));
+    can->SaveAs(Form(outDir +  "/q2%g.pdf", xpom));
 
 }
 
@@ -401,6 +406,6 @@ void dPlotter::plotXpom()
     //DrawLatexUp(-1.3, Form("Q^{2} = %g GeV^{2}", q2));
 
 
-    can->SaveAs("dPlots/xpomGrid.pdf");
+    can->SaveAs(outDir + "/xpomGrid.pdf");
 
 }

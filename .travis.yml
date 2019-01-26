@@ -23,12 +23,12 @@ script:
     - ./rd  alposBuild/alpos alpos/steering/H1diff.str
     - cp test/alpos.out.root  alpos/test/alpos.out.root
     - cd alpos/macros/
-    - ./rd root -l -b -q dplotter.C
+    - ./rd root -l -b -q alpos/macros/dplotter.C
 
 
 deploy:
     provider: pages
-    local-dir : alpos/macros/dPlots
+    local-dir : test/dPlots
     skip-cleanup: true
     github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
     keep-history: false
