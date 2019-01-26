@@ -21,8 +21,6 @@ script:
 #Run test
     - ln -s alpos/datafiles
     - ./rd  alposBuild/alpos alpos/steering/H1diff.str
-    - cp test/alpos.out.root  alpos/test/alpos.out.root
-    - cd alpos/macros/
     - ./rd root -l -b -q alpos/macros/dplotter.C
 
 
