@@ -10,6 +10,5 @@ PlottingHelper
 alpos/test/steering.str
 alpos/test/alpos.out.root
 alpos/test/H1diff.str
-datafiles
 *.wgt
 *.swp
