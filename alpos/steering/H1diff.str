@@ -13,7 +13,7 @@
 DataTheorySets {{
   AlposName                     SteerFile                                   TheoryFunction            
 #  H1ZEUS-HERA-I-CCDISe+p        datafiles/h1zeus/0911.0884/H1ZEUS_CC_e+p_HERA1.dat                QcdnumDISCS
-  H1incDDIS                   datafiles/h1/0606004/ddis.dat                   QcdnumDDISCS   q2>=8.4   beta<=0.81
+  H1incDDIS                   datafiles/h1/0606004/ddis.dat                   QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 # nothing used here in the example
 }}
 
