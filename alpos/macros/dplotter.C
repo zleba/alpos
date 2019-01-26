@@ -230,7 +230,7 @@ void dPlotter::plotBeta(double xpom)
     TLegend *leg = new TLegend(0.4, 1-can->GetTopMargin(), 0.9, 1);
 
 
-    can->SaveAs(Form(outDir + "/xpom%g.pdf", xpom));
+    can->SaveAs(Form(outDir + "/beta_xpom%g.pdf", xpom));
 
 }
 
@@ -362,7 +362,7 @@ void dPlotter::plotQ2(double xpom)
     DrawLatexUp(1, Form("x_{IP} = %g",xpom), -1, "l");
 
 
-    can->SaveAs(Form(outDir +  "/q2%g.pdf", xpom));
+    can->SaveAs(Form(outDir +  "/q2_xpom%g.pdf", xpom));
 
 }
 
