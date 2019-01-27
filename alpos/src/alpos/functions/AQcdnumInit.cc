@@ -30,11 +30,12 @@ extern "C" {
    void fillwt_(int* itype,int* id1,int* id2,int* nw);
    void zmfillw_(int* nw);
    void zswitch_(int* IPDFSET);
+   void hswitch_(int* IPDFSET);
 
    void eprc_init_(int* boool);
    void zmstfun_(int* istf, double* def, double* x, double* Q2, double* f, int* n, int* nchk);
    void pdfinp_( void (*) (double*,double*,double*), int*,double*,double*,int*);
-   void pdfext_( void (*) (double*,double*,double*), int*,int*,double*,double*);
+   //void pdfext_( void (*) (double*,double*,double*), int*,int*,double*,double*); // deprecated
    void extpdf_(double (*)(int*, double* ,double* ,bool*), int*, int*, double*, double*);
    void zmdefq2_(double* a, double* b);   
    void setabr_(double* a, double* b);
@@ -58,22 +59,29 @@ namespace AWrap {
     * Return q,qbar,g for ipdf = [-6:6], proton singlet [7], nonsinglet [8]
     *----------------------------------------------------------------------
     */
-   double fimport(int* ii, double* xx, double* qq, bool* fst) {
+   double fun(int* ii, double* xx, double* qq, bool* fst) {
+      // The index ipdf runs from -6 to 6 , indexed according to (5.2) in the PDG convention. 
+      // For the extra pdfs, if any, the index is 7 ≤ pdf ≤ +n.  
+      // The first time func is called by extpdf the flag first is set to true
+      // and you can initialise the function, if needed.
       static double proton[13];
       double q = sqrt(*qq);
       vector<double> xxx = TheoryHandler::Handler()->GetFuncD(AQcdnumInit::fFunctionName+".PDF")->GetQuick(2,*xx,q); // never 'specialize' the QcdnumInit instance
       int ipdf = *ii;
       
-      bool first = *fst;
-      if(first) {
-	 for(int i=1; i<=13; i++) { QCDNUM::qstore("Read",i,proton[i-1]); }
-      }
+      // bool first = *fst;
+      // if(first) {
+      // 	 for(int i=1; i<=13; i++) { QCDNUM::qstore("Read",i,proton[i-1]); }
+      // }
       double f = 0;
-      if(ipdf >= -6 && ipdf <= 6) f = QCDNUM::fvalxq(1,ipdf,*xx,q,1);
-      if(ipdf == 7)               f = QCDNUM::sumfxq(1,proton,2,*xx,q,1);
-      if(ipdf == 8)               f = QCDNUM::sumfxq(1,proton,3,*xx,q,1);
-      cout<<"THIS PIECE OF CODE IS NOT FUNCTIONAL !!"<<endl;
-      exit(4);
+      //if(ipdf >= -6 && ipdf <= 6) f = QCDNUM::fvalxq(1,ipdf,*xx,q,1);
+      // if(ipdf == 7)               f = QCDNUM::sumfxq(1,proton,2,*xx,q,1);
+      // if(ipdf == 8)               f = QCDNUM::sumfxq(1,proton,3,*xx,q,1);
+      if(ipdf >= -6 && ipdf <= 6) f = xxx[ipdf+6];//QCDNUM::fvalxq(1,ipdf,*xx,q,1);
+      else {
+	 cout<<" ERROR ! AQcdnumInit.cc"<<endl;
+	 exit(3);
+      }
       return f;
    }
 
@@ -340,20 +348,23 @@ bool AQcdnumInit::Update() {
       PAR(PDF); // 'init' or update PDF
 
       // set external PDF (this requires access to the PDF, which is not yet initialized during the 'init' step)
-      double epsi;
-      int IPDFSet = 5 ;//external PDF
-      double offset = 0.001;
-      int nExtraPDF = 0;      
+      double epsi; // Maximum deviation of the quadratic spline interpolation from linear interpotion
+      int IPDFSet = 5 ;//external PDF (5-24)
+      double offset = 0.001; // to catch discontinuities at the thresholds
+      int nExtraPDF = 0; //Number of extra pdfs to be imported, beyond the 13 quark and gluon pdfs
       int nwds;
       //pdfinp_(AWrap::GetXFX, &IPDFSet, &offset,&epsi ,&nwds);
       //pdfext_(AWrap::GetXFX, &IPDFSet, &nExtraPDF, &offset,&epsi); // QCDNUM earlier versions
-      extpdf_(AWrap::fimport, &IPDFSet, &nExtraPDF, &offset,&epsi);
+      extpdf_(AWrap::fun, &IPDFSet, &nExtraPDF, &offset,&epsi);
+      info["Update"]<<"PDF imported. Max deviation of linear w.r.t. quadratic spline: "<<epsi<<endl;
       zswitch_(&IPDFSet);
+      hswitch_(&IPDFSet);
    }
    else {
       // Update for InitEvolution
       int IPDFSet = 1 ;//external PDF: 5
       zswitch_(&IPDFSet);
+      hswitch_(&IPDFSet);
       if(PAR(nfFix) >= 3)
           QCDNUM::hswitch(IPDFSet);
       // double offset = 0.001;

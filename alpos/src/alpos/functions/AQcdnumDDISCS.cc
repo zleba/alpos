@@ -116,7 +116,7 @@ bool AQcdnumDDISCS::Update() {
 
    if(PAR(QcdnumInit.nfFix) >= 3) {
        int icharm = 1, ibottom = -2;
-       cout << "Radek inside " << endl;
+       cout << "Radek inside  " << endl;
        //charm
        hqstfun_(&iF2, &icharm,&CEP2F[0],&beta[0],&q2[0],&F2c[0],&npts,&ichk);
        hqstfun_(&iFL, &icharm,&CEP2F[0],&beta[0],&q2[0],&FLc[0],&npts,&ichk);
@@ -124,6 +124,7 @@ bool AQcdnumDDISCS::Update() {
        //bottom
        hqstfun_(&iF2, &ibottom,&CEP2F[0],&beta[0],&q2[0],&F2b[0],&npts,&ichk);//no check on nf = 4
        hqstfun_(&iFL, &ibottom,&CEP2F[0],&beta[0],&q2[0],&FLb[0],&npts,&ichk);//no check on nf = 4
+       cout<<" Radek ok."<<endl;
    }
 
    // { // ugly check:a
