@@ -14,6 +14,7 @@
 namespace AlposTools {
 
    //! --- useful matrix operations/functions
+   template <typename T> T sq(const T& v) { return v*v;} // square
    std::vector<double > CovToCorr(TMatrixDSym& mat);
    void CovToCovRel(TMatrixDSym& mat, const std::vector<double>& sigma);
    void CovRelToCov(TMatrixDSym& mat, const std::vector<double>& sigma);
