@@ -36,6 +36,7 @@
     #include "alpos/functions/AApfelxxAlphas.h"
     #include "alpos/functions/AApfelxxDISCS.h"
 #endif //_CMAKE_FOUND_Apfelxx
+#include "alpos/functions/ADPDF.h"
 
 #include "alpos/AData.h"
 #include "alpos/functions/ASingleConstant.h"
@@ -119,6 +120,7 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
    else if ( functype == AApfelxxAlphas::fFunctionName )      ptr = new AApfelxxAlphas(funcname);
    else if ( functype == AApfelxxPDF::fFunctionName )         ptr = new AApfelxxPDF(funcname);
 #endif //_CMAKE_FOUND_APFELxx
+   else if ( functype == ADPDF::fFunctionName )             ptr = new ADPDF(funcname);
    else if ( functype == ALhapdf6::fFunctionName )          ptr = new ALhapdf6(funcname);
    else if ( functype == ALhapdf6Alphas::fFunctionName )    ptr = new ALhapdf6Alphas(funcname);
    else if ( functype == AStrowp1::fFunctionName )          ptr = new AStrowp1(funcname);
