@@ -47,9 +47,9 @@ bool ADPDF::Init() {
    //! return true if initialization was successful.
    debug["Init"]<<endl;
 
-   CONST(pom1);
-   CONST(pom2);
-   CONST(reg1);
+   // CONST(pom1);
+   // CONST(pom2);
+   // CONST(reg1);
    
    return true;
 }
@@ -89,6 +89,13 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
       return pdf;
    }
    double xpom = xpom_zpom_muf[0];
+   if ( xpom == 0 ) xpom = PAR(xpom);
+   if ( xpom < 1.e-5 || xpom > 1 ) {
+      error["Quick"]<<"Unreasonale xpom value:" << xpom<<endl; 
+      cout<<"xpom in:  "<<xpom_zpom_muf[0]<<endl;
+      cout<<"xpom par: "<<PAR(xpom)<<endl;
+      exit(1);
+   }
    double zpom = xpom_zpom_muf[1];
    double muf  = xpom_zpom_muf[2];
 
@@ -120,7 +127,7 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
       for ( int i = 0 ; i < 13 ; i++ ) 
 	 pdf[i] += pom2[i] * flxP2;
    }
-
+   
    // reggeon
    vector<double> reg1 = QUICK(reg1,({zpom,muf}));
    //Reggeon flux 
@@ -135,6 +142,8 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
 	    pdf[i] += reg1[i] * flxIR * n_IR;
       }
    }
+
+   //cout<<"muf="<<muf<<"\txpom="<<xpom<<"\tzpom="<<zpom<<"\tpdf0="<<pdf[0]<<"\tpdf6="<<pdf[6]<<endl;
    
    return pdf;
   
@@ -147,18 +156,19 @@ bool ADPDF::Update() {
    //fValue.resize(GetRequirements().size());
    //fError.resize(GetRequirements().size());
 
-   cout<<"Daniel ADPDF::Update Todo!"<<endl;
-
    // update
    SET(pom1.xp,PAR(zpom),0);
    SET(pom1.muf,PAR(muf),0);
+   UPDATE(pom1);
    if ( PAR(Flux_pom2_a0) ) {
       SET(pom2.xp,PAR(zpom),0);
       SET(pom2.muf,PAR(muf),0);
+      UPDATE(pom2);
    }
    if ( PAR(reg1_n) != 0 ) {
       SET(reg1.xp,PAR(zpom),0);
       SET(reg1.muf,PAR(muf),0);
+      UPDATE(reg1);
    }
 
    fValue = GetQuick(vector<double>{PAR(xpom),PAR(zpom),PAR(muf)});

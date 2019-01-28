@@ -14,7 +14,8 @@ DataTheorySets {{
   AlposName                     SteerFile                                   TheoryFunction            
 #  H1ZEUS-HERA-I-CCDISe+p        datafiles/h1zeus/0911.0884/H1ZEUS_CC_e+p_HERA1.dat                QcdnumDISCS
 #  H1incDDIS                   datafiles/h1/0606004/ddis.dat                   QcdnumDDISCS   # q2>=8.4   beta<=0.81
-#  H1incDDIS-HERA-I            datafiles/h1/0606004/h1_ddis_heraI.dat          QcdnumDDISCS   # Q2>=8.4   beta<=0.81   mx>=2
+  H1incDDIS-HERA-I-Q            datafiles/h1/0606004/h1_ddis_heraI.dat          QcdnumDDISCS   # Q2>=8.4   beta<=0.81   mx>=2
+  H1incDDIS-HERA-I-A            datafiles/h1/0606004/h1_ddis_heraI.dat          ApfelxxDDISCS   # Q2>=8.4   beta<=0.81   mx>=2
 # H1incDDIS                   datafiles/h1/1203.4495/h1_ddis_Comb.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 # H1incDDIS                   datafiles/h1/1107.3420/h1_ddis_lowE.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 }}
@@ -28,7 +29,7 @@ Tasks {{
 #  PrintSteering           PrintSteering
    PrintTheorySet         PrintTheorySet
 #   AFitter                MyFit
-#   StatAnalysis           Stat
+   StatAnalysis           Stat
 #   SavePDFTGraph          SavePDFTGraph
 }}
 
@@ -38,7 +39,7 @@ Tasks {{
 # --------------------------------------------------------------#
 ErrorSymmetrization             SignImprovedQuadratic
 Output                          test/alpos.out.root             # commonoutput file for outputs of all tasks
-GlobalVerbosity                 Debug # , Warning, Error
+GlobalVerbosity                 Info # Debug, Warning, Error
 InitSubsets                     false  # Init subsets of datasets
 IgnoreTheoryErrors              true                            # Ignore all theory errors when calculating chi2 value
 MatrixInversionTolerance        1.e-6                           # Tolerance of matrix inversion algorithm
@@ -97,7 +98,7 @@ AlposTheory {{{
 InitFunctions {{
    FunctionName          FunctionType         # one line here! (header of 'table')
    PDFQ0_diff            PDFQ0_diff
-#   QcdnumInit            QcdnumInit
+   QcdnumInit            QcdnumInit
 #   QcdnumPDF             QcdnumPDF
    ApfelxxAlphas            ApfelxxAlphas
    ApfelxxPDF               ApfelxxPDF
@@ -129,10 +130,10 @@ QcdnumInit.nfFix                         3       # 3,4,5,6 for FFNS, or '0' for 
 QcdnumInit.InitEvolution                 1       # 0:false, 1: true   # init QCD evolution, or take external PDF
 # -- if InitEvolution=0: take external PDF
 QcdnumInit.PDF                           ApfelxxPDF # PDFQ0_diff # LHAPDF  #QcdnumPDF # PDF1
-# -- if InitEvolution=0: take interanl PDF
+# -- if InitEvolution=1: take interanl PDF
 QcdnumInit.Q0                            1.323  # FitB=1.5811, FitA=1.323 must below mcharm
-QcdnumInit.nxGrid                        200 #60 # number of x-grid points
-QcdnumInit.nqGrid                        120 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
+QcdnumInit.nxGrid                        60 #60 # number of x-grid points
+QcdnumInit.nqGrid                        60 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
 
 # QcdnumPDF defaults
 QcdnumPDF.QcdnumInit                     QcdnumInit   # one QcdnumInit function must made available
@@ -147,7 +148,7 @@ STROWP1.muf                               10
 
 # --------------------------------------------------------------#
 # LHAPDF6 defaults
-LHAPDF6.LHAPDFFile                        nix
+LHAPDF6.LHAPDFFile                        CT14nnlo
 LHAPDF6.PDFSet                            0
 LHAPDF6.xp                                0.1
 LHAPDF6.muf                               10                      
@@ -224,10 +225,22 @@ QcdnumDDISCS.b0_IR            1.6
 QcdnumDDISCS.n_IR             0.0017
 
 
+
+ApfelxxDDISCS.DPDF            DPDF   
+ApfelxxDDISCS.Alpha_s	      ApfelxxAlphas
+ApfelxxDDISCS.e-charge	      1
+ApfelxxDDISCS.e-polarity      0
+ApfelxxDDISCS.iOrd	      iOrd
+ApfelxxDDISCS.mc	      1.6
+ApfelxxDDISCS.mb	      4.5
+ApfelxxDDISCS.mt              175
+
+# -----------------------------------------------------
 # PDFQ0_diff
 PDFQ0_diff.iPDF               0 # dummy
 PDFQ0_diff.xp                0.1  # dummy
 
+# -----------------------------------------------------
 #PDFQ0_diff.gTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2]) * exp(-0.01/(1-x)) )"
 #PDFQ0_diff.sTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2]) * exp(-0.01/(1-x)) "
 PDFQ0_diff.gTF1             default

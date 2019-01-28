@@ -19,6 +19,7 @@ using namespace std;
 
 // LH Toy PDFs
 /*
+code duplication with AApfelxxDISCS
 double xupv(double const& x)  { return 5.107200 * pow(x,0.8) * pow((1-x),3); }
 double xdnv(double const& x)  { return 3.064320 * pow(x,0.8) * pow((1-x),4); }
 double xglu(double const& x)  { return 1.7 * pow(x,-0.1) * pow((1-x),5); }
@@ -53,7 +54,7 @@ double LHToyPDFs(int const& i, double const& x, double const&)
 
 // __________________________________________________________________________________________ //
 const std::vector<std::string> AApfelxxDDISCS::fRequirements = {
-   "PDF", // evolved PDF function
+   "DPDF", // evolved PDF function
    "Alpha_s", // alpha_s evolution function
    "e-charge",
    "e-polarity",
@@ -78,23 +79,29 @@ AApfelxxDDISCS::~AApfelxxDDISCS() {
 bool AApfelxxDDISCS::Init() { //alpos
    //! Init is once called for each function
    //! return true if initialization was successful.
-   AlposObject::debug["Init"]<<endl;
+   debug["Init"]<<endl;
 
-   cout<<"Daniel hier! This is not yet working!"<<endl;
+   // CONST(DPDF);
+   // CONST(Alpha_s);
 
    // get points
    q2 = DOUBLE_COL_NS(Data,Q2,GetAlposName());
-   x = DOUBLE_COL_NS(Data,x,GetAlposName());
    y = DOUBLE_COL_NS(Data,y,GetAlposName());
+   xpom = DOUBLE_COL_NS(Data,xp,GetAlposName());
+   beta = DOUBLE_COL_NS(Data,beta,GetAlposName());
+   sigmaData = DOUBLE_COL_NS(Data,Sigma,GetAlposName());
    fValue.resize(q2.size());
    fError.resize(q2.size());
 
+   static const double mp2 = pow(0.92, 2);
    if ( y.empty() ) {
       double sqs=DOUBLE_NS(sqrt-s,GetAlposName());
       double ss = sqs*sqs;
       y.resize(q2.size());
       for ( unsigned int i = 0 ; i<q2.size() ; i++ ) { 
-	 y[i] = q2[i] / (x[i]*ss);
+	 double x = beta[i]*xpom[i];
+	 y[i] = q2[i]/(ss-mp2)/x;
+	    //y[i] = q2[i] / (x[i]*ss);
       }
    }
    // conceptually, these should be taken as alpos parameters like: PAR(charge)
@@ -106,8 +113,8 @@ bool AApfelxxDDISCS::Init() { //alpos
    IsRedCS  = BOOL_NS(IsReducedCS,GetAlposName()); // access directly from steering
    IsNC     = BOOL_NS(IsNC,GetAlposName());
 
-   fPDF = TheoryHandler::Handler()->GetFuncD(this->GetAlposName()+std::string(".PDF"));
-   fAs  = TheoryHandler::Handler()->GetFuncD(this->GetAlposName()+std::string(".Alpha_s"));
+   fDPDF = TheoryHandler::Handler()->GetFuncD(this->GetAlposName()+std::string(".DPDF"));
+   fAs   = TheoryHandler::Handler()->GetFuncD(this->GetAlposName()+std::string(".Alpha_s"));
    //const apfel::Grid g{{apfel::SubGrid{100,1e-5,3}, apfel::SubGrid{60,1e-1,3}, apfel::SubGrid{50,6e-1,3}, apfel::SubGrid{50,8e-1,3}}};
    fGrid = unique_ptr<const apfel::Grid>(new apfel::Grid({
 	    apfel::SubGrid{100,1e-5,3}, 
@@ -130,18 +137,7 @@ bool AApfelxxDDISCS::Update() {  //alpos
 
    // 'Update' PDF and Alpha_s values to ensure that 'Quick'-access are correct.
    polty  = PAR(e-polarity);
-   const double convfac= 0.389379338e9; //0.389379323e9;
-   //const double Mz = PAR(ApfelxxInit.mZ);//APFEL::GetZMass();
-   const double Mw = 80.385; //PAR(ApfelxxInit.mW);//APFEL::GetWMass();
-   const double Gf = 1.16638e-5; //PAR(ApfelxxInit.Gf);//APFEL::GetGFermi();
 
-   if ( charge!=-1 &&  charge!=1) {
-      error["Update"]<<"Could not get charge of lepton."<<endl;
-      exit(1);
-   }
-
-
-   UPDATE(PDF);
    UPDATE(Alpha_s);
 
    // --- Apfel++ following structurefunction_test.cc
@@ -180,7 +176,7 @@ bool AApfelxxDDISCS::Update() {  //alpos
    // const auto PDFsalpos = [&] (int const& i, double const& x, double const& mu) -> double{ 
    //    return AlposTools::LicoLhaToApfelxx(fPDF->GetQuick({x,mu}))[i];
    const auto PDFsalpos = [&] (double const& x, double const& mu) -> map<int,double>{
-      return AlposTools::LicoLhaToApfelxxMap(fPDF->GetQuick({x,mu}));
+      return AlposTools::LicoLhaToApfelxxMap(fDPDF->GetQuick({0,x,mu}));
       // vector<double> xfx = fPDF->GetQuick({x,mu});
       // vector<double> xfxApfl = ;
       // return xfxApfl[i];
@@ -252,21 +248,24 @@ bool AApfelxxDDISCS::Update() {  //alpos
    // const auto F3 = apfel::StructureFunctionBuildNC(fF3Obj, PDFsalpos, Thresholds, PerturbativeOrder, asalpos, fDq);
    const auto F2 = apfel::BuildStructureFunctions(fF2Obj, PDFsalpos, PerturbativeOrder, asalpos, fBq);
    const auto FL = apfel::BuildStructureFunctions(fFLObj, PDFsalpos, PerturbativeOrder, asalpos, fBq);
-   const auto F3 = apfel::BuildStructureFunctions(fF3Obj, PDFsalpos, PerturbativeOrder, asalpos, fDq);
+   //const auto F3 = apfel::BuildStructureFunctions(fF3Obj, PDFsalpos, PerturbativeOrder, asalpos, fDq);
 
 
    // ------ calc structure functions
    for ( unsigned int i =0 ; i<q2.size() ; i++ ) {
-      double Q = sqrt(q2[i]);
-      
+     double Q = sqrt(q2[i]);
+
       double yplus  = 1+(1-y[i])*(1-y[i]);
       double yminus = 1-(1-y[i])*(1-y[i]);
 
-      double f2 = F2.at(0).Evaluate(Q).Evaluate(x[i]);
-      double fl = FL.at(0).Evaluate(Q).Evaluate(x[i]);
-      double f3 = F3.at(0).Evaluate(Q).Evaluate(x[i]);
+      SET(DPDF.xpom,xpom[i],0); 
+      UPDATE(DPDF);
 
-      //cout<<"Apfel++ Q2="<<Q*Q<<"\tf2="<<f2<<"\tfl="<<fl<<"\tf3="<<f3<<"\tq="<<charge<<"\tpol="<<polty<<endl;
+      double f2 = F2.at(0).Evaluate(Q).Evaluate(beta[i]);
+      double fl = FL.at(0).Evaluate(Q).Evaluate(beta[i]);
+      double f3 = 0;//F3.at(0).Evaluate(Q).Evaluate(beta[i]);
+
+      cout<<"Apfel++ Q2="<<Q*Q<<"\tf2="<<f2<<"\tfl="<<fl<<"\tf3="<<f3<<"\tq="<<charge<<"\tpol="<<polty<<endl;
    
       if ( IsNC ) {
 	 f3 *= -1.*charge;
@@ -287,16 +286,16 @@ bool AApfelxxDDISCS::Update() {  //alpos
 	 else { cout<<"Error. Wrong charge."<<endl;exit(1); }
       }
 
-      // ------ calc non-reduced CS if needed
-      if ( !IsRedCS ) {
-	 if ( IsNC ) {
-	    double aem = 7.29735e-3; // 1/137.035999074 // 7.29927d-3;//
-	    fValue[i] *= 2*M_PI*yplus/(x[i]*q2[i]*q2[i])*convfac*aem*aem;
-	 }
-	 else { //CC
-	    fValue[i] *= pow(Mw,4)/pow(Mw*Mw+q2[i],2)*Gf*Gf/(2*M_PI*x[i])*convfac;
-	 }
-      }
+      // // ------ calc non-reduced CS if needed
+      // if ( !IsRedCS ) {
+      // 	 if ( IsNC ) {
+      // 	    double aem = 7.29735e-3; // 1/137.035999074 // 7.29927d-3;//
+      // 	    fValue[i] *= 2*M_PI*yplus/(x[i]*q2[i]*q2[i])*convfac*aem*aem;
+      // 	 }
+      // 	 else { //CC
+      // 	    fValue[i] *= pow(Mw,4)/pow(Mw*Mw+q2[i],2)*Gf*Gf/(2*M_PI*x[i])*convfac;
+      // 	 }
+      // }
    }
 
    // ------ done

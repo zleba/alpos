@@ -63,6 +63,12 @@ std::vector<double> ALhapdf6::GetQuick(const vector<double>& xp_muf) {
    //!   xp_mur[0] = xp
    //!   xp_muf[0] = Q
 
+   if ( !fPDFSet || !fPDF ) {
+      error["GetQuick"]<<"Error in ALhapdf6::GetQuick(vector). PDF is not initialized. "<<endl;
+      error["GetQuick"]<<"This may be a bug!"<<endl;
+      Update();
+   }
+
    std::vector<double> ret(fValue.size());
    if ( xp_muf.size() != 2) {
       cout<<"Error in ALhapdf6::GetQuick(vector). Quick acces is implemented for two parameter which are 'xp' and 'muf'."<<endl;
