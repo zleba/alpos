@@ -167,6 +167,8 @@ bool AQcdnumDDISCS::Update() {
        //Reduced x-section for pomeron
        double xpSigRed_IP =  flxIP*xpom[i] * (F2  - y*y/yplus*FL);
 
+       cout<<"QCDNUM  Q2="<<q2[i]<<"\tf2*flxIP="<<F2*flxIP<<"\tfl*flx="<<FL*flxIP<<endl;
+
 
        //Reggeon flux
        double flxIR = rflux(xpom[i], a0_IR, ap_IR, b0_IR);

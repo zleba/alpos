@@ -110,7 +110,14 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
    double ap_IP = PAR(Flux_pom1_ap);
    double b0_IP = PAR(Flux_pom1_b0);
    double flxIP = rflux(xpom, tcut, a0_IP, ap_IP, b0_IP, xPomNorm);
-   for ( auto& p : pdf ) p*= flxIP;
+
+   // cout<<"ADPDF! flxIP = " << flxIP <<endl;
+   // cout<<"ADPDF! gluon   " <<pdf[6]<<endl;
+   // cout<<"ADPDF! up      " <<pdf[7]<<endl;
+   // cout<<"ADPDF! dn      " <<pdf[8]<<endl;
+
+   for ( auto& p : pdf ) p*=flxIP;
+
 
 
    // pom2
@@ -172,6 +179,10 @@ bool ADPDF::Update() {
    }
 
    fValue = GetQuick(vector<double>{PAR(xpom),PAR(zpom),PAR(muf)});
+
+   cout<<this->GetAlposName();
+   for ( auto p : fValue ) cout<<"\t"<<p;
+   cout<<endl;
 
    return true;
 }

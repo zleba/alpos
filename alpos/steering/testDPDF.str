@@ -99,12 +99,16 @@ InitFunctions {{
    FunctionName          FunctionType         # one line here! (header of 'table')
    PDFQ0_diff            PDFQ0_diff
    QcdnumInit            QcdnumInit
-#   QcdnumPDF             QcdnumPDF
+   QcdnumPDF             QcdnumPDF
    ApfelxxAlphas            ApfelxxAlphas
    ApfelxxPDF               ApfelxxPDF
    STROWP1                   STROWP1
-   GRVPION                    LHAPDF6
+#   GRVPION                    LHAPDF6
    DPDF                      DPDF
+   H1DPDF2006                H1DPDF2006
+   h12006_IP                H1DPDF2006
+#   h12006_IR                H1DPDF2006
+#   h12006_IP_0              H1DPDF2006
 }}
 
 # --------------------------------------------------------------#
@@ -132,13 +136,13 @@ QcdnumInit.InitEvolution                 1       # 0:false, 1: true   # init QCD
 QcdnumInit.PDF                           ApfelxxPDF # PDFQ0_diff # LHAPDF  #QcdnumPDF # PDF1
 # -- if InitEvolution=1: take interanl PDF
 QcdnumInit.Q0                            1.323  # FitB=1.5811, FitA=1.323 must below mcharm
-QcdnumInit.nxGrid                        60 #60 # number of x-grid points
-QcdnumInit.nqGrid                        60 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
+QcdnumInit.nxGrid                        120 #60 # number of x-grid points
+QcdnumInit.nqGrid                        80 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
 
 # QcdnumPDF defaults
 QcdnumPDF.QcdnumInit                     QcdnumInit   # one QcdnumInit function must made available
-QcdnumPDF.xp                             0.01
-QcdnumPDF.muf                            4.4721
+QcdnumPDF.xp                             0.1
+QcdnumPDF.muf                            10000
 
 
 # --------------------------------------------------------------#
@@ -162,17 +166,32 @@ GRVPION.muf                               10
 
 
 # --------------------------------------------------------------#
+# H1PDF2006
+H1DPDF2006.xpom                            0.002
+H1DPDF2006.zpom                            0.5
+H1DPDF2006.muf                             5
+H1DPDF2006.ierr                            0  # error set
+H1DPDF2006.ireg                            0  # 0: both, 1: only IP, 2: only IR
+H1DPDF2006.iFit                            1  # FitA=1, FitB=2
+
+h12006_IP.ireg                             1
+h12006_IR.ireg                             2
+
+#h12006_IP_0.ireg                           1
+#h12006_IP_0.muf                            1.323
+
+# --------------------------------------------------------------#
 # DPDF
 DPDF.xpom                                 0.002
-DPDF.zpom                                 0.1
-DPDF.muf                                  10
-DPDF.pom1                                 ApfelxxPDF # use any pomeron PDF
+DPDF.zpom                                 0.5
+DPDF.muf                                  5
+DPDF.pom1                                 ApfelxxPDF  # QcdnumPDF # ApfelxxPDF # use any pomeron PDF
 DPDF.pom2                                 0
-DPDF.reg1                                 GRVPION # use GRVPION or STROWP1
+DPDF.reg1                                 STROWP1 # use GRVPION or STROWP1
 DPDF.xPomFluxNorm                         0.003
 DPDF.tcut                                 -1
 
-DPDF.Flux_pom1_a0                        0.1.1182
+DPDF.Flux_pom1_a0                        1.1182
 DPDF.Flux_pom1_ap                        0.06
 DPDF.Flux_pom1_b0                        5.5
 
@@ -226,27 +245,25 @@ QcdnumDDISCS.n_IR             0.0017
 
 
 
-ApfelxxDDISCS.DPDF            DPDF   
+# -----------------------------------------------------
+ApfelxxDDISCS.DPDF            DPDF    # H1DPDF2006 # DPDF   
 ApfelxxDDISCS.Alpha_s	      ApfelxxAlphas
 ApfelxxDDISCS.e-charge	      1
 ApfelxxDDISCS.e-polarity      0
 ApfelxxDDISCS.iOrd	      iOrd
-ApfelxxDDISCS.mc	      1.6
-ApfelxxDDISCS.mb	      4.5
-ApfelxxDDISCS.mt              175
+ApfelxxDDISCS.mc	      91.6
+ApfelxxDDISCS.mb	      94.5
+ApfelxxDDISCS.mt              9175
 
 # -----------------------------------------------------
 # PDFQ0_diff
 PDFQ0_diff.iPDF               0 # dummy
-PDFQ0_diff.xp                0.1  # dummy
-
-# -----------------------------------------------------
-#PDFQ0_diff.gTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2]) * exp(-0.01/(1-x)) )"
-#PDFQ0_diff.sTF1             "[0]*pow(x,[1]) * TMath::Power(1-x,[2]) * exp(-0.01/(1-x)) "
-PDFQ0_diff.gTF1             default
-PDFQ0_diff.sTF1             "default"
-PDFQ0_diff.vTF1             "x*0"
-
+PDFQ0_diff.xp                 0.1  # dummy
+#PDFQ0_diff.gTF1              "[0]*pow(x,[1]) * TMath::Power(1-x,[2]) * exp(-0.01/(1-x)) )"
+#PDFQ0_diff.sTF1              "[0]*pow(x,[1]) * TMath::Power(1-x,[2]) * exp(-0.01/(1-x)) "
+PDFQ0_diff.gTF1               default
+PDFQ0_diff.sTF1               "default"
+PDFQ0_diff.vTF1               "x*0"
 # FitA
 #  EXT PARAMETER                                
 #  NO.   NAME        VALUE          ERROR       
@@ -265,20 +282,17 @@ PDFQ0_diff.vTF1             "x*0"
 #   4   C_quark     0.44690       0.85678E-01   
 #   5   n_mes       0.13976E-02   0.38861E-03   
 #   6   a0pom        1.1110       0.73433E-02   
-
-
-
-PDFQ0_diff.g0               0.14591
-PDFQ0_diff.g1               0
-PDFQ0_diff.g2               -0.94705
-PDFQ0_diff.g3               0
-PDFQ0_diff.g4               0
-
-PDFQ0_diff.s0               1.0587
-PDFQ0_diff.s1               2.2964
-PDFQ0_diff.s2               0.56894
-PDFQ0_diff.s3               0
-PDFQ0_diff.s4               0
+PDFQ0_diff.g0                 0.14591
+PDFQ0_diff.g1                 0
+PDFQ0_diff.g2                 -0.94705
+PDFQ0_diff.g3                 0
+PDFQ0_diff.g4                 0
+			      
+PDFQ0_diff.s0                 1.0587
+PDFQ0_diff.s1                 2.2964
+PDFQ0_diff.s2                 0.56894
+PDFQ0_diff.s3                 0
+PDFQ0_diff.s4                 0
 
 PDFQ0_diff.v0               0
 PDFQ0_diff.v1               0
@@ -292,11 +306,11 @@ ApfelxxPDF.xp                   0.1
 ApfelxxPDF.muf                  100
 ApfelxxPDF.Alpha_s              ApfelxxAlphas
 ApfelxxPDF.PDFmu0               PDFQ0_diff # PDFQ0_HERA_10pts #not-yet-implemented #ApfelxxAlphas
-ApfelxxPDF.mu0                  1.4
+ApfelxxPDF.mu0                  1.323 # 1.4
 ApfelxxPDF.iOrd                 iOrd
-ApfelxxPDF.mc                   1.4
-ApfelxxPDF.mb                   4.5
-ApfelxxPDF.mt                   175
+ApfelxxPDF.mc                   991.4
+ApfelxxPDF.mb                   994.5
+ApfelxxPDF.mt                   99175
 ApfelxxPDF.nx1                  100
 ApfelxxPDF.xmin1                1e-5
 ApfelxxPDF.intdegree1           3
@@ -311,25 +325,14 @@ ApfelxxPDF.xmin4                8e-1
 ApfelxxPDF.intdegree4           3
 
 # --------------------------------------------------------------#
-#  Apfel++DISCS
-ApfelxxDISCS.Alpha_s            ApfelxxAlphas # QcdnumAlphas #ApfelxxAlphas
-ApfelxxDISCS.PDF                ApfelxxPDF # LHAPDF6 #ApfelxxPDF
-ApfelxxDISCS.iOrd               iOrd
-ApfelxxDISCS.mc                 1.4
-ApfelxxDISCS.mb                 4.5
-ApfelxxDISCS.mt                 174
-ApfelxxDISCS.e-charge           +1
-ApfelxxDISCS.e-polarity         0
-
-# --------------------------------------------------------------#
 #  Apfel++Alphas
 ApfelxxAlphas.mur               100
 ApfelxxAlphas.AlphaQCDRef       AlphasMz
 ApfelxxAlphas.MuAlphaQCDRef     mZ
 ApfelxxAlphas.iOrd              iOrd
-ApfelxxAlphas.mc                1.4
-ApfelxxAlphas.mb                4.5
-ApfelxxAlphas.mt                175
+ApfelxxAlphas.mc                91.4
+ApfelxxAlphas.mb                94.5
+ApfelxxAlphas.mt                9175
 
 
 

@@ -97,10 +97,6 @@ std::vector<double> AStrowp1::GetQuick(const vector<double>& xp_muf) {
    ret[11] = 0;
    ret[12] = 0;
 
-   cout<<"Strowp1: ";
-   for ( auto& r : ret ) cout<<"\t"<<r;
-   cout<<endl;
-   
    return ret;
   
 }

@@ -18,6 +18,7 @@
 #include "alpos/functions/ALhapdf6.h"
 #include "alpos/functions/ALhapdf6Alphas.h"
 #include "alpos/functions/AStrowp1.h"
+#include "alpos/functions/AH1DPDF2006.h"
 //#include "alpos/AAlphasDependentPDF.h"
 #include "alpos/functions/AfastNLO.h"
 #include "alpos/functions/AfastNLOalt.h"
@@ -126,6 +127,7 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
    else if ( functype == ALhapdf6::fFunctionName )          ptr = new ALhapdf6(funcname);
    else if ( functype == ALhapdf6Alphas::fFunctionName )    ptr = new ALhapdf6Alphas(funcname);
    else if ( functype == AStrowp1::fFunctionName )          ptr = new AStrowp1(funcname);
+   else if ( functype == AH1DPDF2006::fFunctionName )       ptr = new AH1DPDF2006(funcname);
    //else if ( functype == AAlphasDependentPDF::fFunctionName)ptr = new AAlphasDependentPDF(funcname);
    else if ( functype == AfastNLO::fFunctionName )          ptr = new AfastNLO(funcname);
    else if ( functype == AfastNLOalt::fFunctionName )       ptr = new AfastNLOalt(funcname);

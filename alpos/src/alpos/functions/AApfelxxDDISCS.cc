@@ -270,8 +270,11 @@ bool AApfelxxDDISCS::Update() {  //alpos
       if ( IsNC ) {
 	 f3 *= -1.*charge;
 	 fValue[i] = f2 + yminus/yplus*f3 - y[i]*y[i]/yplus*fl;
+	 fValue[i] *= xpom[i];
       }
       else if ( !IsNC ) {  // CC
+	 error["Update"]<<"ERROR CC not not validated!"<<endl;
+	 exit(3);
 	 f2 *= 0.5;
 	 fl *= 0.5;
 	 f3 *= 0.5;
