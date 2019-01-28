@@ -40,7 +40,6 @@ const std::string AQcdnumDDISCS::fFunctionName = "QcdnumDDISCS"; //< The functio
 
 // ___________________________________________________________________________________________ //
 AQcdnumDDISCS::AQcdnumDDISCS(const std::string& name) : AParmFuncBase<double>(name) { 
-   cout<<"AQcdnumDDISCS Constructor."<<endl;
    //ARegisterRequirements(this); // needed in every constructor
 }
 
@@ -123,7 +122,6 @@ bool AQcdnumDDISCS::Update() {
        //bottom
        hqstfun_(&iF2, &ibottom,&CEP2F[0],&beta[0],&q2[0],&F2b[0],&npts,&ichk);//no check on nf = 4
        hqstfun_(&iFL, &ibottom,&CEP2F[0],&beta[0],&q2[0],&FLb[0],&npts,&ichk);//no check on nf = 4
-       cout<<" Radek ok."<<endl;
    }
 
    // { // ugly check:a
