@@ -31,6 +31,17 @@ AQcdnumPDF::~AQcdnumPDF() {
 bool AQcdnumPDF::Init() {
    //! Init is once called for each function
    //! return true if initialization was successful.
+   
+   // check if QCDNUM PDF is at all available, i.e.
+   // if QCDNUM performs some PDF evolution:
+   if ( PAR(QcdnumInit.InitEvolution) ) {
+      // ok
+   }
+   else {
+      error["Init"]<<"QcdnumPDF is not available, since QCDNUM does not perform any evolution."<<endl;
+      exit(1);
+   }
+   
    return true;
 }
 
