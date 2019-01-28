@@ -173,13 +173,13 @@ QcdnumDDISCS.Cg              -0.95
 
 # Pomeron flux
 QcdnumDDISCS.a0_IP            1.1182
-QcdnumDDISCS.ap_IP            0.06
-QcdnumDDISCS.b0_IP            5.5
+QcdnumDDISCS.ap_IP            @ap_IP
+QcdnumDDISCS.b0_IP            @b0_IP
 
 # Reggeon flux
-QcdnumDDISCS.a0_IR            0.5
-QcdnumDDISCS.ap_IR            0.3
-QcdnumDDISCS.b0_IR            1.6
+QcdnumDDISCS.a0_IR            @a0_IR
+QcdnumDDISCS.ap_IR            @ap_IR
+QcdnumDDISCS.b0_IR            @b0_IR
 QcdnumDDISCS.n_IR             0.0017
 
 
