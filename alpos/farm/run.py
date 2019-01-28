@@ -2,6 +2,8 @@
 #The script to run over all model variations
 #First make a soft link to the datafiles directory in the current one, like `ln -s  ../datafiles`
 
+jobName='test2'
+
 def valErr(cnt, err1, err2):
     return [cnt, cnt+err1, cnt+err2]
 def valErr(cnt, err):
@@ -15,7 +17,7 @@ def replace(fName, sh, sign): #0=cnt, 1=up, 2=dn
             tag = 'u'
         elif sign == 2:
             tag = 'd'
-        fOutName = fName+str(sh)+tag
+        fOutName = jobName +'/'+ fName+str(sh)+tag
         with open(fOutName, "wt") as fout:
             #print( sh - 1)
             for line in fin:
@@ -26,7 +28,7 @@ def replace(fName, sh, sign): #0=cnt, 1=up, 2=dn
                     else:
                         line = line.replace('@'+p[0], str(p[1][0]))
 
-                line = line.replace('@outFile', 'test/'+fOutName+'.root')
+                line = line.replace('@outFile', fOutName+'_dir'+'/'+'out'+'.root')
 
                 fout.write(line)
         return fOutName
@@ -34,6 +36,8 @@ def replace(fName, sh, sign): #0=cnt, 1=up, 2=dn
 
 #For the template file fName replace the parameters with errors (all possible combinations)
 def put2files(fName, pars):
+    import os
+    os.mkdir(jobName)
     inFiles = []
     inFiles.append(replace(fName, 0, 0))
     for i in range(len(pars)):
