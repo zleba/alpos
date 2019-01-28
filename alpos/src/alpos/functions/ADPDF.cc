@@ -150,21 +150,16 @@ bool ADPDF::Update() {
    cout<<"Daniel ADPDF::Update Todo!"<<endl;
 
    // update
-   SET(pom1.xp,PAR(xpom),0);
+   SET(pom1.xp,PAR(zpom),0);
    SET(pom1.muf,PAR(muf),0);
    if ( PAR(Flux_pom2_a0) ) {
-      SET(pom2.xp,PAR(xpom),0);
+      SET(pom2.xp,PAR(zpom),0);
       SET(pom2.muf,PAR(muf),0);
    }
    if ( PAR(reg1_n) != 0 ) {
-      SET(reg1.xp,PAR(xpom),0);
+      SET(reg1.xp,PAR(zpom),0);
       SET(reg1.muf,PAR(muf),0);
    }
-
-
-   vector<double> pom1 = VALUES(pom1);
-   vector<double> pom2 = VALUES(pom1);
-   vector<double> reg1 = VALUES(reg1);
 
    fValue = GetQuick(vector<double>{PAR(xpom),PAR(zpom),PAR(muf)});
 
