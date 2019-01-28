@@ -302,9 +302,9 @@ bool AFitter::Execute() {
    if ( rootfile ) {
       rootfile->cd();
       TH1D *histFitParameters=new TH1D
-	 ("fitparameters",";parameter",allparnames.size(),-0.5,allparnames.size()-0.5);
+	 ("fitparameters","",allparnames.size(),-0.5,allparnames.size()-0.5);
       TH2D *histFitCorrelations=new TH2D
-	 ("fitcorrelations",";parameter",
+	 ("fitcorrelations","",
 	  allparnames.size(),-0.5,allparnames.size()-0.5,
 	  allparnames.size(),-0.5,allparnames.size()-0.5);
       TFitResult fitResult(fFitter->Result());
@@ -334,6 +334,10 @@ bool AFitter::Execute() {
 	 histFitParameters->SetBinContent(ip+1, pars[ip]);
 	 histFitParameters->SetBinError(ip+1, errs[ip]);
 	 histFitParameters->GetXaxis()->SetBinLabel(ip+1,allparnames[ip].c_str());
+
+	 histFitCorrelations->GetXaxis()->SetBinLabel(ip+1,allparnames[ip].c_str());
+	 histFitCorrelations->GetYaxis()->SetBinLabel(ip+1,allparnames[ip].c_str());
+
 	 for ( unsigned int jp =0; jp<allparnames.size() ; jp++) {
             histFitCorrelations->SetBinContent(ip+1, jp+1, 0);
             if ((!fParIsFixed[ip]) && (!fParIsFixed[jp])) {

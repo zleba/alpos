@@ -35,6 +35,8 @@ struct point {
 
 struct dPlotter {
     std::vector<point> data;
+    TH1D *hPars;
+    TH2D *hCorrs;
     TString outDir;
 
     void readData(TString inFile);
@@ -42,6 +44,12 @@ struct dPlotter {
     void plotQ2(double xpom);
     void plotXpom();
     void plotPDFs(bool inLog);
+    void plotParameters();
+    void plotCorrelations();
+
+
+
+
 };
 
 
@@ -63,7 +71,8 @@ void dplotter(TString inFile = "test/alpos.out.root")
     dplt.plotQ2(0.01);
     dplt.plotQ2(0.03);
 
-
+    dplt.plotParameters();
+    dplt.plotCorrelations();
 
     //dplt.plotBeta(0.03f);
 
@@ -72,6 +81,13 @@ void dplotter(TString inFile = "test/alpos.out.root")
 void dPlotter::readData(TString inFile)
 {
     TFile *file = TFile::Open(inFile);
+
+    hPars  = dynamic_cast<TH1D*>(file->Get("fitparameters"));
+    hCorrs = dynamic_cast<TH2D*>(file->Get("fitcorrelations"));
+    assert(hPars);
+    assert(hCorrs);
+
+
     TNtuple *tuple = (TNtuple*) file->Get("ASaveDataTheory/ThDataTab");
 
 
@@ -457,5 +473,69 @@ void dPlotter::plotXpom()
 
 
     can->SaveAs(outDir + "/xpomGrid.pdf");
+
+}
+
+void dPlotter::plotParameters()
+{
+    gStyle->SetOptStat(0);
+
+    TCanvas *can = new TCanvas(rn(),"", 600, 600);
+    SetLeftRight(0.13, 0.16);
+
+    map<TString, vector<double>> pars;
+    //Parameters  for fitA
+    pars["g0"]  =  {  0.14591    ,   0.33171E-01   };
+    pars["g2"]  =   { -0.94705    ,   0.20309       };
+    pars["q0"] = {  1.0587     ,   0.322116   };
+    pars["q1"] = {   2.2964    ,   0.36439       };
+    pars["q2"] = {  0.56894    ,   0.14969       };
+    pars["n_IR"] =     {  0.16966E-02,   0.41732E-03   };
+    pars["a0_IP"] =   {   1.1182    ,   0.81319E-02 };
+
+    TH1D *hParsFitA = (TH1D*) hPars->Clone("FitA");
+    for(int i = 1; i <= hPars->GetNbinsX(); ++i) {
+        TString s = hPars->GetXaxis()->GetBinLabel(i);
+        int nFound = 0;
+        for(auto &p : pars) {
+            if(s.Contains(p.first)) {
+               hParsFitA->SetBinContent(i, p.second[0]);
+               hParsFitA->SetBinError(i, p.second[1]);
+               ++nFound;
+            }
+        }
+        assert(nFound == 1);
+    }
+    hParsFitA->SetLineColor(kRed);
+    hParsFitA->SetLineStyle(2);
+
+    hPars->Draw();
+    hParsFitA->Draw("same");
+    GetXaxis()->SetTitle("");
+    GetYaxis()->SetTitle("Value");
+
+    TLegend *leg = newLegend(kPos9);
+    leg->AddEntry(hPars, "Our fit");
+    leg->AddEntry(hParsFitA, "H1 2006 FitA");
+    DrawLegends({leg});
+
+    can->SaveAs(outDir + "/pars.pdf");
+
+}
+
+void dPlotter::plotCorrelations()
+{
+    gStyle->SetOptStat(0);
+    gStyle->SetPaintTextFormat("1.2f");
+    TCanvas *can = new TCanvas(rn(),"", 600, 600);
+    SetLeftRight(0.24, 0.16);
+    SetTopBottom(0.2, 0.2);
+
+    hCorrs->Draw("colz text");
+    hCorrs->GetXaxis()->SetTitle("");
+    hCorrs->GetZaxis()->SetRangeUser(-1, 1);
+    
+
+    can->SaveAs(outDir + "/corrs.pdf");
 
 }
