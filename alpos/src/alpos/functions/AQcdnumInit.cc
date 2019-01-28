@@ -291,6 +291,13 @@ bool AQcdnumInit::Init() {
        }
        //if if grid reading failed, fill and write grid again
        if(ierr != 0) {
+
+           //  define relation between muf2 and Q2
+           //    q2 = a*muf2 + b
+           //  default: a=1, b=0
+           //  can only be varied if muf==mur
+           bq2 = 0;
+           aq2 = 1.0/pow(PAR(ScaleFacMuF),2);
            QCDNUM::hqfillw(iF2FLsets, hqmass, aq2, bq2, nwords);//nwords is output
            QCDNUM::hqdumpw(22, hqname);
        }
