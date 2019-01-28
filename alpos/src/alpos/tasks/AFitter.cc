@@ -336,7 +336,7 @@ bool AFitter::Execute() {
 	 histFitParameters->GetXaxis()->SetBinLabel(ip+1,allparnames[ip].c_str());
 	 for ( unsigned int jp =0; jp<allparnames.size() ; jp++) {
             histFitCorrelations->SetBinContent(ip+1, jp+1, 0);
-            if ((fParIsFixed[ip]) && (fParIsFixed[jp])) {
+            if ((!fParIsFixed[ip]) && (!fParIsFixed[jp])) {
                histFitCorrelations->SetBinContent(ip+1, jp+1, fitResult.Correlation(ip, jp));
             }
 	 }
