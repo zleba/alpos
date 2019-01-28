@@ -17,6 +17,7 @@
 #include "alpos/functions/AApfel.h"
 #include "alpos/functions/ALhapdf6.h"
 #include "alpos/functions/ALhapdf6Alphas.h"
+#include "alpos/functions/AStrowp1.h"
 //#include "alpos/AAlphasDependentPDF.h"
 #include "alpos/functions/AfastNLO.h"
 #include "alpos/functions/AfastNLOalt.h"
@@ -26,7 +27,6 @@
 #include "alpos/functions/AfastNLOInterpolPDFas.h"
 #include "alpos/functions/AfastNLOInterpolPDFasNormDIS.h"
 #include "alpos/functions/AfastNLORatio.h"
-
 #if _CMAKE_FOUND_APPLGRID
     #include "alpos/functions/AApplgrid.h"
 #endif //_CMAKE_FOUND_APPLGRID
@@ -121,6 +121,7 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
 #endif //_CMAKE_FOUND_APFELxx
    else if ( functype == ALhapdf6::fFunctionName )          ptr = new ALhapdf6(funcname);
    else if ( functype == ALhapdf6Alphas::fFunctionName )    ptr = new ALhapdf6Alphas(funcname);
+   else if ( functype == AStrowp1::fFunctionName )          ptr = new AStrowp1(funcname);
    //else if ( functype == AAlphasDependentPDF::fFunctionName)ptr = new AAlphasDependentPDF(funcname);
    else if ( functype == AfastNLO::fFunctionName )          ptr = new AfastNLO(funcname);
    else if ( functype == AfastNLOalt::fFunctionName )       ptr = new AfastNLOalt(funcname);
