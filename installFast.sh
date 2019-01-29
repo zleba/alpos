@@ -3,6 +3,6 @@ mkdir -p fastnloBuild
 mv fastnlo_toolkit-2.3.1pre-2411 fastnlo
 pwd=$PWD
 cd fastnlo
-./configure --prefix=$pwd/fastnloBuild  --disable-doxygen-pdf  --with-lhapdf=$(dirname $(dirname `which lhapdf-config`))
+./configure --prefix=$pwd/fastnloBuild  --disable-doxygen-doc  --with-lhapdf=$(dirname $(dirname `which lhapdf-config`))
 make -j`nproc`
 make install

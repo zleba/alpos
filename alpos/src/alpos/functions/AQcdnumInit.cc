@@ -234,7 +234,7 @@ bool AQcdnumInit::Init() {
 
 
    // --- check Q0 and mc input:
-   if ( PAR(Q0) > PAR(mcharm) ) {
+   if ( PAR(Q0) > PAR(mcharm) &&  PAR(nfFix) == 0) {
       error["Init"]<<"Staring scale 'Q0' must be below charm mass thrshold 'mcharm'. Evolution not possible. Exiting."<<endl;
       exit(1);
    }
