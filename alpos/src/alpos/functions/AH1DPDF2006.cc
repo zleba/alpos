@@ -85,10 +85,11 @@ std::vector<double> AH1DPDF2006::GetQuick(const vector<double>& xpom_zpom_muf) {
 
    std::vector<double> pdf(fValue.size(),0);
    double xpom = xpom_zpom_muf[0];
+   if ( xpom==0 ) xpom=fxpom;
    double zpom = xpom_zpom_muf[1];
    double muf  = xpom_zpom_muf[2];
-   diffpdferr_(&xpom, &zpom, &muf, &fifit, &fierr, &fireg,  &fValue[0]);
-
+   diffpdferr_(&xpom, &zpom, &muf, &fifit, &fierr, &fireg,  &pdf[0]);
+   
    return pdf;
   
 }
@@ -100,13 +101,13 @@ bool AH1DPDF2006::Update() {
    //fValue.resize(GetRequirements().size());
    //fError.resize(GetRequirements().size());
 
-   double xpom = PAR(xpom);
+   fxpom = PAR(xpom);
    double zpom = PAR(zpom);
    double muf  = PAR(muf);
    fifit = int(PAR(iFit));
    fierr = int(PAR(ierr));
    fireg = int(PAR(ireg));
-   diffpdferr_(&xpom, &zpom, &muf, &fifit, &fierr, &fireg,  &fValue[0]);
+   diffpdferr_(&fxpom, &zpom, &muf, &fifit, &fierr, &fireg,  &fValue[0]);
    
    return true;
 }
