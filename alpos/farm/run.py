@@ -4,7 +4,7 @@
 
 from math import sqrt
 
-jobName='testNew'
+jobName='testNewNLOvfns'
 
 def valErr(cnt, err1, err2 = -999):
     if err2 == -999:
@@ -52,15 +52,17 @@ def put2files(fName, pars):
 
 
 pars= []
+pars.append(('alphaS',   valErr(0.106, 0.002)))
+#pars.append(('alphaS',   valErr(0.118, 0.002)))
 pars.append(('mCharm',   valErr(1.4, 0.2)))
 pars.append(('mBottom',  valErr(4.5, 0.5)))
-pars.append(('alphaS',   valErr(0.118, 0.002)))
-pars.append(('ap_IP',   valErr(0.06, 0.19, -0.06)))
 pars.append(('a0_IR',   valErr(0.5,   0.1)))
 pars.append(('ap_IR',   valErr(0.3,   0.6, -0.3)))
-pars.append(('b0_IP',   valErr(5.5,   0.7, -2.0)))
 pars.append(('b0_IR',   valErr(1.6,   0.4, -1.6)))
+pars.append(('ap_IP',   valErr(0.06, 0.19, -0.06)))
+pars.append(('b0_IP',   valErr(5.5,   0.7, -2.0)))
 pars.append(('Q0',    [sqrt(1.75), sqrt(2.05), sqrt(1.15)] ))
+pars.append(('mu',    [1, 2, 0.5]))
 
 
 #Create files with all variations

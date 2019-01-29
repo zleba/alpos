@@ -265,44 +265,49 @@ bool AQcdnumInit::Init() {
 
    if( PAR(nfFix) >= 3) { //needed only for FFNS
        //Fill Structure functions for Charm & Bottm
-       double aq2 = 1., bq2 = 0.; //q2 = a*muF^2 + b, or muF = 1/a*q2 - b/a
        int nwords; //output
        double hqmass[] = { PAR(mcharm),  PAR(mbottom), 0. };
        int iF2FLsets = 3; //fill F2 & FL
+       double bq2 = 0; //q2 = a*muF^2 + b, or muF = 1/a*q2 - b/a
+       double aq2 = 1.0/pow(PAR(ScaleFacMuF),2);
 
-       //Read weights from file to boost the execution
-       // Try to read the weight file and create one if that fails
-       string dirName = Alpos::Current()->Settings()->Alpos_dir+"/temp";
-       gSystem->mkdir(dirName.c_str(), true);
-       string hqname = dirName + "/hqstf.wgt";
-       int ilun = 22;
-       int ierr;
-       //Try to read the existing grid
-       QCDNUM::hqreadw(ilun, hqname,  nwords, ierr);//nwords,ierr are outputs
-       if(ierr == 0) {  //if reading OK, do some additional consistency checks
-           double a, b;
-           double qmas[3];
-           QCDNUM::hqparms(qmas, a, b);
-           if(qmas[0] != hqmass[0]) ierr = 1;
-           if(qmas[1] != hqmass[1]) ierr = 1;
-           if(qmas[2] != hqmass[2]) ierr = 1;
-           if(a != aq2)             ierr = 1;
-           if(b != bq2)             ierr = 1;
+       bool readWgtFromFile = false;
+       if(readWgtFromFile) {
+
+           //Read weights from file to boost the execution
+           // Try to read the weight file and create one if that fails
+           string dirName = Alpos::Current()->Settings()->Alpos_dir+"/temp";
+           gSystem->mkdir(dirName.c_str(), true);
+           string hqname = dirName + "/hqstf.wgt";
+           int ilun = 22;
+           int ierr;
+           //Try to read the existing grid
+           QCDNUM::hqreadw(ilun, hqname,  nwords, ierr);//nwords,ierr are outputs
+           if(ierr == 0) {  //if reading OK, do some additional consistency checks
+               double a, b;
+               double qmas[3];
+               QCDNUM::hqparms(qmas, a, b);
+               if(qmas[0] != hqmass[0]) ierr = 1;
+               if(qmas[1] != hqmass[1]) ierr = 1;
+               if(qmas[2] != hqmass[2]) ierr = 1;
+               if(a != aq2)             ierr = 1;
+               if(b != bq2)             ierr = 1;
+           }
+           //if if grid reading failed, fill and write grid again
+           if(ierr != 0 || true) {
+
+               //  define relation between muf2 and Q2
+               //    q2 = a*muf2 + b
+               //  default: a=1, b=0
+               //  can only be varied if muf==mur
+               QCDNUM::hqfillw(iF2FLsets, hqmass, aq2, bq2, nwords);//nwords is output
+               QCDNUM::hqdumpw(22, hqname);
+           }
+           cout << "In total nwords "<< nwords << " read" << endl;
        }
-       //if if grid reading failed, fill and write grid again
-       if(ierr != 0) {
-
-           //  define relation between muf2 and Q2
-           //    q2 = a*muf2 + b
-           //  default: a=1, b=0
-           //  can only be varied if muf==mur
-           bq2 = 0;
-           aq2 = 1.0/pow(PAR(ScaleFacMuF),2);
+       else { //calculate without cache
            QCDNUM::hqfillw(iF2FLsets, hqmass, aq2, bq2, nwords);//nwords is output
-           QCDNUM::hqdumpw(22, hqname);
        }
-
-       cout << "In total nwords "<< nwords << " read" << endl;
    }
 
    // --- set alpha_s MZ (we must use the internal alpha_s code)
@@ -365,13 +370,13 @@ bool AQcdnumInit::Update() {
       extpdf_(AWrap::fun, &IPDFSet, &nExtraPDF, &offset,&epsi);
       info["Update"]<<"PDF imported. Max deviation of linear w.r.t. quadratic spline: "<<epsi<<endl;
       zswitch_(&IPDFSet);
-      hswitch_(&IPDFSet);
+      if(PAR(nfFix) >= 3)
+          hswitch_(&IPDFSet);
    }
    else {
       // Update for InitEvolution
       int IPDFSet = 1 ;//external PDF: 5
       zswitch_(&IPDFSet);
-      hswitch_(&IPDFSet);
       if(PAR(nfFix) >= 3)
           QCDNUM::hswitch(IPDFSet);
       // double offset = 0.001;
