@@ -2,12 +2,16 @@
 #The script to run over all model variations
 #First make a soft link to the datafiles directory in the current one, like `ln -s  ../datafiles`
 
-jobName='test2'
+from math import sqrt
 
-def valErr(cnt, err1, err2):
-    return [cnt, cnt+err1, cnt+err2]
-def valErr(cnt, err):
-    return [cnt, cnt+err, cnt-err]
+jobName='testNew'
+
+def valErr(cnt, err1, err2 = -999):
+    if err2 == -999:
+        return [cnt, cnt+err1, cnt-err1]
+    else:
+        return [cnt, cnt+err1, cnt+err2]
+#def valErr(cnt, err):
 
 #For the template file fName replace the parameters with errors
 def replace(fName, sh, sign): #0=cnt, 1=up, 2=dn
@@ -37,7 +41,8 @@ def replace(fName, sh, sign): #0=cnt, 1=up, 2=dn
 #For the template file fName replace the parameters with errors (all possible combinations)
 def put2files(fName, pars):
     import os
-    os.mkdir(jobName)
+    if os.path.isdir(jobName) == False:
+        os.mkdir(jobName)
     inFiles = []
     inFiles.append(replace(fName, 0, 0))
     for i in range(len(pars)):
@@ -55,7 +60,7 @@ pars.append(('a0_IR',   valErr(0.5,   0.1)))
 pars.append(('ap_IR',   valErr(0.3,   0.6, -0.3)))
 pars.append(('b0_IP',   valErr(5.5,   0.7, -2.0)))
 pars.append(('b0_IR',   valErr(1.6,   0.4, -1.6)))
-pars.append(('Q0',    {sqrt(1.75), sqrt(2.05), sqrt(1.15)} )
+pars.append(('Q0',    [sqrt(1.75), sqrt(2.05), sqrt(1.15)] ))
 
 
 #Create files with all variations
