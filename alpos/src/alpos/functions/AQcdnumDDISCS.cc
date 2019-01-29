@@ -158,8 +158,8 @@ bool AQcdnumDDISCS::Update() {
        double yplus  = 1+pow(1-y,2);
        //cout<<"QCDNUM  Q2="<<q2[i]<<"\tf2="<<F2[i]<<"\tfl="<<FL[i]<<"\tf3="<<xF3[i]<<"\tq="<<charge<<"\tpol="<<polty<<endl;
 
-       double F2 = F2l[i] ;//+ F2c[i] + F2b[i];
-       double FL = FLl[i] ;//+ FLc[i] + FLb[i];
+       double F2 = F2l[i] + F2c[i] + F2b[i];
+       double FL = FLl[i] + FLc[i] + FLb[i];
 
        //Pomeron flux
        double flxIP = rflux(xpom[i], a0_IP, ap_IP, b0_IP);
@@ -167,7 +167,7 @@ bool AQcdnumDDISCS::Update() {
        //Reduced x-section for pomeron
        double xpSigRed_IP =  flxIP*xpom[i] * (F2  - y*y/yplus*FL);
 
-       cout<<"QCDNUM  Q2="<<q2[i]<<"\tf2*flxIP="<<F2*flxIP<<"\tfl*flx="<<FL*flxIP<<endl;
+       //cout<<"QCDNUM  Q2="<<q2[i]<<"\tf2*flxIP="<<F2*flxIP<<"\tfl*flx="<<FL*flxIP<<endl;
 
 
        //Reggeon flux
