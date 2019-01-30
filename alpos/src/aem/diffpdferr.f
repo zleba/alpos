@@ -36,14 +36,14 @@ c     Get Pomeron flux in the proton. It depends on xpom & t but not on beta and
 c
 c   For the moment only central value (jpdf=0)
 c   From pdf-cteq6_err.h
-c     h12006flux(&xp, &t_diff,&iint, &ifit, &ipdf, &ipom, &PomFlux);
+c     h12006fluxErr(&xp, &t_diff,&iint, &ifit, &ipdf, &ipom, &PomFlux);
 c     h12006pdf(&z, &q2, &ifit,&ipdf,xpq,f2,fl,c2,cl);
 
       if(ireg.eq.2) then 
          Pflux=0
       else
          ipom=1
-         call h12006flux(xpom,t,int,ifit,ierr,ipom,flux);
+         call h12006fluxErr(xpom,t,int,ifit,ierr,ipom,flux);
          Pflux=flux	    
 c     get pomeron PDF's
          qq2=muf*muf
@@ -62,7 +62,7 @@ c     Get Reggeon flux in the proton. It depends on xpom & t but not on beta and
 
 c      ipom=2; //1-pomeron, 2-reggeon
 c      int jpdf=0;
-c      h12006flux_(&xp, &t_diff,&iint, &ifit, &jpdf, &ipom, &RegFlux);
+c      h12006fluxerr_(&xp, &t_diff,&iint, &ifit, &jpdf, &ipom, &RegFlux);
 
 
       if(ireg.eq.1) then
@@ -70,7 +70,7 @@ c      h12006flux_(&xp, &t_diff,&iint, &ifit, &jpdf, &ipom, &RegFlux);
       else
          ipom=2
          nul = 0
-         call h12006flux(xpom,t,int,ifit,nul,ipom,flux)
+         call h12006fluxErr(xpom,t,int,ifit,nul,ipom,flux)
          Rflux=flux	    
       endif
 
@@ -134,10 +134,11 @@ cc       INCLUDE 'Boris/ddis2jet/i_2006_fita.f'
 cc       INCLUDE 'Boris/ddis2jet/i_2006_fitb.f' 	
 cc       INCLUDE 'pion_stand_alone.f'
 cc c      INCLUDE 'Boris/ddis2jet/strowp1.f'
-       INCLUDE 'Boris/ddis2jet/h12006flux.err.f'
-       INCLUDE 'Boris/ddis2jet/lha2006fita.f'
-       INCLUDE 'Boris/ddis2jet/lha2006fitb.f'
 
-       INCLUDE 'Boris/ddis2jet/h12006pdf.f'
+cc       INCLUDE 'Boris/ddis2jet/h12006flux.err.f'
+cc      INCLUDE 'Boris/ddis2jet/lha2006fita.f'
+cc      INCLUDE 'Boris/ddis2jet/lha2006fitb.f'
+
+cc      INCLUDE 'Boris/ddis2jet/h12006pdf.f'
 c===================================================================
       

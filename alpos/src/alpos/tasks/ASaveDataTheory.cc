@@ -144,6 +144,7 @@ bool ASaveDataTheory::Execute(){
        xpSigTh_ = theoPts->at(i);
        xpSigThErr_ = 0;
 
+       cout << "RADEK " << endl;
        xpSigThOrgA_ = getSigRed2006(1, xp_, q2_, beta_);
        xpSigThOrgB_ = getSigRed2006(2, xp_, q2_, beta_);
 
