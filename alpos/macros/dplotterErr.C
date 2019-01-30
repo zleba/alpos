@@ -37,6 +37,7 @@ struct sysShift {
     std::vector<point> data;
     TH1D *hPars;
     TH2D *hCorrs;
+    double chi2;
     void readData(TString inFile);
 };
 
@@ -66,9 +67,9 @@ struct dPlotter {
 void dplotterErr(TString inFile = "../farm/testNewNLO/H1diff_templ.str")
 {
     dPlotter dplt;
-    dplt.readData(inFile, 9);
+    dplt.readData(inFile, 7);
 
-    for(int i = 1; i <= 9; ++i) {
+    for(int i = 1; i <= 7; ++i) {
         dplt.plotParameters(i);
         dplt.plotParametersShifts(i);
     }
@@ -88,6 +89,8 @@ void sysShift::readData(TString inFile)
     hCorrs = dynamic_cast<TH2D*>(file->Get("fitcorrelations"));
     assert(hPars);
     assert(hCorrs);
+
+    chi2 = (dynamic_cast<TFitResult*>(file->Get("fitresult")))->MinFcnValue();
 
     return;
 
@@ -154,6 +157,10 @@ TGraphAsymmErrors *dPlotter::getPamametersBand(int shMax)
 void dPlotter::plotParameters(int sh)
 {
     gStyle->SetOptStat(0);
+    double varLeft  = shifts[2*sh-1].chi2 - shifts[0].chi2;
+    double varRight = shifts[2*sh].chi2 - shifts[0].chi2;
+    double vFit = (varLeft - varRight) / (varLeft + varRight);
+    cout << "Shift " <<sh <<" : "<<  varLeft <<" "<< varRight << " " << -vFit << endl;
 
     TCanvas *can = new TCanvas(rn(),"", 600, 600);
     SetLeftRight(0.13, 0.16);
@@ -204,13 +211,13 @@ void dPlotter::plotParameters(int sh)
     shifts[2*(sh-1)+1].hPars->SetLineStyle(2);
     shifts[2*(sh-1)+2].hPars->SetLineStyle(2);
 
-    TGraphAsymmErrors *grAll = getPamametersBand(9);
+    TGraphAsymmErrors *grAll = getPamametersBand(7);
     grAll->SetFillColorAlpha(kBlue, 0.3);
     grAll->SetLineColor(kBlue);
     grAll->SetFillStyle(1001);
     grAll->Draw("same e2");
 
-    TGraphAsymmErrors *gr = getPamametersBand(8);
+    TGraphAsymmErrors *gr = getPamametersBand(6);
     gr->SetFillColorAlpha(kBlue, 0.4);
     gr->SetLineColor(kBlue);
     gr->SetFillStyle(1001);

@@ -31,6 +31,8 @@ Tasks {{
 #   AFitter                MyFit
    StatAnalysis           Stat
 #   SavePDFTGraph          SavePDFTGraph
+   SaveDPDFTGraph         SaveDPDFTGraph
+#   SavePDFTGraph          SavePDFTGraph
 }}
 
 
