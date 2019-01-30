@@ -112,7 +112,7 @@ InitFunctions {{
 # --------------------------------------------------------------#
 # Useful parameter shorthand notations
 # --------------------------------------------------------------#
-iOrd                        1
+iOrd                        2
 AlphasMz                    @alphaS
 mZ                          91.1876
 
@@ -128,7 +128,7 @@ QcdnumInit.PDFQ0Param                    PDFQ0_diff
 QcdnumInit.mcharm                        @mCharm #1.4     #1.47  #1.3
 QcdnumInit.mbottom                       @mBottom     #4.5   #4.2
 QcdnumInit.mtop                          174     #173
-QcdnumInit.nfFix                         3       # 3,4,5,6 for FFNS, or '0' for VFNS mode
+QcdnumInit.nfFix                         0       # 3,4,5,6 for FFNS, or '0' for VFNS mode
 QcdnumInit.InitEvolution                 1       # 0:false, 1: true   # init QCD evolution, or take external PDF
 # -- if InitEvolution=0: take external PDF
 QcdnumInit.PDF                           PDFQ0_diff # LHAPDF  #QcdnumPDF # PDF1

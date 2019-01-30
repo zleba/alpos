@@ -56,25 +56,24 @@ struct dPlotter {
 
 
     void plotParametersShifts(int sh);
+    TGraphAsymmErrors *getPamametersBand(int shMax = 999);
 
 
 };
 
 
 
-void dplotterErr(TString inFile = "../farm/testNewNLOvfns/H1diff_templ.str")
+void dplotterErr(TString inFile = "../farm/testNewNLO/H1diff_templ.str")
 {
     dPlotter dplt;
-    dplt.readData(inFile, 10);
+    dplt.readData(inFile, 9);
 
-    for(int i = 1; i <= 10; ++i) {
+    for(int i = 1; i <= 9; ++i) {
         dplt.plotParameters(i);
         dplt.plotParametersShifts(i);
     }
     //dplt.plotParameters(2);
-
     //dplt.plotCorrelations();
-
     //dplt.plotBeta(0.03f);
 
 }
@@ -127,6 +126,31 @@ void dPlotter::readData(TString inFile, int nErr)
 }
 
 
+TGraphAsymmErrors *dPlotter::getPamametersBand(int shMax)
+{
+    TGraphAsymmErrors *gr = new TGraphAsymmErrors(shifts[0].hPars->GetNbinsX());
+    for(int i = 0; i < shifts[0].hPars->GetNbinsX(); ++i) {
+
+        double vCnt = shifts[0].hPars->GetBinContent(i+1);
+
+        double errP = 0, errM = 0;
+        for(int j = 1; j < shifts.size() && j <= 2*shMax; ++j) {
+            double v = shifts[j].hPars->GetBinContent(i+1) - vCnt;
+            errP = hypot(errP, max(0.0, v));
+            errM = hypot(errM, max(0.0,-v));
+        }
+
+        double x = shifts[0].hPars->GetBinCenter(i+1);
+        double w = shifts[0].hPars->GetBinWidth(i+1);
+        gr->SetPoint(i, x, vCnt);
+        gr->SetPointError(i, w/2, w/2, errM, errP);
+
+    }
+    return gr;
+
+}
+
+
 void dPlotter::plotParameters(int sh)
 {
     gStyle->SetOptStat(0);
@@ -138,13 +162,14 @@ void dPlotter::plotParameters(int sh)
     //Parameters  for fitA
     pars["g0"]  =  {  0.14591    ,   0.33171E-01   };
     pars["g2"]  =   { -0.94705    ,   0.20309       };
-    pars["q0"] = {  1.0587     ,   0.322116   };
-    pars["q1"] = {   2.2964    ,   0.36439       };
-    pars["q2"] = {  0.56894    ,   0.14969       };
+    pars["s0"] = {  1.0587     ,   0.322116   };
+    pars["s1"] = {   2.2964    ,   0.36439       };
+    pars["s2"] = {  0.56894    ,   0.14969       };
     pars["n_IR"] =     {  0.16966E-02,   0.41732E-03   };
     pars["a0_IP"] =   {   1.1182    ,   0.81319E-02 };
 
-    TH1D *hParsFitA = (TH1D*) shifts[0].hPars->Clone("FitA");
+    TH1D *hParsFitA = (TH1D*) shifts[0].hPars->Clone("FitA"+rn());
+    hParsFitA->Reset();
     for(int i = 1; i <= hParsFitA->GetNbinsX(); ++i) {
         TString s = hParsFitA->GetXaxis()->GetBinLabel(i);
         int nFound = 0;
@@ -157,18 +182,50 @@ void dPlotter::plotParameters(int sh)
         }
         assert(nFound == 1);
     }
-    hParsFitA->SetLineColor(kRed);
-    hParsFitA->SetLineStyle(2);
+
+    //Remove Errors
+    for(int i = 1; i <shifts.size(); ++i) {
+        if(!shifts[i].hPars)
+            shifts[i].hPars =  (TH1D*) shifts[0].hPars->Clone();
+
+        for(int j = 1; j <= shifts[0].hPars->GetNbinsX(); ++j)
+            shifts[i].hPars->SetBinError(j, 1e-8);
+    }
+
 
     shifts[0].hPars->Draw();
+    shifts[0].hPars->SetLineColor(kBlue);
+    shifts[0].hPars->SetLineWidth(2);
 
     shifts[2*(sh-1)+1].hPars->Draw("same");
     shifts[2*(sh-1)+2].hPars->Draw("same");
+    shifts[2*(sh-1)+1].hPars->SetLineWidth(2);
+    shifts[2*(sh-1)+2].hPars->SetLineWidth(2);
+    shifts[2*(sh-1)+1].hPars->SetLineStyle(2);
+    shifts[2*(sh-1)+2].hPars->SetLineStyle(2);
+
+    TGraphAsymmErrors *grAll = getPamametersBand(9);
+    grAll->SetFillColorAlpha(kBlue, 0.3);
+    grAll->SetLineColor(kBlue);
+    grAll->SetFillStyle(1001);
+    grAll->Draw("same e2");
+
+    TGraphAsymmErrors *gr = getPamametersBand(8);
+    gr->SetFillColorAlpha(kBlue, 0.4);
+    gr->SetLineColor(kBlue);
+    gr->SetFillStyle(1001);
+    gr->Draw("same e2");
+
+
 
     hParsFitA->Draw("same");
+    hParsFitA->SetLineColor(kRed);
+    hParsFitA->SetLineStyle(2);
+    hParsFitA->SetLineWidth(2);
 
     GetXaxis()->SetTitle("");
     GetYaxis()->SetTitle("Value");
+    GetYaxis()->SetRangeUser(-2.1, 3.1);
 
     TLegend *leg = newLegend(kPos9);
     leg->AddEntry(shifts[0].hPars, "Our fit");
