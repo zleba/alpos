@@ -22,6 +22,7 @@
 //#include "alpos/AAlphasDependentPDF.h"
 #include "alpos/functions/AfastNLO.h"
 #include "alpos/functions/AfastNLOalt.h"
+#include "alpos/functions/AfastNLODiffDIS.h"
 #include "alpos/functions/AfastNLOnormDIS.h"
 #include "alpos/functions/AfastNLOnormDISalt.h"
 //#include "alpos/AfastNLODiffDIS.h"
@@ -133,6 +134,7 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
    //else if ( functype == AAlphasDependentPDF::fFunctionName)ptr = new AAlphasDependentPDF(funcname);
    else if ( functype == AfastNLO::fFunctionName )          ptr = new AfastNLO(funcname);
    else if ( functype == AfastNLOalt::fFunctionName )       ptr = new AfastNLOalt(funcname);
+   else if ( functype == AfastNLODiffDIS::fFunctionName )   ptr = new AfastNLODiffDIS(funcname);
 #if _CMAKE_FOUND_QCDNUM
    else if ( functype == AfastNLOnormDIS::fFunctionName )   ptr = new AfastNLOnormDIS(funcname);
    else if ( functype == AfastNLOnormDISalt::fFunctionName )   ptr = new AfastNLOnormDISalt(funcname);
