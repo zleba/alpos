@@ -127,6 +127,7 @@ bool ASaveDPDFTGraph::Execute(){
    vector<string> fitparamnames;
    const bool DoAlphasSingleShift = false;
    if ( fitresult ) {
+      info["Execute"]<<"Found fit result. Now calculating eigenvectors."<<endl;
       FitType = true;
       int nxn = fitresult->GetCovarianceMatrix().GetNcols();
       nPDF = 1+nxn*2;
@@ -220,6 +221,7 @@ bool ASaveDPDFTGraph::Execute(){
    vector<double> TmpLHAPDFset0;
    vector<double> TmpLHAPDFAlphaS_Val0;
    double asmz0=0;
+   info["Execute"]<<"Calculating DPDFs for "<<xpomval.size()<<" xpom values, and "<<q2val.size()<<" mu_f^2 values."<<endl;
    for ( int iMem = 0 ;iMem<nPDF ; iMem++ ) { // iMem-loop is slowest!
       info["execute"]<<"Evaluating PDFset "<<iMem<<"/"<<nPDF-1<<endl;
       if ( FitType ) {
@@ -321,9 +323,10 @@ bool ASaveDPDFTGraph::Execute(){
 	       }
 	       gPDF.Write();
 	    }
-	    gDirectory->Write();
+	    //gDirectory->Write();
 	 }
       }
+      //taskdir->Write();
 
       // --- Q2/mu_f loop for pom and reg
       for ( auto q2 : q2val ) {
@@ -368,6 +371,7 @@ bool ASaveDPDFTGraph::Execute(){
 	 }
 	 gDirectory->Write();
       }
+      //taskdir->Write();
    }
 
 
@@ -377,13 +381,15 @@ bool ASaveDPDFTGraph::Execute(){
    // for ( auto h : hShiftParams ) delete h;
 
    
-   // TGraphs with error bands
+   // TGraphs with error bands for DPDF
    if ( nPDF>1 && ( FitType) ) {
+      // --- DPDF
+      info["Execute"]<<"Calculating error bands for "<<xpomval.size()<<" xpom values, and "<<q2val.size()<<" mu_f^2 values."<<endl;
       for ( auto xp : xpomval ) {
 	 for ( auto q2 : q2val ) {
 	    TString dirname = Form("Q2_%.1f__xpom_%0.4f",q2,xp);
-	    //TString dirname = Form("Q2_%.1f",q2);
 	    TDirectory* q2dir = taskdir->GetDirectory(dirname);
+	    //TString dirname = Form("Q2_%.1f",q2);
 	    // if ( !q2dir->GetDirectory("PDF_Errors") ) q2dir->mkdir("PDF_Errors")->cd();
 	    // q2dir->cd("PDF_Errors");
 	    q2dir->mkdir("DPDF_ErrorsSymm");
@@ -429,15 +435,100 @@ bool ASaveDPDFTGraph::Execute(){
 		  gPDFSymm.Write();
 	       }
 	    }
-	    taskdir->Write();
 	 }
       }
+      //taskdir->Write();
+
+      // --- DPDF
+      info["Execute"]<<"Calculating error bands for pom and reg for "<<q2val.size()<<" mu_f^2 values."<<endl;
+      for ( auto q2 : q2val ) {
+	 TString dirname = Form("Q2_%.1f",q2);
+	 //TString dirname = Form("Q2_%.1f",q2);
+	 TDirectory* q2dir = taskdir->GetDirectory(dirname);
+	 // if ( !q2dir->GetDirectory("PDF_Errors") ) q2dir->mkdir("PDF_Errors")->cd();
+	 // q2dir->cd("PDF_Errors");
+	 q2dir->mkdir("Pom_ErrorsSymm");
+	 q2dir->mkdir("Pom_ErrorsAsym");
+	 q2dir->mkdir("Reg_ErrorsSymm");
+	 q2dir->mkdir("Reg_ErrorsAsym");
+
+	 for ( auto ipdf : pdfdef ) {
+	    TGraphAsymmErrors gPomSymm,gPomAsym;
+	    TGraphAsymmErrors gRegSymm,gRegAsym;
+	    gPomSymm.SetName("Pom_"+TString(ipdf.first.c_str()));
+	    gPomAsym.SetName("Pom_"+TString(ipdf.first.c_str()));
+	    gRegSymm.SetName("Reg_"+TString(ipdf.first.c_str()));
+	    gRegAsym.SetName("Reg_"+TString(ipdf.first.c_str()));
+	    const map<double,map<double, vector<double> > >& iPomValues = AllValPom.at(ipdf.first);
+	    const map<double,map<double, vector<double> > >& iRegValues = AllValReg.at(ipdf.first);
+	    for ( auto zp : zval ) {
+	       int nP = gPomSymm.GetN();
+	       //const vector<double>& values = AllValues[ipdf.first][q2][xp]; // this is a bit slow
+	       const vector<double>& pomvalues = iPomValues.at(q2).at(zp);
+	       const vector<double>& regvalues = iRegValues.at(q2).at(zp);
+	       double Perrdn=0,Perrup=0,Perrsym=0;
+	       double Rerrdn=0,Rerrup=0,Rerrsym=0;
+	       {
+		  // calculate asymmetric 'hessian' uncertainties
+		  // see e.g.:
+		  // hep-ph/0101032
+		  // arXiv:1101.0536
+		  // code adapted from: LHAPDF::src/PDFSet.cc 
+		  int nxn = (nPDF-1)/2;
+		  for (int ieig = 0; ieig < nxn; ieig++) {
+		     Perrup  += AlposTools::sq(max(max(pomvalues[2*ieig+1]-pomvalues[0],pomvalues[2*ieig+2]-pomvalues[0]), 0.));
+		     Perrdn  += AlposTools::sq(max(max(pomvalues[0]-pomvalues[2*ieig+1],pomvalues[0]-pomvalues[2*ieig+2]), 0.));
+		     Perrsym += AlposTools::sq(pomvalues[2*ieig+1]-pomvalues[2*ieig+2]);
+		     Rerrup  += AlposTools::sq(max(max(regvalues[2*ieig+1]-regvalues[0],regvalues[2*ieig+2]-regvalues[0]), 0.));
+		     Rerrdn  += AlposTools::sq(max(max(regvalues[0]-regvalues[2*ieig+1],regvalues[0]-regvalues[2*ieig+2]), 0.));
+		     Rerrsym += AlposTools::sq(regvalues[2*ieig+1]-regvalues[2*ieig+2]);
+		  }
+		  Perrsym = 0.5*sqrt(Perrsym);
+		  Perrup  = sqrt(Perrup);
+		  Perrdn  = sqrt(Perrdn);
+		  Rerrsym = 0.5*sqrt(Rerrsym);
+		  Rerrup  = sqrt(Rerrup);
+		  Rerrdn  = sqrt(Rerrdn);
+	       }
+	       {
+		  double cent = pomvalues[0];
+		  gPomSymm.SetPoint(nP,zp,cent);
+		  gPomAsym.SetPoint(nP,zp,cent);
+		  gPomSymm.SetPointError(nP,0,0,Perrsym,Perrsym);
+		  gPomAsym.SetPointError(nP,0,0,Perrdn,Perrup);
+	       }
+	       {
+		  double cent = pomvalues[0];
+		  gRegSymm.SetPoint(nP,zp,cent);
+		  gRegAsym.SetPoint(nP,zp,cent);
+		  gRegSymm.SetPointError(nP,0,0,Rerrsym,Rerrsym);
+		  gRegAsym.SetPointError(nP,0,0,Rerrdn,Rerrup);
+	       }
+	    }
+	    // save to file
+	    q2dir->cd("Pom_ErrorsAsym");
+	    gPomAsym.Write();
+	    q2dir->cd("Reg_ErrorsAsym");
+	    gRegAsym.Write();
+	    if ( FitType ) {
+	       q2dir->cd("Pom_ErrorsSymm");
+	       gPomSymm.Write();
+	       q2dir->cd("Reg_ErrorsSymm");
+	       gRegSymm.Write();
+	    }
+	 }
+      }
+      //taskdir->Write();
       info["Execute"]<<"TGraphs with errors calculated."<<endl;
    }
    else {
       info["Execute"]<<"No error TGraphs are drawn."<<endl;
    }
 
+   
+   info["Execute"]<<"Writing to disk."<<endl;
+   taskdir->Write();
+   
    // reset
    if ( Mem0>=0 ) SET_ANY(dpdffunc+".PDFSet",Mem0,0);
    if ( FitType ) {
