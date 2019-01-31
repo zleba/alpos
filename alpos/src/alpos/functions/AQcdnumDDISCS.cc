@@ -23,7 +23,6 @@ double rflux(double x_pom, double a0, double ap, double b0);
 using namespace std;
 
 const std::vector<std::string> AQcdnumDDISCS::fRequirements = {"QcdnumInit",
-							       "Aq","Bq","Cq","Ag","Bg","Cg", //pdf parameters
                                                                "a0_IP", "ap_IP", "b0_IP",     //Pomeron flux
                                                                "a0_IR", "ap_IR", "b0_IR",     //Reggeon flux
                                                                "n_IR",                        //Reggeon suppression
@@ -77,13 +76,6 @@ bool AQcdnumDDISCS::Update() {
 
    fValue.resize(q2.size());
    fError.resize(q2.size());
-
-   //fValue[0] = PAR(Aq);
-   //fValue[1] = PAR(Bq);
-   //fValue[2] = PAR(Cq);
-   //fValue[3] = PAR(Ag);
-   //fValue[4] = PAR(Bg);
-   //fValue[5] = PAR(Cg);
 
 
    const double a0_IP = PAR(a0_IP);
@@ -168,7 +160,6 @@ bool AQcdnumDDISCS::Update() {
        double xpSigRed_IP =  flxIP*xpom[i] * (F2  - y*y/yplus*FL);
 
        //cout<<"QCDNUM  Q2="<<q2[i]<<"\tf2*flxIP="<<F2*flxIP<<"\tfl*flx="<<FL*flxIP<<endl;
-
 
        //Reggeon flux
        double flxIR = rflux(xpom[i], a0_IR, ap_IR, b0_IR);

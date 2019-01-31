@@ -15,7 +15,7 @@ DataTheorySets {{
 #  H1ZEUS-HERA-I-CCDISe+p        datafiles/h1zeus/0911.0884/H1ZEUS_CC_e+p_HERA1.dat                QcdnumDISCS
 #  H1incDDIS                   datafiles/h1/0606004/ddis.dat                   QcdnumDDISCS   # q2>=8.4   beta<=0.81
   H1incDDIS-HERA-I-Q            datafiles/h1/0606004/h1_ddis_heraI.dat          QcdnumDDISCS   # Q2>=8.4   beta<=0.81   mx>=2
-  H1incDDIS-HERA-I-A            datafiles/h1/0606004/h1_ddis_heraI.dat          ApfelxxDDISCS   # Q2>=8.4   beta<=0.81   mx>=2
+#  H1incDDIS-HERA-I-A            datafiles/h1/0606004/h1_ddis_heraI.dat          ApfelxxDDISCS   # Q2>=8.4   beta<=0.81   mx>=2
 # H1incDDIS                   datafiles/h1/1203.4495/h1_ddis_Comb.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 # H1incDDIS                   datafiles/h1/1107.3420/h1_ddis_lowE.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 }}
@@ -28,11 +28,9 @@ Tasks {{
   TaskType                TaskName
 #  PrintSteering           PrintSteering
    PrintTheorySet         PrintTheorySet
-#   AFitter                MyFit
+   AFitter                MyFit
    StatAnalysis           Stat
-#   SavePDFTGraph          SavePDFTGraph
    SaveDPDFTGraph         SaveDPDFTGraph
-#   SavePDFTGraph          SavePDFTGraph
 }}
 
 
@@ -61,11 +59,19 @@ MyFit {{{
    Chisq                        LogNormal
    
    FitParameters { 
+       #IP_ap
+       #IP_b0
+       #IR_a0
+       #IR_ap
+       #IR_b0
+       IP_a0
+       IR_n 
        PDFQ0_diff.g0  
-       PDFQ0_diff.g2
+#       PDFQ0_diff.g2
        PDFQ0_diff.s0  
-       PDFQ0_diff.s1  
-       PDFQ0_diff.s2  
+#       PDFQ0_diff.s1  
+#       PDFQ0_diff.s2  
+
    }
         
    PrintResults                 true
@@ -82,11 +88,14 @@ Stat {{{
 }}}
 
 
-SavePDFTGraph {{{
-   PDF                  QcdnumPDF  # LHAPDF6 
-   nx                   100
-   xmin                 0.004
-   Q2Values             { 1.75, 2.5, 8.5, 20, 90, 800 }
+SaveDPDFTGraph {{{
+   DPDF                 DPDF 
+   nzpom                30
+   zmin                 0.004
+   xpomValues           { 0.0003, 0.003, 0.03 }
+   Q2Values             { 1.75, 8.5, 20, 90, 800 }
+   AsciiOutput          false
+   Alphas               todo
 }}}
 #################################################################
 #  Specify Alpos theory (in 'AlposTheory' namespace)
@@ -117,7 +126,7 @@ InitFunctions {{
 # Useful parameter shorthand notations
 # --------------------------------------------------------------#
 iOrd                        1
-AlphasMz                    0.118000001
+AlphasMz                    0.106000001
 mZ                          91.1876
 
 # --------------------------------------------------------------#
@@ -138,8 +147,8 @@ QcdnumInit.InitEvolution                 1       # 0:false, 1: true   # init QCD
 QcdnumInit.PDF                           ApfelxxPDF # PDFQ0_diff # LHAPDF  #QcdnumPDF # PDF1
 # -- if InitEvolution=1: take interanl PDF
 QcdnumInit.Q0                            1.323  # FitB=1.5811, FitA=1.323 must below mcharm
-QcdnumInit.nxGrid                        120 #60 # number of x-grid points
-QcdnumInit.nqGrid                        80 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
+QcdnumInit.nxGrid                        80 #60 # number of x-grid points
+QcdnumInit.nqGrid                        60 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
 
 # QcdnumPDF defaults
 QcdnumPDF.QcdnumInit                     QcdnumInit   # one QcdnumInit function must made available
@@ -183,28 +192,38 @@ h12006_IR.ireg                             2
 #h12006_IP_0.muf                            1.323
 
 # --------------------------------------------------------------#
+# common flux parameters (to keep apfel and qcdnum consistent for plotting)
+IP_a0                                    1.1182	 
+IP_ap                                    0.06	 
+IP_b0                                    5.5     
+IR_a0                                    0.5    
+IR_ap                                    0.3    
+IR_b0                                    1.6    
+IR_n                                     0.0017 
+
+# --------------------------------------------------------------#
 # DPDF
 DPDF.xpom                                 0.002
 DPDF.zpom                                 0.5
 DPDF.muf                                  5
-DPDF.pom1                                 ApfelxxPDF  # QcdnumPDF # ApfelxxPDF # use any pomeron PDF
+DPDF.pom1                                 QcdnumPDF # ApfelxxPDF # QcdnumPDF # ApfelxxPDF # use any pomeron PDF
 DPDF.pom2                                 0
 DPDF.reg1                                 STROWP1 # use GRVPION or STROWP1
 DPDF.xPomFluxNorm                         0.003
 DPDF.tcut                                 -1
 
-DPDF.Flux_pom1_a0                        1.1182
-DPDF.Flux_pom1_ap                        0.06
-DPDF.Flux_pom1_b0                        5.5
+DPDF.Flux_pom1_a0                        IP_a0
+DPDF.Flux_pom1_ap                        IP_ap
+DPDF.Flux_pom1_b0                        IP_b0
 
 DPDF.Flux_pom2_a0                        0
 DPDF.Flux_pom2_ap                        0
 DPDF.Flux_pom2_b0                        0
 
-DPDF.Flux_reg1_a0                        0.5
-DPDF.Flux_reg1_ap                        0.3
-DPDF.Flux_reg1_b0                        1.6
-DPDF.reg1_n                              0.0017
+DPDF.Flux_reg1_a0                        IR_a0
+DPDF.Flux_reg1_ap                        IR_ap
+DPDF.Flux_reg1_b0                        IR_b0
+DPDF.reg1_n                              IR_n 
 
 
 # --------------------------------------------------------------#
@@ -226,29 +245,20 @@ DPDF.reg1_n                              0.0017
 
 
 QcdnumDDISCS.QcdnumInit        QcdnumInit # PDF, alpha_s is provided through QCDNUM
-QcdnumDDISCS.Aq               1.06
-QcdnumDDISCS.Bq               2.30
-QcdnumDDISCS.Cq               0.57
-QcdnumDDISCS.Ag               0.15
-QcdnumDDISCS.Bg               0.00
-QcdnumDDISCS.Cg              -0.95
-
-
 # Pomeron flux
-QcdnumDDISCS.a0_IP            1.1182
-QcdnumDDISCS.ap_IP            0.06
-QcdnumDDISCS.b0_IP            5.5
-
+QcdnumDDISCS.a0_IP            IP_a0
+QcdnumDDISCS.ap_IP            IP_ap
+QcdnumDDISCS.b0_IP            IP_b0
 # Reggeon flux
-QcdnumDDISCS.a0_IR            0.5
-QcdnumDDISCS.ap_IR            0.3
-QcdnumDDISCS.b0_IR            1.6
-QcdnumDDISCS.n_IR             0.0017
+QcdnumDDISCS.a0_IR            IR_a0
+QcdnumDDISCS.ap_IR            IR_ap
+QcdnumDDISCS.b0_IR            IR_b0
+QcdnumDDISCS.n_IR             IR_n 
 
 
 
 # -----------------------------------------------------
-ApfelxxDDISCS.DPDF            DPDF    # H1DPDF2006 # DPDF   
+ApfelxxDDISCS.DPDF            h12006_IP # H1DPDF2006 # DPDF    # H1DPDF2006 # DPDF   
 ApfelxxDDISCS.Alpha_s	      ApfelxxAlphas
 ApfelxxDDISCS.e-charge	      1
 ApfelxxDDISCS.e-polarity      0

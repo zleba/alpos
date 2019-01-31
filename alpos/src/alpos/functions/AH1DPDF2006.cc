@@ -1,6 +1,5 @@
 
 #include "alpos/functions/AH1DPDF2006.h"
-#include "apfel/dglapbuilder.h"
 
 #include <iostream>
 
