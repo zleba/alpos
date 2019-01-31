@@ -75,6 +75,7 @@
 #include "alpos/tasks/AApcFitter.h"
 #include "alpos/tasks/AConstLQFitter.h"
 #include "alpos/tasks/APrintTheorySet.h"
+#include "alpos/tasks/ASaveTheorySet.h"
 #include "alpos/tasks/APrintSteering.h"
 #include "alpos/tasks/AStatAnalysis.h"
 #include "alpos/tasks/APrintErrorSummary.h"
@@ -199,6 +200,7 @@ ATask* AFactory::TaskFactory(const std::string& tname, const std::string& ttype)
    else if ( ttype == AApcFitter::fTaskType )         return new AApcFitter(tname);//AFitter(tname,fSteerfile,&fResults);
    else if ( ttype == AConstLQFitter::fTaskType )     return new AConstLQFitter(tname);//AFitter(tname,fSteerfile,&fResults);
    else if ( ttype == APrintTheorySet::TaskType() )   return new APrintTheorySet(tname);
+   else if ( ttype == ASaveTheorySet::TaskType() )    return new ASaveTheorySet(tname);
    else if ( ttype == APrintSteering::TaskType() )    return new APrintSteering(tname);
    else if ( ttype == AStatAnalysis::fTaskType )      return new AStatAnalysis(tname);
    else if ( ttype == APrintErrorSummary::fTaskType ) return new APrintErrorSummary(tname);

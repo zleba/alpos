@@ -28,9 +28,10 @@ Tasks {{
   TaskType                TaskName
 #  PrintSteering           PrintSteering
    PrintTheorySet         PrintTheorySet
-   AFitter                MyFit
-   StatAnalysis           Stat
-   SaveDPDFTGraph         SaveDPDFTGraph
+   SaveTheorySet          Save1
+#   AFitter                MyFit
+#   StatAnalysis           Stat
+#   SaveDPDFTGraph         SaveDPDFTGraph
 }}
 
 

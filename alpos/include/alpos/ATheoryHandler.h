@@ -134,7 +134,8 @@ public:
 
    ATheorySet GetTheorySet() const; //!< Get the values and errors of all parameters
    void SetTheorySet(const ATheorySet& set); //!< Set a full set of theory parameters
-   void PrintCurrentTheorySet(ATheorySet* set = nullptr) const; //!< Print the names of all available parameters
+   void PrintCurrentTheorySet(ATheorySet* set = nullptr, std::ostream& strm = std::cout) const; //!< Print the names of all available parameters
+   void SaveCurrentTheorySet(const std::string& outdir, ATheorySet* set = nullptr) const; //!< Save the entire theory set to disk
    const std::pair<ASuperData*, ASuperTheory*>& GetSuperPair() const { return fSuperPair; } //!< Get pointers to Superdata and Supertheory
    const std::map<std::string, std::pair<AData*, AFuncD*> >& GetDataTheoryPairs() const { return fDataTheoryPairs; }; //!< Get pointer to all data-theory pairs (ordered by name)
    const std::map<std::string, std::map<std::string, std::pair<ASubsetData*, ASubsetFunction*> > >& GetSubsetPairs() const { return fSubsetPairs; }; //!< Get pointers to all subsets (ordered by dataset name, and subsetname)
