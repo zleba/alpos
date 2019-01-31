@@ -87,24 +87,24 @@ ErrorUnit         Percent     # Are errors given as: "Absolute", "Relative", "Pe
 
 Errors {{
 ErrorName      Column           Correlation     Nature
- "Stat"     "stat.(%)"            ESMC          P
-# "LRG"     "JES(up):JES(dn)"       EYM0.5         M
-  JES     "EHFS(up):EHFS(dn)"     EYM0.5           M
+ "Stat"     "stat.(%)"             ESMC          P
+# "LRG"     "JES(up):JES(dn)"      EYM0.5         M
+  JES     "EHFS(up):EHFS(dn)"      EYM0.5           M
   Ee         "Ee(up):Ee(dn)"       EYM1           M
   ThE       "ThE(up):ThE(dn)"      EYM1           M
   Lumi           7.76              EYM1           M
   Bkg       Bkgd(up):Bkgd(dn)      EYM1           M
   Mod        Mod(up):Mod(dn)       EYM1        M
   UnCorrSys       UnCorrSys        EYM0           M
-  fSys10         fSys10         EYM1           M
-  fSys11         fSys11         EYM1           M
-  fSys12         fSys12         EYM1           M
-  fSys13         fSys13         EYM1           M
-  fSys14         fSys14         EYM1           M
-  fSys15         fSys15         EYM1           M
-  fSys16         fSys16         EYM1           M
-  fSys17         fSys17         EYM1           M
-#  HadErr    "had.err"               TYM0.5         M   # Had. corr.
+  fSys10         fSys10            EYM1           M
+  fSys11         fSys11            EYM1           M
+  fSys12         fSys12            EYM1           M
+  fSys13         fSys13            EYM1           M
+  fSys14         fSys14            EYM1           M
+  fSys15         fSys15            EYM1           M
+  fSys16         fSys16            EYM1           M
+  fSys17         fSys17            EYM1           M
+  HadErr       "had.err"           TYM0.5         M   # Had. corr.
 }}
 #      EpsNames[kJES]    = "eps(LRG)     ";
 #      EpsNames[kLArNoise] = "eps(PD)      ";
