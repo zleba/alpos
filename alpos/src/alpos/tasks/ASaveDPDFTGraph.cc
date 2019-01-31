@@ -12,6 +12,8 @@
 #include "alpos/ASuperData.h"
 #include "alpos/ASuperTheory.h"
 #include "alpos/functions/ALhapdf6.h"
+#include "alpos/ASubsetFunction.h"
+#include <numeric>
 
 /** 
  ASaveDPDFTGraph
@@ -209,6 +211,28 @@ bool ASaveDPDFTGraph::Execute(){
    }
    // -------------------------------------------------------------------------- //
 
+
+   // -------------------------------------------------------------------------- //
+   // --- cross sections
+     
+
+      // for ( const auto& id: TheoryHandler::Handler()->GetAllSubsetPairs() )
+      //  	 crosssections[id.second.second->GetAlposName()][0] = id.second.second->GetValues();
+	   
+      // 	 Print(id.second.first,id.second.second);
+      // const auto& vv =  super.first->GetValues();
+      // for ( double v : vv ) cout<<"\t"<<v;
+      // cout<<endl;
+      // // single datasets
+      // for ( const auto& id : TheoryHandler::Handler()->GetDataTheoryPairs() )
+      // 	 Print(id.second.first,id.second.second);
+      // // subsets 
+      // for ( const auto& is: TheoryHandler::Handler()->GetAllSubsetPairs() )
+      //    Print(is.second.first,is.second.second);
+   // -------------------------------------------------------------------------- //
+
+
+   // -------------------------------------------------------------------------- //
    // ----
    map<string,vector<double> > pdfdef = GetDPDFdef();
 
@@ -216,6 +240,7 @@ bool ASaveDPDFTGraph::Execute(){
    map<string,map<double,map<double, vector<double> > > > AllValPom; // <parname,q2,xp,val>
    map<string,map<double,map<double, vector<double> > > > AllValReg; // <parname,q2,xp,val>
    map<string,map<double,map<double,map<double, vector<double> > > > > AllValues; // <parname,xpom,q2,xp,val>
+   map<string,map<int,vector<double> > > crosssections; // theoname, iMem, values<>
    vector<TGraph*> gFitParams,gShiftParams;
    vector<TH1D*>   hFitParams,hShiftParams;
    vector<double> TmpLHAPDFset0;
@@ -286,6 +311,15 @@ bool ASaveDPDFTGraph::Execute(){
       }
       PAR_ANY(dpdffunc); // update PDF
       //if ( asfunc != "" ) PAR_ANY(asfunc); // update Alphas
+
+      // store cross section predictions 
+      const auto& super = TheoryHandler::Handler()->GetSuperPair();
+      crosssections[super.second->GetAlposName()][iMem] = super.second->GetValues();
+      for ( const auto& id : TheoryHandler::Handler()->GetDataTheoryPairs() )
+	 crosssections[id.second.second->GetAlposName()][iMem] = id.second.second->GetValues();
+      for ( const auto& id: TheoryHandler::Handler()->GetAllSubsetPairs() )
+	 crosssections[id.second.second->GetAlposName()][iMem] = id.second.second->GetValues();
+
 
       // --- Q2/mu_f loop
       for ( auto xp : xpomval ) {
@@ -525,7 +559,28 @@ bool ASaveDPDFTGraph::Execute(){
       info["Execute"]<<"No error TGraphs are drawn."<<endl;
    }
 
-   
+   // --------------------------------------------------
+   // store cross sections
+   //map<string,map<int,vector<double> > > crosssections; // theoname, iMem, values<>
+   for ( const auto& iMemCS : crosssections ) {
+      string csname = iMemCS.first;
+      for ( const auto& csm : iMemCS.second ) {
+	 int iMem = csm.first;
+	 const vector<double>& cs = csm.second;
+	 TString dirname = Form("Theo_Eig_%d",iMem);
+	 if ( !taskdir->FindObjectAny(dirname) ) 
+	    taskdir->mkdir(dirname);
+	 taskdir->cd(dirname);
+	 std::vector<double> x(cs.size()) ;
+	 std::iota (std::begin(x), std::end(x), 0); // Fill with 0, 1, ..., cs.size()
+	 TGraph g(cs.size(), &x[0] ,&cs[0] );
+	 g.SetName(csname.c_str());
+	 g.Write();
+      }
+   }   
+
+
+   // --------------------------------------------------
    info["Execute"]<<"Writing to disk."<<endl;
    taskdir->Write();
    

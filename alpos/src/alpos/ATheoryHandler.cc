@@ -335,13 +335,13 @@ void TheoryHandler::PrintListOfAllParms() const {
 
 
 //____________________________________________________________________________________ //
-void TheoryHandler::PrintCurrentTheorySet(ATheorySet* setptr) const{
+void TheoryHandler::PrintCurrentTheorySet(ATheorySet* setptr, std::ostream& strm) const{
    //! Print the current theory set (i.e. all parameters and its values)
    //! or if 'set' is specified, print this set
    
 
    static const string ten = "++++++++++";
-   cout<<"\n  +"<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<endl;
+   strm<<"\n  +"<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<endl;
 
    ATheorySet set = GetTheorySet();
    if (setptr==nullptr) setptr = &set;
@@ -388,7 +388,7 @@ void TheoryHandler::PrintCurrentTheorySet(ATheorySet* setptr) const{
 	    vals += " ["+to_string(i.second.Values.size()-1)+"];";
 	 }
 
-	 //cout<<"  +  "<<i.first<<"  \t\t"<<i.second.Values[0]<<"\t const="<<i.second.Const<<endl;
+	 //strm<<"  +  "<<i.first<<"  \t\t"<<i.second.Values[0]<<"\t const="<<i.second.Const<<endl;
 	 // 'ordered' or not? (alpha_s has for instance only 'one' value)
 	 // if ( zwo==0 && i.second.Values.size() == 1 )
 	 //    printf("  +  %-50s  %-7s  %s\n",
@@ -397,11 +397,74 @@ void TheoryHandler::PrintCurrentTheorySet(ATheorySet* setptr) const{
 	 //    printf("  +  %-50s  %-7s  %s\n",
 	 // 	   name.c_str(), cnst.c_str(),vals.c_str());
 	 //}
-	 printf("  +  %-55s  %-7s  %s\n",
+	 char buf[1000];
+	 sprintf(buf,"  +  %-55s  %-7s  %s\n",
 		name.c_str(), cnst.c_str(),vals.c_str());
+	 strm<<buf;
       }
-      cout<<"  +"<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<endl;
-      cout<<endl;
+      strm<<"  +"<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<endl;
+      strm<<endl;
+}
+
+
+//____________________________________________________________________________________ //
+void TheoryHandler::SaveCurrentTheorySet(const string& outname, ATheorySet* setptr) const{
+   //! Print the current theory set (i.e. all parameters and its values)
+   //! or if 'set' is specified, print this set
+
+   // init
+   string outputdirectory =  Alpos::Current()->Settings()->outputdir;
+   ATheorySet set = GetTheorySet();
+   if (setptr==nullptr) setptr = &set;
+
+   // -------- write to ascii file in 'print' format
+   {
+      string printfile  = outputdirectory+outname+"_cout.txt";
+      info["SaveCurrentTheorySet"]<<"Writing Theory set in 'cout'-format to ascii file : "<<printfile<<endl;
+      ofstream pfile(printfile.c_str());
+      PrintCurrentTheorySet(setptr,pfile);
+   }
+
+   // -------- write to ascii file
+   {
+      string outputfile  = outputdirectory+outname+".txt";
+      info["SaveCurrentTheorySet"]<<"Writing Theory set to ascii file : "<<outputfile<<endl;
+      //ofstream file((outputdirectory+GetTaskName()+"_"+dataChildren[iChild]->GetAlposName()+".txt").c_str());
+      ofstream file(outputfile.c_str());
+      for ( const auto& i : setptr->GetSet() ) {
+	 string name = i.first;
+	 // string alias = TheoryHandler::Handler()->GetParameter(name)->GetAlposName();
+	 // if ( alias == name ) 
+	 //    alias = "";
+	 // else {
+	 //    alias = "--> "+alias;
+	 //    name += "  "+alias;
+	 // }
+	 // string cnst = i.second.Const ? "(const)" : "";
+	 // if ( i.second.Const ) name += "  (const)";
+	 
+	 char buf [55];
+	 sprintf(buf,"%-60s",
+		 name.c_str(), "");
+	 
+	 file << buf;
+	 for ( auto val : i.second.Values ) file<<"\t"<<val;
+	 file<<endl;
+      }
+   }
+
+   // -------- write to root file
+   {
+      TDirectory* rootfile  = Alpos::Current()->Settings()->rootoutput; 
+      TDirectory* outtdir   = rootfile->mkdir(outname.c_str());
+      info["SaveCurrentTheorySet"]<<"Writing Theory set to TDirectory "<<outtdir->GetName()<<" in root file :"<< rootfile->GetName() <<endl;
+      outtdir->cd();
+      
+   
+      // reset
+      rootfile->cd();
+   }
+
 }
 
 

@@ -22,6 +22,7 @@
 //#include "alpos/AAlphasDependentPDF.h"
 #include "alpos/functions/AfastNLO.h"
 #include "alpos/functions/AfastNLOalt.h"
+#include "alpos/functions/AfastNLODiffDIS.h"
 #include "alpos/functions/AfastNLOnormDIS.h"
 #include "alpos/functions/AfastNLOnormDISalt.h"
 //#include "alpos/AfastNLODiffDIS.h"
@@ -75,6 +76,7 @@
 #include "alpos/tasks/AApcFitter.h"
 #include "alpos/tasks/AConstLQFitter.h"
 #include "alpos/tasks/APrintTheorySet.h"
+#include "alpos/tasks/ASaveTheorySet.h"
 #include "alpos/tasks/APrintSteering.h"
 #include "alpos/tasks/AStatAnalysis.h"
 #include "alpos/tasks/APrintErrorSummary.h"
@@ -132,6 +134,7 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
    //else if ( functype == AAlphasDependentPDF::fFunctionName)ptr = new AAlphasDependentPDF(funcname);
    else if ( functype == AfastNLO::fFunctionName )          ptr = new AfastNLO(funcname);
    else if ( functype == AfastNLOalt::fFunctionName )       ptr = new AfastNLOalt(funcname);
+   else if ( functype == AfastNLODiffDIS::fFunctionName )   ptr = new AfastNLODiffDIS(funcname);
 #if _CMAKE_FOUND_QCDNUM
    else if ( functype == AfastNLOnormDIS::fFunctionName )   ptr = new AfastNLOnormDIS(funcname);
    else if ( functype == AfastNLOnormDISalt::fFunctionName )   ptr = new AfastNLOnormDISalt(funcname);
@@ -199,6 +202,7 @@ ATask* AFactory::TaskFactory(const std::string& tname, const std::string& ttype)
    else if ( ttype == AApcFitter::fTaskType )         return new AApcFitter(tname);//AFitter(tname,fSteerfile,&fResults);
    else if ( ttype == AConstLQFitter::fTaskType )     return new AConstLQFitter(tname);//AFitter(tname,fSteerfile,&fResults);
    else if ( ttype == APrintTheorySet::TaskType() )   return new APrintTheorySet(tname);
+   else if ( ttype == ASaveTheorySet::TaskType() )    return new ASaveTheorySet(tname);
    else if ( ttype == APrintSteering::TaskType() )    return new APrintSteering(tname);
    else if ( ttype == AStatAnalysis::fTaskType )      return new AStatAnalysis(tname);
    else if ( ttype == APrintErrorSummary::fTaskType ) return new APrintErrorSummary(tname);

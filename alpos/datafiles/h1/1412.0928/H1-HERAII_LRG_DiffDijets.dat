@@ -1,0 +1,147 @@
+#! -*-sh-*-
+#
+# The data are taken from: paper after reading
+# double-differential 'absolute' inclusive jet cross sections in bins of Q2 and pt  (Q2_min,Q2_max,Pt_min,Pt_max)
+#
+# phase space is given in the H1 preliminary reports: H1prelim-12-031 and  H1prelim-11-032 
+# normalized cross section are given without units.
+# all errors given in %
+#
+# File adapted from HERAFitter
+#
+
+##########################################################
+#  General parameters of this dataset
+##########################################################
+AlposName           "bla-33"  # A unique alpos name
+Description         "H1 LRG diffractive dijets HERA-II"
+Reference           "JHEP 1503 (2015) 092 [arxiv:1412.0928]"
+arXiv                           1412.0928
+Inspire                         1332186
+
+##########################################################
+#  fastNLO parameters, specific to this dataset
+#  not specified parameters are taken from default as
+#  specified in the global steering file
+##########################################################
+#
+#TheoryFunction: 'fastNLO'
+Filenames {
+#fnhd5200v23_2G_Nodes.40.6.4_mu2PtAvg_dQ2dPt1.tab
+theoryfiles/NNLOJET/H1-LQall-8.diff_LRG_ptj1_q2_4_6.NumEvtBinProc.RMS8.pre10.tab
+theoryfiles/NNLOJET/H1-LQall-8.diff_LRG_ptj1_q2_6_10.NumEvtBinProc.RMS8.pre10.tab
+theoryfiles/NNLOJET/H1-LQall-8.diff_LRG_ptj1_q2_10_18.NumEvtBinProc.RMS8.pre10.tab
+theoryfiles/NNLOJET/H1-LQall-8.diff_LRG_ptj1_q2_18_34.NumEvtBinProc.RMS8.pre10.tab
+theoryfiles/NNLOJET/H1-LQall-8.diff_LRG_ptj1_q2_34_100.NumEvtBinProc.RMS8.pre10.tab
+}
+Units               0      # 0: absoluteUnits, 1: PublicationUnits
+#MuRFuncForm         3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+#MuFFuncForm         3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+xpom_min           0.0001 #000001
+xpom_max           0.03
+
+##########################################################
+#  Data table 
+#  
+#  Necessary keys are:
+#   + ErrorSet           (Specifies the 'set' of error, which may correlated to other data sets)
+#   + Data       (the data table, bin boundaries, and errors)
+#   + Errors         (specify the used errors, and its nature)
+#   + ... irgendwas fuer 'interne' correlation  ...
+#   + ... irgendwas fuer  externe  korrlationen ...
+#   + TheoryFactors     (multiplicative factors to be applied on theory) 
+#   + TheoryErrors   (additional errors on the theory [as sepcified in 'Data'])
+# 
+##########################################################
+
+Data {{
+   Q2_min   Q2_max   Pt_min   Pt_max   Sigma stat.(%)  sys.(%)  tot.(%)   had  had.err    EW  JES(up)  JES(dn) EHFS(up) EHFS(dn)   Ee(up)   Ee(dn)  ThE(up)  ThE(dn)  IDe(up)  IDe(dn) LArN(up) LArN(dn) Trig(up) Trig(dn) Lumi(up) Lumi(dn) TrCl(up) TrCl(dn)      Bkgd(up) Bkgd(dn)     Mod(up)  Mod(dn)      UnCorrSys   fSys10   fSys11   fSys12   fSys13   fSys14   fSys15   fSys16   fSys17 BinSize  InvBinSize
+    4      6        5.5      7.0       3.357    9.0      12.3    15.3    1.05     5       1          0     0       1.2   -1.2       5.9    -5.9          0.4  -0.4           0     0          0     0           0     0         7.76     -7.76      0     0             0.1  -0.1          0     0                0              2.7    -1.3    1.1      3.4    -1.0     5.8     2.9    0.6    3    0.333333	 
+    4      6        7.0      9.0       1.231    15.0     13.2    20.0    1.06     4       1          0     0       6.1   -6.1       3.0    -3.0         -0.1   0.1           0     0          0     0           0     0         7.76     -7.76      0     0             0.5  -0.5          0     0                0              1.4    -2.5    1.2      1.5    -0.3     0.1    -0.6    0.0    4    0.25	 
+    4      6        9.0     15.0       0.122    26.5     15.5    30.7    1.04     3       1          0     0       5.5   -5.5       0.5    -0.5          7.8  -7.8           0     0          0     0           0     0         7.76     -7.76      0     0             0.8  -0.8          0     0                0             -0.1    -5.5    0.7      0.3    -2.3    -1.2    -0.5    3.3    12   0.0833333	 
+    6      10       5.5      7.0       1.844    7.0      10.8    12.9    1.05     5       1          0     0       4.7   -4.7       0.8    -0.8          2.9  -2.9           0     0          0     0           0     0         7.76     -7.76      0     0             0.1  -0.1          0     0                0             -1.4    -1.8    0.3     -1.0    -1.6    -2.9    -1.3    0.7    6    0.166667	 
+    6      10       7.0      9.0       0.579    12.9     12.8    18.2    1.06     4       1          0     0       3.9   -3.9       3.3    -3.3          1.9  -1.9           0     0          0     0           0     0         7.76     -7.76      0     0             0.4  -0.4          0     0                0              1.1    -0.6    0.8      0.0    -0.8    -2.1    -1.3    1.5    8    0.125	 
+    6      10       9.0     15.0       0.051    24.7     20.0    31.7    1.03     3       1          0     0      12.4  -12.4       1.1    -1.1          1.9  -1.9           0     0          0     0           0     0         7.76     -7.76      0     0             0.4  -0.4          0     0                0             -0.6    -6.3    1.3     -0.0    -3.0    -2.8    -0.9    6.1    24   0.0416667	 
+   10      18       5.5      7.0       0.834    7.2      10.4    12.7    1.05     5       1          0     0       3.2   -3.2       0.9    -0.9          1.2  -1.2           0     0          0     0           0     0         7.76     -7.76      0     0             0.2  -0.2          0     0                0             -1.1    -1.6    0.5     -1.4    -1.1    -3.9    -1.7    0.6    12   0.0833333	 
+   10      18       7.0      9.0       0.287    12.6     13.6    18.5    1.06     5       1          0     0       6.0   -6.0       3.1    -3.1          0.4  -0.4           0     0          0     0           0     0         7.76     -7.76      0     0             0.6  -0.6          0     0                0             -0.3    -1.3    0.7     -0.1     0.7    -0.3    -0.4    2.3    16   0.0625	 
+   10      18       9.0     15.0       0.021    29.9     20.3    36.2    1.03     2       1          0     0      11.6  -11.6       1.7    -1.7          1.4  -1.4           0     0          0     0           0     0         7.76     -7.76      0     0             0.5  -0.5          0     0                0             -1.1    -6.5    1.0     -1.4    -6.0    -6.3    -2.9    5.6    48   0.0208333	 
+   18      34       5.5      7.0       0.344    8.6      10.8    13.7    1.06     5       1          0     0       5.1   -5.1       0.4    -0.4          1.5  -1.5           0     0          0     0           0     0         7.76     -7.76      0     0             0.0  -0.0          0     0                0              0.3    -1.4    0.5     -0.4    -0.0    -2.6    -1.7    1.1    24   0.0416667	 
+   18      34       7.0      9.0       0.100    17.6     14.5    22.8    1.07     4       1          0     0       3.6   -3.6       5.2    -5.2          0.3  -0.3           0     0          0     0           0     0         7.76     -7.76      0     0             0.7  -0.7          0     0                0             -0.2    -0.5    0.8     -0.2    -1.5    -1.0    -0.4    0.0    32   0.03125	 
+   18      34       9.0     15.0       0.016    20.1     16.3    25.9    1.04     4       1          0     0       8.2   -8.2       1.8    -1.8          1.6  -1.6           0     0          0     0           0     0         7.76     -7.76      0     0             0.4  -0.4          0     0                0              0.0    -4.6    0.6     -0.1    -2.5    -2.6    -0.6    5.2    96   0.0104167	 
+   34      100      5.5      7.0       0.061    11.7     12.1    16.8    1.07     4       1          0     0       5.0   -5.0       0.7    -0.7          1.5  -1.5           0     0          0     0           0     0         7.76     -7.76      0     0             0.1  -0.1          0     0                0             -0.4    -1.7    0.5     -1.1    -1.6    -3.4    -2.0    0.9    99   0.010101	 
+   34      100      7.0      9.0       0.028    17.4     14.1    22.3    1.06     6       1          0     0       3.1   -3.1       3.7    -3.7         -0.6   0.6           0     0          0     0           0     0         7.76     -7.76      0     0             0.6  -0.6          0     0                0             -0.6    -0.6    0.5     -1.0     1.5    -1.6    -0.4    1.0    132  0.00757576	 
+   34      100      9.0      15.0      0.003    27.8     17.5    32.9    1.05     3       1          0     0       9.0   -9.0       0.3    -0.3          3.6  -3.6           0     0          0     0           0     0         7.76     -7.76      0     0             1.0  -1.0          0     0                0              1.8    -3.5    0.7      1.0    -4.9    -3.1    -1.5    6.1    396  0.00252525  
+#>>/afs/desy.de/user/b/britzger/xxl/alpos/svn-neu/Alpos/Alpos/datafiles/h1/1412.0928/DiffDijetQ2Pt1_DijetQ2Pt_unfolding_final_ModErrBreakdown_141020.txt:1:
+}}
+
+
+Subsets {
+    Q2_min Pt_min
+}
+
+Cuts { }
+
+
+ErrorSet        "H1Hera-II"   # errors are labelled as "<ErrorSet>_<Name>", and are correlated with other of the same name of other datasets 
+ErrorUnit         Percent     # Are errors given as: "Absolute", "Relative", "Percent"
+
+Errors {{
+ErrorName      Column           Correlation     Nature
+ "Stat"     "stat.(%)"            ESMC          P
+# "LRG"     "JES(up):JES(dn)"       EYM0.5         M
+  JES     "EHFS(up):EHFS(dn)"     EYM0.5           M
+  Ee         "Ee(up):Ee(dn)"       EYM1           M
+  ThE       "ThE(up):ThE(dn)"      EYM1           M
+  Lumi           7.76              EYM1           M
+  Bkg       Bkgd(up):Bkgd(dn)      EYM1           M
+  Mod        Mod(up):Mod(dn)       EYM1        M
+  UnCorrSys       UnCorrSys        EYM0           M
+  fSys10         fSys10         EYM1           M
+  fSys11         fSys11         EYM1           M
+  fSys12         fSys12         EYM1           M
+  fSys13         fSys13         EYM1           M
+  fSys14         fSys14         EYM1           M
+  fSys15         fSys15         EYM1           M
+  fSys16         fSys16         EYM1           M
+  fSys17         fSys17         EYM1           M
+#  HadErr    "had.err"               TYM0.5         M   # Had. corr.
+}}
+#      EpsNames[kJES]    = "eps(LRG)     ";
+#      EpsNames[kLArNoise] = "eps(PD)      ";
+#      EpsNames[10]   = "eps(Mod Q2)  ";
+#      EpsNames[11]   = "eps(Mod PT1) ";
+#      EpsNames[12]   = "eps(Mod xIP) ";
+#      EpsNames[13]   = "eps(Mod Beta)";
+#      EpsNames[14]   = "eps(Mod t)   ";
+#      EpsNames[15]   = "eps(Mod zIP) ";
+#      EpsNames[16]   = "eps(Mod xGam)";
+#      EpsNames[17]   = "eps(Mod Deta)";
+# 
+
+TheoryFactors { # a list 
+ "had" InvBinSize
+}
+
+
+
+Stat_Matrix_Format           "Matrix" # "Matrix" or "SingleValues" or specify single value only
+Stat_Matrix_Type         "Correlation" # 'Covariance', 'Correlation' or 'CorrelationPercent'
+
+Stat_Matrix {{
+  # one empty line here !
+  1.00  -0.64   0.27   0.08  -0.03   0.02   0.09  -0.04   0.01   0.03  -0.02   0.01   0.07  -0.03   0.00 
+ -0.64   1.00  -0.56  -0.05   0.01   0.01  -0.05   0.02  -0.01  -0.02   0.01  -0.00  -0.04   0.01   0.00 
+  0.27  -0.56   1.00   0.02   0.01   0.03   0.01  -0.00   0.01   0.00  -0.00  -0.00   0.00   0.00  -0.00 
+  0.08  -0.05   0.02   1.00  -0.62   0.25   0.10  -0.04   0.01   0.06  -0.03   0.01   0.14  -0.06   0.01 
+ -0.03   0.01   0.01  -0.62   1.00  -0.58  -0.06   0.00   0.01  -0.03   0.02  -0.01  -0.07   0.03  -0.00 
+  0.02   0.01   0.03   0.25  -0.58   1.00   0.02  -0.00  -0.02   0.01  -0.00   0.00   0.02  -0.01  -0.00 
+  0.09  -0.05   0.01   0.10  -0.06   0.02   1.00  -0.60   0.22   0.00  -0.00   0.01   0.13  -0.05   0.01 
+ -0.04   0.02  -0.00  -0.04   0.00  -0.00  -0.60   1.00  -0.59   0.00  -0.04   0.03  -0.06   0.03  -0.00 
+  0.01  -0.01   0.01   0.01   0.01  -0.02   0.22  -0.59   1.00   0.01   0.03  -0.03   0.02   0.01   0.01 
+  0.03  -0.02   0.00   0.06  -0.03   0.01   0.00   0.00   0.01   1.00  -0.57   0.17  -0.05   0.02   0.01 
+ -0.02   0.01  -0.00  -0.03   0.02  -0.00  -0.00  -0.04   0.03  -0.57   1.00  -0.57   0.03  -0.07   0.02 
+  0.01  -0.00  -0.00   0.01  -0.01   0.00   0.01   0.03  -0.03   0.17  -0.57   1.00   0.00   0.03  -0.07 
+  0.07  -0.04   0.00   0.14  -0.07   0.02   0.13  -0.06   0.02  -0.05   0.03   0.00   1.00  -0.60   0.13 
+ -0.03   0.01   0.00  -0.06   0.03  -0.01  -0.05   0.03   0.01   0.02  -0.07   0.03  -0.60   1.00  -0.44 
+  0.00   0.00  -0.00   0.01  -0.00  -0.00   0.01  -0.00   0.01   0.01   0.02  -0.07   0.13  -0.44   1.00 
+}}   
