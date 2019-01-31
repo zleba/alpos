@@ -13,6 +13,7 @@ using namespace PlottingHelper;
 
 #include <vector>
 #include <map>
+#include <cassert>
 
 
 using namespace PlottingHelper;//pollute the namespace!
@@ -37,6 +38,8 @@ struct sysShift {
     std::vector<point> data;
     TH1D *hPars;
     TH2D *hCorrs;
+    map<double, vector<TGraph*>> singletQ2;
+    map<double, vector<TGraph*>> gluonQ2;
     double chi2;
     void readData(TString inFile);
 };
@@ -55,6 +58,7 @@ struct dPlotter {
     void plotParameters(int sh);
     void plotCorrelations();
 
+    pair<TGraphAsymmErrors*,TGraphAsymmErrors*> getBandModel(double q2);
 
     void plotParametersShifts(int sh);
     TGraphAsymmErrors *getPamametersBand(int shMax = 999);
@@ -64,10 +68,14 @@ struct dPlotter {
 
 
 
-void dplotterErr(TString inFile = "../farm/testNewNLO/H1diff_templ.str")
+void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
 {
     dPlotter dplt;
+
     dplt.readData(inFile, 7);
+    dplt.plotPDFs(false);
+
+    return;
 
     for(int i = 1; i <= 7; ++i) {
         dplt.plotParameters(i);
@@ -87,10 +95,40 @@ void sysShift::readData(TString inFile)
 
     hPars  = dynamic_cast<TH1D*>(file->Get("fitparameters"));
     hCorrs = dynamic_cast<TH2D*>(file->Get("fitcorrelations"));
-    assert(hPars);
-    assert(hCorrs);
+    if(!hPars || !hCorrs) {
+        cout << "Not loaded " << __LINE__ << endl;
+        exit(1);
+    }
 
     chi2 = (dynamic_cast<TFitResult*>(file->Get("fitresult")))->MinFcnValue();
+
+
+    int nShifts = 2*hPars->GetNbinsX() + 1;
+    vector<double> q2Vals = {1.8, 8.5, 20, 90, 800};
+    for(double q2 : q2Vals) {
+        singletQ2[q2].resize(nShifts, nullptr);
+        gluonQ2[q2].resize(nShifts, nullptr);
+
+        for(int i = 0; i < nShifts; ++i) {
+            cout << Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_gluon", q2, i ) << endl;
+            cout << Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_d", q2, i ) << endl;
+            gluonQ2[q2][i]   = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%.1f/DPDF_%d/Pom_gluon", q2, i )));
+            singletQ2[q2][i] = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%.1f/DPDF_%d/Pom_d", q2, i )));
+            if(!gluonQ2[q2][i] || !singletQ2[q2][i]) {
+                cout << "Not loaded " << __LINE__  << endl;
+                exit(1);
+            }
+
+            //Rescale singlet by 6:
+            for(int k = 0; k < singletQ2[q2][i]->GetN(); ++k) {
+                double x, y;
+                singletQ2[q2][i]->GetPoint(k, x, y);
+                singletQ2[q2][i]->SetPoint(k, x, 6*y);
+            }
+        }
+    }
+
+
 
     return;
 
@@ -152,6 +190,71 @@ TGraphAsymmErrors *dPlotter::getPamametersBand(int shMax)
     return gr;
 
 }
+
+TGraphAsymmErrors *addBands(vector<TGraphAsymmErrors*> graphs)
+{
+    TGraphAsymmErrors *gr = (TGraphAsymmErrors*) graphs[0]->Clone(rn());
+    for(int i = 0; i < graphs[0]->GetN(); ++i) {
+        double x, vCnt;
+        double errP=0, errM = 0;
+        double el, er, eM, eP;
+        for(int j = 0; j < graphs.size(); ++j) {
+            errP = hypot(errP, graphs[j]->GetErrorYhigh(i));
+            errM = hypot(errM, graphs[j]->GetErrorYlow(i));
+        }
+        gr->SetPointEYhigh(i, errP);
+        gr->SetPointEYlow(i, errP);
+    }
+    return gr;
+}
+
+TGraphAsymmErrors *getBand(vector<TGraph*> graphs)
+{
+    TGraphAsymmErrors *gr = new TGraphAsymmErrors(graphs[0]->GetN());
+    for(int i = 0; i < graphs[0]->GetN(); ++i) {
+        double x, vCnt;
+        graphs[0]->GetPoint(i, x, vCnt);
+
+        double errP = 0, errM = 0;
+        for(auto g : graphs) {
+            double xTmp, vNow;
+            g->GetPoint(i, xTmp, vNow) ;
+            double v = vNow - vCnt;
+            errP = hypot(errP, max(0.0, v));
+            errM = hypot(errM, max(0.0,-v));
+        }
+
+        double xLeft = x, xRight = x;
+        if(i > 0) {
+            double vTmp;
+            graphs[0]->GetPoint(i-1, xLeft, vTmp);
+        }
+        if(i < graphs[0]->GetN() - 1) {
+            double vTmp;
+            graphs[0]->GetPoint(i+1, xRight, vTmp);
+        }
+
+        gr->SetPoint(i, x, vCnt);
+        gr->SetPointError(i, (x-xLeft)/2, (xRight-x)/2, errM, errP);
+
+    }
+    return gr;
+
+}
+
+
+pair<TGraphAsymmErrors*,TGraphAsymmErrors*> dPlotter::getBandModel(double q2)
+{
+    vector<TGraph*> gluons, singlets;
+    for(int i = 0; i < shifts.size(); ++i) {
+        singlets.push_back(shifts[i].singletQ2.at(q2)[0]);
+        gluons.push_back(shifts[i].singletQ2.at(q2)[0]);
+    }
+
+    return {getBand(gluons), getBand(singlets)};
+}
+
+
 
 
 void dPlotter::plotParameters(int sh)
@@ -293,12 +396,6 @@ void dPlotter::plotParametersShifts(int sh)
 }
 
 
-
-
-
-
-
-
 void dPlotter::plotCorrelations()
 {
     gStyle->SetOptStat(0);
@@ -313,5 +410,120 @@ void dPlotter::plotCorrelations()
     
 
     can->SaveAs(outDir + "/corrs.pdf");
+
+}
+
+
+
+void dPlotter::plotPDFs(bool inLog)
+{
+    vector<double> q2s;
+    for(auto v : shifts[0].gluonQ2) {
+        q2s.push_back(v.first);
+    }
+
+    gStyle->SetOptStat(0);
+    TCanvas *can = new TCanvas(rn(),"", 600, 600);
+    SetLeftRight(0.1, 0.14);
+    SetTopBottom(0.1, 0.1);
+
+    double zMin = 4e-3;
+    DivideTransparent(group(1, 0.5, 2), group(1, 0, q2s.size()));
+
+    for(int i = 0; i < q2s.size(); ++i) {
+        //Fill Graph
+
+        TGraphAsymmErrors *grS = getBand(shifts[0].singletQ2.at(q2s[i]));
+        TGraphAsymmErrors *grG = getBand(shifts[0].gluonQ2.at(q2s[i]));
+
+        TGraphAsymmErrors *grSm, *grGm;
+        tie(grGm, grSm) = getBandModel(q2s[i]);
+
+        TGraphAsymmErrors *grStot = addBands({grS, grSm});
+        TGraphAsymmErrors *grGtot = addBands({grG, grGm});
+
+        grS->SetLineColor(kBlue);
+        grG->SetLineColor(kBlue);
+
+
+        can->cd(2*i + 1);
+        TH1D *hFrS = new TH1D(rn(), "", 1, zMin, 1);
+        hFrS->Draw("axis");
+
+
+        grStot->SetFillColorAlpha(kRed, 0.5);
+        grStot->SetFillStyle(1001);
+        grStot->Draw("le3 same");
+
+
+        grS->SetFillColorAlpha(kBlue, 0.5);
+        grS->SetFillStyle(1001);
+        grS->Draw("le3 same");
+
+
+
+        GetYaxis()->SetRangeUser(0, 0.27);
+        //GetYaxis()->SetRangeUser(0.9, 1.1);
+        GetYaxis()->SetNdivisions(503);
+        GetXaxis()->SetNdivisions(404);
+        SetFTO({15}, {6}, {1.4, 2.2, 0.4, 3.9});
+
+        if(inLog) gPad->SetLogx();
+
+        if(i == 0) {
+            DrawLatexUp(-1, "Singlet");
+            GetYaxis()->SetTitle("z #Sigma(z,Q^{2})");
+        }
+        if(i == q2s.size()-1) {
+            GetXaxis()->SetTitle("z");
+        }
+        else {
+            GetXaxis()->SetLabelOffset(50000);
+        }
+
+        can->cd(2*i + 2);
+        TH1D *hFrG = new TH1D(rn(), "", 1, zMin, 1);
+        hFrG->Draw("axis");
+
+        grGtot->SetFillColorAlpha(kRed, 0.5);
+        grGtot->SetFillStyle(1001);
+        grGtot->Draw("le3 same");
+
+        grG->SetFillColorAlpha(kBlue, 0.5);
+        grG->SetFillStyle(1001);
+        grG->Draw("le3 same");
+
+
+        GetYaxis()->SetRangeUser(0, 2.25);
+        //GetYaxis()->SetRangeUser(0.9, 1.1);
+        GetYaxis()->SetNdivisions(503);
+        GetXaxis()->SetNdivisions(404);
+        SetFTO({15}, {6}, {1.4, 2.2, 0.4, 3.9});
+        if(inLog) gPad->SetLogx();
+
+        if(i == 0) {
+            DrawLatexUp(-1, "Gluon");
+            GetYaxis()->SetTitle("z g(z,Q^{2})");
+        }
+        if(i == q2s.size()-1) {
+            GetXaxis()->SetTitle("z");
+        }
+        else {
+            GetXaxis()->SetLabelOffset(50000);
+        }
+
+        DrawLatexRight(1, Form("Q^{2}=%g",q2s[i]), -1, "l");
+
+        if(i == 3) {
+            auto *leg = newLegend(kPos9);
+            leg->AddEntry(grG,   "OurFit");
+            DrawLegends({leg});
+        }
+    }
+
+    if(inLog)
+        can->SaveAs(outDir + "/pdfsLog.pdf");
+    else
+        can->SaveAs(outDir + "/pdfsLin.pdf");
 
 }
