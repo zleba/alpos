@@ -58,7 +58,7 @@ struct dPlotter {
     void plotBeta(double xpom);
     void plotQ2(double xpom);
     void plotXpom();
-    void plotPDFs(bool inLog);
+    void plotPDFs(bool inLog, bool doRatio = false);
     void plotParameters(int sh);
     void plotCorrelations();
 
@@ -80,13 +80,19 @@ void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
     dPlotter dplt;
 
     dplt.readData(inFile, 1);
-    dplt.plotPDFs(false);
+    dplt.plotPDFs(false, true);
+    dplt.plotPDFs(true, true);
+    dplt.plotPDFs(false, false);
+    dplt.plotPDFs(true, false);
+
     for(double q2 : vector<double>({1.75, 8.5, 20, 90, 800})) {
         dplt.plotPDF(q2, 0, false);
         dplt.plotPDF(q2, 0, true);
         dplt.plotPDF(q2, 1, false);
         dplt.plotPDF(q2, 1, true);
     }
+    dplt.plotParameters(1);
+    dplt.plotCorrelations();
 
     return;
 
@@ -94,8 +100,6 @@ void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
         dplt.plotParameters(i);
         dplt.plotParametersShifts(i);
     }
-    //dplt.plotParameters(2);
-    //dplt.plotCorrelations();
     //dplt.plotBeta(0.03f);
 
 }
@@ -467,7 +471,7 @@ void dPlotter::plotCorrelations()
 
 
 
-void dPlotter::plotPDFs(bool inLog)
+void dPlotter::plotPDFs(bool inLog, bool doRatio)
 {
     vector<double> q2s;
     for(auto v : shifts[0].gluonQ2) {
@@ -516,6 +520,19 @@ void dPlotter::plotPDFs(bool inLog)
             grGfB->SetPoint(j, z, xPq[6]);
         }
 
+        if(doRatio) {
+            TGraph *grSRef = (TGraph*) grS->Clone();
+            grS    = GetFraction(grS, grSRef);
+            grStot = GetFraction(grStot, grSRef);
+            grSfA  = GetFraction(grSfA, grSRef);
+            grSfB  = GetFraction(grSfB, grSRef);
+
+            TGraph *grGRef =(TGraph*) grG->Clone();
+            grG    = GetFraction(grG, grGRef);
+            grGtot = GetFraction(grGtot, grGRef);
+            grGfA  = GetFraction(grGfA, grGRef);
+            grGfB  = GetFraction(grGfB, grGRef);
+        }
 
         can->cd(2*i + 1);
         TH1D *hFrS = new TH1D(rn(), "", 1, zMin, 1);
@@ -531,11 +548,14 @@ void dPlotter::plotPDFs(bool inLog)
         grS->SetFillStyle(1001);
         grS->Draw("le3 same");
 
+        grSfA->SetLineColor(kRed);
+        grSfB->SetLineColor(kMagenta);
         grSfA->Draw("l same");
         grSfB->Draw("l same");
 
 
-        GetYaxis()->SetRangeUser(0, 0.27);
+        if(doRatio) GetYaxis()->SetRangeUser(0.4, 1.6);
+        else        GetYaxis()->SetRangeUser(0, 0.27);
         //GetYaxis()->SetRangeUser(0.9, 1.1);
         GetYaxis()->SetNdivisions(503);
         GetXaxis()->SetNdivisions(404);
@@ -545,7 +565,9 @@ void dPlotter::plotPDFs(bool inLog)
 
         if(i == 0) {
             DrawLatexUp(-1, "Singlet");
-            GetYaxis()->SetTitle("z #Sigma(z,Q^{2})");
+            if(doRatio) GetYaxis()->SetTitle("#Sigma(z,Q^{2}) / #Sigma_{0}(z,Q^{2})");
+            else        GetYaxis()->SetTitle("z #Sigma(z,Q^{2})");
+
         }
         if(i == q2s.size()-1) {
             GetXaxis()->SetTitle("z");
@@ -553,6 +575,18 @@ void dPlotter::plotPDFs(bool inLog)
         else {
             GetXaxis()->SetLabelOffset(50000);
         }
+
+
+        if(i == 3 && doRatio) {
+            auto *leg = newLegend(kPos7);
+            leg->SetNColumns(2);
+            leg->AddEntry(grG,   "OurFit", "lf");
+            leg->AddEntry(grGfA, "2006 FitA", "l");
+            leg->AddEntry((TObject*)nullptr, "", "");
+            leg->AddEntry(grGfB, "2006 FitB", "l");
+            DrawLegends({leg});
+        }
+
 
         can->cd(2*i + 2);
         TH1D *hFrG = new TH1D(rn(), "", 1, zMin, 1);
@@ -566,10 +600,14 @@ void dPlotter::plotPDFs(bool inLog)
         grG->SetFillStyle(1001);
         grG->Draw("le3 same");
 
+        grGfA->SetLineColor(kRed);
+        grGfB->SetLineColor(kMagenta);
         grGfA->Draw("l same");
         grGfB->Draw("l same");
 
-        GetYaxis()->SetRangeUser(0, 2.25);
+        if(doRatio) GetYaxis()->SetRangeUser(0.4, 1.6);
+        else        GetYaxis()->SetRangeUser(0, 2.25);
+
         //GetYaxis()->SetRangeUser(0.9, 1.1);
         GetYaxis()->SetNdivisions(503);
         GetXaxis()->SetNdivisions(404);
@@ -578,7 +616,8 @@ void dPlotter::plotPDFs(bool inLog)
 
         if(i == 0) {
             DrawLatexUp(-1, "Gluon");
-            GetYaxis()->SetTitle("z g(z,Q^{2})");
+            if(doRatio) GetYaxis()->SetTitle("g(z,Q^{2}) / g_{0}(z,Q^{2})");
+            else        GetYaxis()->SetTitle("z g(z,Q^{2})");
         }
         if(i == q2s.size()-1) {
             GetXaxis()->SetTitle("z");
@@ -589,17 +628,18 @@ void dPlotter::plotPDFs(bool inLog)
 
         DrawLatexRight(1, Form("Q^{2}=%g",q2s[i]), -1, "l");
 
-        if(i == 3) {
+        if(i == 3 && !doRatio) {
             auto *leg = newLegend(kPos9);
-            leg->AddEntry(grG,   "OurFit");
+            leg->AddEntry(grG,   "OurFit", "lf");
+            leg->AddEntry(grGfA, "2006 FitA", "l");
+            leg->AddEntry(grGfB, "2006 FitB", "l");
             DrawLegends({leg});
         }
     }
 
-    if(inLog)
-        can->SaveAs(outDir + "/pdfsLog.pdf");
-    else
-        can->SaveAs(outDir + "/pdfsLin.pdf");
+    TString sRat = doRatio ? "Rat" : "";
+    if(inLog) can->SaveAs(outDir + "/pdfs"+sRat+"Log.pdf");
+    else      can->SaveAs(outDir + "/pdfs"+sRat+"Lin.pdf");
 
 }
 
