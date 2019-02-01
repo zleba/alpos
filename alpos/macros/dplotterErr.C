@@ -1,7 +1,11 @@
 R__ADD_INCLUDE_PATH($PlH_DIR/PlottingHelper)
 R__LOAD_LIBRARY($PlH_DIR/plottingHelper_C.so)
+
+R__LOAD_LIBRARY($PlH_DIR/../alposBuild/libaem.so)
+
+extern "C" void qcd_2006_(double *z,double *q2, int *ifit, double *xPq,       double *f2, double *fl, double *c2, double *cl);
+
 #include "plottingHelper.h"
-using namespace PlottingHelper;
 
 
 #include "TCanvas.h"
@@ -58,6 +62,9 @@ struct dPlotter {
     void plotParameters(int sh);
     void plotCorrelations();
 
+    void plotPDF(double q2, int fl, bool inLog);
+
+
     pair<TGraphAsymmErrors*,TGraphAsymmErrors*> getBandModel(double q2);
 
     void plotParametersShifts(int sh);
@@ -74,6 +81,7 @@ void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
 
     dplt.readData(inFile, 7);
     dplt.plotPDFs(false);
+    dplt.plotPDF(1.8, 0, false);
 
     return;
 
@@ -207,6 +215,41 @@ TGraphAsymmErrors *addBands(vector<TGraphAsymmErrors*> graphs)
     }
     return gr;
 }
+
+double GetMaximum(TGraph *gr)
+{
+    double m = -1e40;
+    for(int i = 0; i < gr->GetN(); ++i) {
+        double x, y;
+        gr->GetPoint(i, x, y);
+        m = max(m, y);
+    }
+    return m;
+}
+
+TGraphAsymmErrors *GetFraction(TGraphAsymmErrors *gr, TGraph *grRef)
+{
+    TGraphAsymmErrors *grRat = (TGraphAsymmErrors*) gr->Clone(rn());
+    for(int i = 0; i < gr->GetN(); ++i) {
+        double x, v;
+        double xR, vRef;
+        gr->GetPoint(i, x,  v);
+        grRef->GetPoint(i, xR, vRef);
+        if(x != xR) exit(1);
+
+        double refInv = (vRef == 0) ? 0 : 1./vRef;
+
+        double vRat = v * refInv;
+        double eH = gr->GetErrorYhigh(i) * refInv;
+        double eL = gr->GetErrorYlow(i) * refInv;
+
+        grRat->SetPoint(i, x, vRat);
+        grRat->SetPointEYhigh(i, eH);
+        grRat->SetPointEYlow(i, eL);
+    }
+    return grRat;
+}
+
 
 TGraphAsymmErrors *getBand(vector<TGraph*> graphs)
 {
@@ -445,6 +488,19 @@ void dPlotter::plotPDFs(bool inLog)
         grS->SetLineColor(kBlue);
         grG->SetLineColor(kBlue);
 
+        TGraphAsymmErrors *grSfA = new TGraphAsymmErrors(grS->GetN());
+        TGraphAsymmErrors *grGfA = new TGraphAsymmErrors(grS->GetN());
+
+        int ifit = 1;
+        for(int j = 0; j < grS->GetN(); ++j) {
+            double xPq[13], f2[2], fl[2], c2[2], cl[2];
+            double z, vTemp;
+            grS->GetPoint(j, z, vTemp);
+            qcd_2006_(&z,&q2s[i], &ifit, xPq, f2, fl, c2, cl);
+            grSfA->SetPoint(j, z, 6*xPq[7]);
+            grGfA->SetPoint(j, z, xPq[6]);
+        }
+
 
         can->cd(2*i + 1);
         TH1D *hFrS = new TH1D(rn(), "", 1, zMin, 1);
@@ -460,6 +516,7 @@ void dPlotter::plotPDFs(bool inLog)
         grS->SetFillStyle(1001);
         grS->Draw("le3 same");
 
+        grSfA->Draw("l same");
 
 
         GetYaxis()->SetRangeUser(0, 0.27);
@@ -493,6 +550,7 @@ void dPlotter::plotPDFs(bool inLog)
         grG->SetFillStyle(1001);
         grG->Draw("le3 same");
 
+        grGfA->Draw("l same");
 
         GetYaxis()->SetRangeUser(0, 2.25);
         //GetYaxis()->SetRangeUser(0.9, 1.1);
@@ -525,5 +583,115 @@ void dPlotter::plotPDFs(bool inLog)
         can->SaveAs(outDir + "/pdfsLog.pdf");
     else
         can->SaveAs(outDir + "/pdfsLin.pdf");
+
+}
+
+
+
+void dPlotter::plotPDF(double q2, int flav, bool inLog)
+{
+    gStyle->SetOptStat(0);
+    TCanvas *can = new TCanvas(rn(),"", 600, 600);
+    SetLeftRight(0.1, 0.14);
+    SetTopBottom(0.1, 0.1);
+
+    double zMin = 4e-3;
+    DivideTransparent({1.}, {1,0,0.7});
+
+    //Fill Graph
+    TGraphAsymmErrors *gr, *grTot;
+    if(flav == 0)
+        gr = getBand(shifts[0].gluonQ2.at(q2));
+    else
+        gr = getBand(shifts[0].singletQ2.at(q2));
+
+    TGraphAsymmErrors *grSm, *grGm;
+    tie(grGm, grSm) = getBandModel(q2);
+
+    if(flav == 0)
+        grTot = addBands({gr, grGm});
+    else
+        grTot = addBands({gr, grSm});
+
+
+    gr->SetLineColor(kBlue);
+
+    TGraphAsymmErrors *grfA = new TGraphAsymmErrors(gr->GetN());
+
+    int ifit = 1;
+    for(int j = 0; j < gr->GetN(); ++j) {
+        double xPq[13], f2[2], fl[2], c2[2], cl[2];
+        double z, vTemp;
+        gr->GetPoint(j, z, vTemp);
+        qcd_2006_(&z,&q2, &ifit, xPq, f2, fl, c2, cl);
+        if(flav == 0)
+            grfA->SetPoint(j, z, xPq[6]);
+        else
+            grfA->SetPoint(j, z, 6*xPq[7]);
+    }
+
+    can->cd(1);
+
+    TH1D *hFr = new TH1D(rn(), "", 1, zMin, 1);
+    hFr->Draw("axis");
+
+
+    grTot->SetFillColorAlpha(kRed, 0.5);
+    grTot->SetFillStyle(1001);
+    grTot->Draw("le3 same");
+
+
+    gr->SetFillColorAlpha(kBlue, 0.5);
+    gr->SetFillStyle(1001);
+    gr->Draw("le3 same");
+
+    grfA->Draw("l same");
+
+
+    double Max = max(GetMaximum(grfA), GetMaximum(gr));
+    //GetYaxis()->SetRangeUser(0.9, 1.1);
+    GetYaxis()->SetNdivisions(503);
+    GetXaxis()->SetNdivisions(404);
+    SetFTO({15}, {6}, {1.4, 2.2, 0.4, 3.9});
+
+    if(inLog) gPad->SetLogx();
+
+        //DrawLatexUp(-1, "Singlet");
+    GetYaxis()->SetTitle("z #Sigma(z,Q^{2})");
+
+    auto *leg = newLegend(kPos9);
+    leg->AddEntry(gr,   "OurFit");
+    DrawLegends({leg}, true);
+
+    GetYaxis()->SetRangeUser(0, 1.2*Max);
+
+    can->cd(2);
+
+    TH1D *hFrRat = new TH1D(rn(), "", 1, zMin, 1);
+    hFrRat->Draw("axis");
+
+    TGraphAsymmErrors *grRat = GetFraction(gr, gr);
+    TGraphAsymmErrors *grTotRat = GetFraction(grTot, gr);
+    TGraphAsymmErrors *grfARat = GetFraction(grfA, gr);
+
+    grTotRat->SetFillColorAlpha(kRed, 0.5);
+    grTotRat->SetFillStyle(1001);
+    grTotRat->Draw("le3 same");
+
+
+    grRat->SetFillColorAlpha(kBlue, 0.5);
+    grRat->SetFillStyle(1001);
+    grRat->Draw("le3 same");
+
+    grfARat->Draw("l same");
+
+
+    GetYaxis()->SetRangeUser(0.5, 1.5);
+    GetXaxis()->SetTitle("z");
+
+    if(inLog)
+        can->SaveAs(outDir + "/pdfLog.pdf");
+    else
+        can->SaveAs(outDir + "/pdfLin.pdf");
 
 }
