@@ -81,7 +81,12 @@ void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
 
     dplt.readData(inFile, 1);
     dplt.plotPDFs(false);
-    dplt.plotPDF(1.75, 0, false);
+    for(double q2 : vector<double>({1.75, 8.5, 20, 90, 800})) {
+        dplt.plotPDF(q2, 0, false);
+        dplt.plotPDF(q2, 0, true);
+        dplt.plotPDF(q2, 1, false);
+        dplt.plotPDF(q2, 1, true);
+    }
 
     return;
 
@@ -494,15 +499,21 @@ void dPlotter::plotPDFs(bool inLog)
 
         TGraphAsymmErrors *grSfA = new TGraphAsymmErrors(grS->GetN());
         TGraphAsymmErrors *grGfA = new TGraphAsymmErrors(grS->GetN());
+        TGraphAsymmErrors *grSfB = new TGraphAsymmErrors(grS->GetN());
+        TGraphAsymmErrors *grGfB = new TGraphAsymmErrors(grS->GetN());
 
-        int ifit = 1;
         for(int j = 0; j < grS->GetN(); ++j) {
             double xPq[13], f2[2], fl[2], c2[2], cl[2];
             double z, vTemp;
             grS->GetPoint(j, z, vTemp);
+            int ifit = 1;
             qcd_2006_(&z,&q2s[i], &ifit, xPq, f2, fl, c2, cl);
             grSfA->SetPoint(j, z, 6*xPq[7]);
             grGfA->SetPoint(j, z, xPq[6]);
+            ifit = 2;
+            qcd_2006_(&z,&q2s[i], &ifit, xPq, f2, fl, c2, cl);
+            grSfB->SetPoint(j, z, 6*xPq[7]);
+            grGfB->SetPoint(j, z, xPq[6]);
         }
 
 
@@ -521,6 +532,7 @@ void dPlotter::plotPDFs(bool inLog)
         grS->Draw("le3 same");
 
         grSfA->Draw("l same");
+        grSfB->Draw("l same");
 
 
         GetYaxis()->SetRangeUser(0, 0.27);
@@ -555,6 +567,7 @@ void dPlotter::plotPDFs(bool inLog)
         grG->Draw("le3 same");
 
         grGfA->Draw("l same");
+        grGfB->Draw("l same");
 
         GetYaxis()->SetRangeUser(0, 2.25);
         //GetYaxis()->SetRangeUser(0.9, 1.1);
@@ -596,7 +609,7 @@ void dPlotter::plotPDF(double q2, int flav, bool inLog)
 {
     gStyle->SetOptStat(0);
     TCanvas *can = new TCanvas(rn(),"", 600, 600);
-    SetLeftRight(0.1, 0.14);
+    SetLeftRight(0.14, 0.08);
     SetTopBottom(0.1, 0.1);
 
     double zMin = 4e-3;
@@ -621,17 +634,21 @@ void dPlotter::plotPDF(double q2, int flav, bool inLog)
     gr->SetLineColor(kBlue);
 
     TGraphAsymmErrors *grfA = new TGraphAsymmErrors(gr->GetN());
+    TGraphAsymmErrors *grfB = new TGraphAsymmErrors(gr->GetN());
 
-    int ifit = 1;
     for(int j = 0; j < gr->GetN(); ++j) {
         double xPq[13], f2[2], fl[2], c2[2], cl[2];
         double z, vTemp;
         gr->GetPoint(j, z, vTemp);
+        int ifit = 1;
         qcd_2006_(&z,&q2, &ifit, xPq, f2, fl, c2, cl);
-        if(flav == 0)
-            grfA->SetPoint(j, z, xPq[6]);
-        else
-            grfA->SetPoint(j, z, 6*xPq[7]);
+        if(flav == 0) grfA->SetPoint(j, z, xPq[6]);
+        else          grfA->SetPoint(j, z, 6*xPq[7]);
+        ifit = 2;
+        qcd_2006_(&z,&q2, &ifit, xPq, f2, fl, c2, cl);
+        if(flav == 0) grfB->SetPoint(j, z, xPq[6]);
+        else          grfB->SetPoint(j, z, 6*xPq[7]);
+
     }
 
     can->cd(1);
@@ -649,22 +666,34 @@ void dPlotter::plotPDF(double q2, int flav, bool inLog)
     gr->SetFillStyle(1001);
     gr->Draw("le3 same");
 
+    grfA->SetLineColor(kRed);
+    grfB->SetLineColor(kMagenta);
     grfA->Draw("l same");
+    grfB->Draw("l same");
 
 
     double Max = max(GetMaximum(grfA), GetMaximum(gr));
     //GetYaxis()->SetRangeUser(0.9, 1.1);
     GetYaxis()->SetNdivisions(503);
     GetXaxis()->SetNdivisions(404);
-    SetFTO({15}, {6}, {1.4, 2.2, 0.4, 3.9});
+
+    auto decor = []() { SetFTO({20}, {6}, {1.4, 2.2, 0.4, 3.9});};
+    decor();
+    GetXaxis()->SetLabelOffset(50000);
 
     if(inLog) gPad->SetLogx();
 
         //DrawLatexUp(-1, "Singlet");
-    GetYaxis()->SetTitle("z #Sigma(z,Q^{2})");
+    if(flav == 0)
+        GetYaxis()->SetTitle("z g(z,Q^{2})");
+    else
+        GetYaxis()->SetTitle("z #Sigma(z,Q^{2})");
 
-    auto *leg = newLegend(kPos9);
-    leg->AddEntry(gr,   "OurFit");
+    auto *leg = newLegend(kPos7);
+    leg->SetHeader(Form("Q^{2} = %g GeV^{2}", q2));
+    leg->AddEntry(gr,    "OurFit");
+    leg->AddEntry(grfA,   "2006 FitA");
+    leg->AddEntry(grfB,   "2006 FitB");
     DrawLegends({leg}, true);
 
     GetYaxis()->SetRangeUser(0, 1.2*Max);
@@ -673,10 +702,12 @@ void dPlotter::plotPDF(double q2, int flav, bool inLog)
 
     TH1D *hFrRat = new TH1D(rn(), "", 1, zMin, 1);
     hFrRat->Draw("axis");
+    if(inLog) gPad->SetLogx();
 
     TGraphAsymmErrors *grRat = GetFraction(gr, gr);
     TGraphAsymmErrors *grTotRat = GetFraction(grTot, gr);
     TGraphAsymmErrors *grfARat = GetFraction(grfA, gr);
+    TGraphAsymmErrors *grfBRat = GetFraction(grfB, gr);
 
     grTotRat->SetFillColorAlpha(kRed, 0.5);
     grTotRat->SetFillStyle(1001);
@@ -688,14 +719,18 @@ void dPlotter::plotPDF(double q2, int flav, bool inLog)
     grRat->Draw("le3 same");
 
     grfARat->Draw("l same");
+    grfBRat->Draw("l same");
 
 
-    GetYaxis()->SetRangeUser(0.5, 1.5);
+    GetYaxis()->SetNdivisions(504);
+    GetYaxis()->SetRangeUser(0.4, 1.6);
     GetXaxis()->SetTitle("z");
+    decor();
 
-    if(inLog)
-        can->SaveAs(outDir + "/pdfLog.pdf");
-    else
-        can->SaveAs(outDir + "/pdfLin.pdf");
+    TString fStr = (flav == 0) ? "Gluon" : "Singlet";
+    fStr += "Q2_";
+    fStr += q2;
+    if(inLog) can->SaveAs(outDir + "/pdf"+fStr+"Log.pdf");
+    else      can->SaveAs(outDir + "/pdf"+fStr+"Lin.pdf");
 
 }
