@@ -101,11 +101,18 @@ bool ASaveDPDFTGraph::Execute(){
    int nzp = INT_NS(nzpom,NS());
    double zmin = DOUBLE_NS(zmin,NS());
    double lxstep = (log(1)-log(zmin))/nzp;
+   double lxlinstep = (1-zmin)/nzp;
+   
    vector<double> zval = {zmin};
    for ( int ix = 0 ; ix < nzp-1 ; ix++ ) {
       zval.push_back(exp((log(zval.back())+lxstep)));
+      if ( exp((log(zval.back())+lxstep)) - zval.back() > lxlinstep ) break;
    }
-   zval.push_back(1);
+   while ( zval.back() < 1 ) { // lin spacing at high z
+      zval.push_back(zval.back()+lxlinstep);
+   }
+   //zval.push_back(1);
+   zval[zval.size()-1] = 1;
    // -------------------------------------------------------------------------- //
 
    // -------------------------------------------------------------------------- //
