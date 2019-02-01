@@ -4,7 +4,7 @@
 
 from math import sqrt
 
-jobName='testNewNLO'
+jobName='testPdfNLO'
 
 def valErr(cnt, err1, err2 = -999):
     if err2 == -999:
@@ -69,15 +69,17 @@ shifts.append(['alphaS'])
 shifts.append(['mCharm'])
 shifts.append(['mBottom'])
 shifts.append(['a0_IR'])
-shifts.append(['ap_IR', 'b0_IR'])
+shifts.append(['ap_IR'])
+shifts.append(['b0_IR'])
 shifts.append(['ap_IP', 'b0_IP'])
 shifts.append(['mu'])
 shifts.append(['Q0'])
 
+shifts = shifts[0:1]
 
 
 #Create files with all variations
-inFiles = put2files('H1diff_templ.str', shifts)
+inFiles = put2files('H1diffQcdnum_templ.str', shifts)
 
 #run all variations in parallel
 procs = []

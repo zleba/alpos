@@ -12,21 +12,29 @@ before_install:
 
 script:
 #Get and compile dependences
-    - ./rd ./installQCDnum.sh
-    - ./rd ./installFast.sh
-    - ./rd ./installApfelxx.sh
-    - ./rd ./installPlHelper.sh
+    - export PROJECT_DIR=$PWD
+    - export PATH=$PWD:$PATH
+    - rd ./installQCDnum.sh
+    - rd ./installFast.sh
+    - rd ./installApfelxx.sh
+    - rd ./installPlHelper.sh
 #Compile Alpos
-    - ./rd ./installAlpos.sh
+    - rd ./installAlpos.sh
 #Run test
-    - ln -s alpos/datafiles
-    - ./rd  alposBuild/alpos alpos/steering/H1diff.str
-    - ./rd root -l -b -q alpos/macros/dplotter.C
+    - cd alpos/farm/
+    - ln -s $PROJECT_DIR/alpos/datafiles
+    - rd ./run.py 
+    - cd $PROJECT_DIR/alpos/macros
+    - rd root -l -b -q dplotterErr.C
+
+      #    - ln -s alpos/datafiles
+      #    - ./rd  alposBuild/alpos alpos/steering/H1diff.str
+      #    - ./rd root -l -b -q alpos/macros/dplotter.C
 
 
 deploy:
     provider: pages
-    local-dir : test/dPlots
+    local-dir : alpos/farm/testPdfNLO/dPlots
     skip-cleanup: true
     github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
     keep-history: false
