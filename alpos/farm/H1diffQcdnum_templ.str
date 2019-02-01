@@ -90,7 +90,7 @@ Stat {{{
 
 SaveDPDFTGraph {{{
    DPDF                 DPDF 
-   nzpom                230
+   nzpom                330
    zmin                 0.001
    xpomValues           {  0.003 }
    Q2Values             { 1.75, 8.5, 20, 90, 800 }

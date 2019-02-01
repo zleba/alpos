@@ -1,7 +1,7 @@
 R__ADD_INCLUDE_PATH($PlH_DIR/PlottingHelper)
 R__LOAD_LIBRARY($PlH_DIR/plottingHelper_C.so)
 
-R__LOAD_LIBRARY($PlH_DIR/../alposBuild/libaem.so)
+R__LOAD_LIBRARY($PROJECT_DIR/alposBuild/libaem.so)
 
 extern "C" void qcd_2006_(double *z,double *q2, int *ifit, double *xPq,       double *f2, double *fl, double *c2, double *cl);
 
@@ -73,6 +73,24 @@ struct dPlotter {
 
 };
 
+
+//Get the gluon+singlet distribution from 2006
+pair<TGraphAsymmErrors*, TGraphAsymmErrors*> getGluonSinglet2006(TGraph *grRef, double q2, int ifit)
+{ 
+    TGraphAsymmErrors *grS = new TGraphAsymmErrors(grRef->GetN());
+    TGraphAsymmErrors *grG = new TGraphAsymmErrors(grRef->GetN());
+
+    for(int j = 0; j < grRef->GetN(); ++j) {
+        double xPq[13], f2[2], fl[2], c2[2], cl[2];
+        double z, vTemp;
+        grRef->GetPoint(j, z, vTemp);
+        qcd_2006_(&z,&q2, &ifit, xPq, f2, fl, c2, cl);
+        ifit = 0;
+        grS->SetPoint(j, z, 6*xPq[7]);
+        grG->SetPoint(j, z, xPq[6]);
+    }
+    return {grG, grS};
+}
 
 
 void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
@@ -224,7 +242,7 @@ TGraphAsymmErrors *addBands(vector<TGraphAsymmErrors*> graphs)
             errM = hypot(errM, graphs[j]->GetErrorYlow(i));
         }
         gr->SetPointEYhigh(i, errP);
-        gr->SetPointEYlow(i, errP);
+        gr->SetPointEYlow(i, errM);
     }
     return gr;
 }
@@ -501,24 +519,10 @@ void dPlotter::plotPDFs(bool inLog, bool doRatio)
         grS->SetLineColor(kBlue);
         grG->SetLineColor(kBlue);
 
-        TGraphAsymmErrors *grSfA = new TGraphAsymmErrors(grS->GetN());
-        TGraphAsymmErrors *grGfA = new TGraphAsymmErrors(grS->GetN());
-        TGraphAsymmErrors *grSfB = new TGraphAsymmErrors(grS->GetN());
-        TGraphAsymmErrors *grGfB = new TGraphAsymmErrors(grS->GetN());
-
-        for(int j = 0; j < grS->GetN(); ++j) {
-            double xPq[13], f2[2], fl[2], c2[2], cl[2];
-            double z, vTemp;
-            grS->GetPoint(j, z, vTemp);
-            int ifit = 1;
-            qcd_2006_(&z,&q2s[i], &ifit, xPq, f2, fl, c2, cl);
-            grSfA->SetPoint(j, z, 6*xPq[7]);
-            grGfA->SetPoint(j, z, xPq[6]);
-            ifit = 2;
-            qcd_2006_(&z,&q2s[i], &ifit, xPq, f2, fl, c2, cl);
-            grSfB->SetPoint(j, z, 6*xPq[7]);
-            grGfB->SetPoint(j, z, xPq[6]);
-        }
+        TGraphAsymmErrors *grSfA, *grSfB;
+        TGraphAsymmErrors *grGfA, *grGfB;
+        tie(grGfA,grSfA) = getGluonSinglet2006(grGtot, q2s[i], 1);
+        tie(grGfB,grSfB) = getGluonSinglet2006(grGtot, q2s[i], 2);
 
         if(doRatio) {
             TGraph *grSRef = (TGraph*) grS->Clone();
@@ -533,6 +537,7 @@ void dPlotter::plotPDFs(bool inLog, bool doRatio)
             grGfA  = GetFraction(grGfA, grGRef);
             grGfB  = GetFraction(grGfB, grGRef);
         }
+
 
         can->cd(2*i + 1);
         TH1D *hFrS = new TH1D(rn(), "", 1, zMin, 1);
@@ -665,10 +670,8 @@ void dPlotter::plotPDF(double q2, int flav, bool inLog)
     TGraphAsymmErrors *grSm, *grGm;
     tie(grGm, grSm) = getBandModel(q2);
 
-    if(flav == 0)
-        grTot = addBands({gr, grGm});
-    else
-        grTot = addBands({gr, grSm});
+    if(flav == 0) grTot = addBands({gr, grGm});
+    else          grTot = addBands({gr, grSm});
 
 
     gr->SetLineColor(kBlue);
@@ -676,19 +679,14 @@ void dPlotter::plotPDF(double q2, int flav, bool inLog)
     TGraphAsymmErrors *grfA = new TGraphAsymmErrors(gr->GetN());
     TGraphAsymmErrors *grfB = new TGraphAsymmErrors(gr->GetN());
 
-    for(int j = 0; j < gr->GetN(); ++j) {
-        double xPq[13], f2[2], fl[2], c2[2], cl[2];
-        double z, vTemp;
-        gr->GetPoint(j, z, vTemp);
-        int ifit = 1;
-        qcd_2006_(&z,&q2, &ifit, xPq, f2, fl, c2, cl);
-        if(flav == 0) grfA->SetPoint(j, z, xPq[6]);
-        else          grfA->SetPoint(j, z, 6*xPq[7]);
-        ifit = 2;
-        qcd_2006_(&z,&q2, &ifit, xPq, f2, fl, c2, cl);
-        if(flav == 0) grfB->SetPoint(j, z, xPq[6]);
-        else          grfB->SetPoint(j, z, 6*xPq[7]);
-
+    TGraphAsymmErrors *grfA, *grfB;
+    if(flav == 0) {
+        grfA = getGluonSinglet2006(grTot, q2, 1).first;
+        grfB = getGluonSinglet2006(grTot, q2, 2).first;
+    }
+    else {
+        grfA = getGluonSinglet2006(grTot, q2, 1).second;
+        grfB = getGluonSinglet2006(grTot, q2, 2).second;
     }
 
     can->cd(1);
