@@ -324,7 +324,7 @@ bool ASaveDPDFTGraph::Execute(){
       // --- Q2/mu_f loop
       for ( auto xp : xpomval ) {
          for ( auto q2 : q2val ) {
-            TString dirname = Form("Q2_%.1f__xpom_%0.4f",q2,xp);
+            TString dirname = Form("Q2_%g__xpom_%0.4f",q2,xp);
             if ( !taskdir->GetDirectory(dirname) ) taskdir->mkdir(dirname);
             TDirectory* q2dir = taskdir->GetDirectory(dirname);
             //taskdir->GetDirectory(dirname)->mkdir(Form("PDF_%d",iMem))->cd();
@@ -364,7 +364,7 @@ bool ASaveDPDFTGraph::Execute(){
 
       // --- Q2/mu_f loop for pom and reg
       for ( auto q2 : q2val ) {
-         TString dirname = Form("Q2_%.1f",q2);
+         TString dirname = Form("Q2_%g",q2);
          if ( !taskdir->GetDirectory(dirname) ) taskdir->mkdir(dirname);
          TDirectory* q2dir = taskdir->GetDirectory(dirname);
          if ( !q2dir->GetDirectory(Form("DPDF_%d",iMem))) q2dir->mkdir(Form("DPDF_%d",iMem));
@@ -421,7 +421,7 @@ bool ASaveDPDFTGraph::Execute(){
       info["Execute"]<<"Calculating error bands for "<<xpomval.size()<<" xpom values, and "<<q2val.size()<<" mu_f^2 values."<<endl;
       for ( auto xp : xpomval ) {
          for ( auto q2 : q2val ) {
-            TString dirname = Form("Q2_%.1f__xpom_%0.4f",q2,xp);
+            TString dirname = Form("Q2_%g__xpom_%0.4f",q2,xp);
             TDirectory* q2dir = taskdir->GetDirectory(dirname);
             //TString dirname = Form("Q2_%.1f",q2);
             // if ( !q2dir->GetDirectory("PDF_Errors") ) q2dir->mkdir("PDF_Errors")->cd();
@@ -476,7 +476,7 @@ bool ASaveDPDFTGraph::Execute(){
       // --- DPDF
       info["Execute"]<<"Calculating error bands for pom and reg for "<<q2val.size()<<" mu_f^2 values."<<endl;
       for ( auto q2 : q2val ) {
-         TString dirname = Form("Q2_%.1f",q2);
+         TString dirname = Form("Q2_%g",q2);
          //TString dirname = Form("Q2_%.1f",q2);
          TDirectory* q2dir = taskdir->GetDirectory(dirname);
          // if ( !q2dir->GetDirectory("PDF_Errors") ) q2dir->mkdir("PDF_Errors")->cd();

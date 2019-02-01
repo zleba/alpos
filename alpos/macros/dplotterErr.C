@@ -81,7 +81,7 @@ void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
 
     dplt.readData(inFile, 1);
     dplt.plotPDFs(false);
-    dplt.plotPDF(1.8, 0, false);
+    dplt.plotPDF(1.75, 0, false);
 
     return;
 
@@ -112,7 +112,7 @@ void sysShift::readData(TString inFile)
 
 
     int nShifts = 2*hPars->GetNbinsX() + 1;
-    vector<double> q2Vals = {1.8, 8.5, 20, 90, 800};
+    vector<double> q2Vals = {1.75, 8.5, 20, 90, 800};
     for(double q2 : q2Vals) {
         singletQ2[q2].resize(nShifts, nullptr);
         gluonQ2[q2].resize(nShifts, nullptr);
@@ -120,8 +120,8 @@ void sysShift::readData(TString inFile)
         for(int i = 0; i < nShifts; ++i) {
             cout << Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_gluon", q2, i ) << endl;
             cout << Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_d", q2, i ) << endl;
-            gluonQ2[q2][i]   = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%.1f/DPDF_%d/Pom_gluon", q2, i )));
-            singletQ2[q2][i] = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%.1f/DPDF_%d/Pom_d", q2, i )));
+            gluonQ2[q2][i]   = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_gluon", q2, i )));
+            singletQ2[q2][i] = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_d", q2, i )));
             if(!gluonQ2[q2][i] || !singletQ2[q2][i]) {
                 cout << "Not loaded " << __LINE__  << endl;
                 exit(1);
@@ -169,8 +169,8 @@ void dPlotter::readData(TString inFile, int nErr)
     shifts.resize(2*nErr+1);
     shifts[0].readData(inFile+"0_dir/out.root");
     for(int i = 0; i < nErr; ++i) {
-        shifts[2*i+1].readData(inFile+(i+1)+"u_dir/out.root");
-        shifts[2*i+2].readData(inFile+(i+1)+"d_dir/out.root");
+        shifts[2*i+1].readData(inFile+Form("%du_dir/out.root",i+1));
+        shifts[2*i+2].readData(inFile+Form("%dd_dir/out.root",i+1));
     }
 
     outDir =  inFile(0, inFile.Last('/'));
