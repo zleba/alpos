@@ -81,10 +81,12 @@ void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
 
     dplt.readData(inFile, 1);
     dplt.plotPDFs(false);
-    dplt.plotPDF(1.75, 0, false);
-    dplt.plotPDF(1.75, 0, true);
-    dplt.plotPDF(1.75, 1, false);
-    dplt.plotPDF(1.75, 1, true);
+    for(double q2 : vector<double>({1.75, 8.5, 20, 90, 800})) {
+        dplt.plotPDF(q2, 0, false);
+        dplt.plotPDF(q2, 0, true);
+        dplt.plotPDF(q2, 1, false);
+        dplt.plotPDF(q2, 1, true);
+    }
 
     return;
 
@@ -726,6 +728,8 @@ void dPlotter::plotPDF(double q2, int flav, bool inLog)
     decor();
 
     TString fStr = (flav == 0) ? "Gluon" : "Singlet";
+    fStr += "Q2_";
+    fStr += q2;
     if(inLog) can->SaveAs(outDir + "/pdf"+fStr+"Log.pdf");
     else      can->SaveAs(outDir + "/pdf"+fStr+"Lin.pdf");
 
