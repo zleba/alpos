@@ -79,7 +79,7 @@ void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
 {
     dPlotter dplt;
 
-    dplt.readData(inFile, 7);
+    dplt.readData(inFile, 1);
     dplt.plotPDFs(false);
     dplt.plotPDF(1.8, 0, false);
 
@@ -172,6 +172,10 @@ void dPlotter::readData(TString inFile, int nErr)
         shifts[2*i+1].readData(inFile+(i+1)+"u_dir/out.root");
         shifts[2*i+2].readData(inFile+(i+1)+"d_dir/out.root");
     }
+
+    outDir =  inFile(0, inFile.Last('/'));
+    outDir += "/dPlots";
+    gSystem->mkdir(outDir, true);
 }
 
 
