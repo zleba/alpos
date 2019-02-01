@@ -19,7 +19,12 @@ DataTheorySets {{
 # H1incDDIS                   datafiles/h1/1107.3420/h1_ddis_lowE.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 
 #  H1incDDIS-HERA-I-Q            datafiles/h1/0606004/h1_ddis_heraI.dat          QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
-    H1-LRG-DiffDijets           datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets.dat         fastNLODiffDIS              # ptmin>=11 
+#   H1-LRG-DiffDijets           datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets.dat         fastNLODiffDIS              # ptmin>=11 
+  
+  H1incDDIS-LAr                 datafiles/h1/0606004/h1_ddis_heraI-LAr.dat              QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
+  H1incDDIS-SpaC97all           datafiles/h1/0606004/h1_ddis_heraI-SpaC-97all.dat       QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
+  H1incDDIS-SpaC97MV            datafiles/h1/0606004/h1_ddis_heraI-SpaC-97MB.dat        QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
+
 }}
 
 
@@ -31,8 +36,10 @@ Tasks {{
 #  PrintSteering           PrintSteering
    PrintTheorySet         PrintTheorySet
 #   SaveTheorySet          Save1
-   AFitter                MyFit
-   StatAnalysis           Stat
+   PrintErrorSummary      PrintErrorSummary
+
+#   AFitter                MyFit
+#   StatAnalysis           Stat
 #   SaveDPDFTGraph         SaveDPDFTGraph
 }}
 
@@ -67,15 +74,14 @@ MyFit {{{
        #IR_a0
        #IR_ap
        #IR_b0
-AlphasMz
-#       IP_a0
-#       IR_n 
+#AlphasMz
+       IP_a0
+       IR_n 
 #       PDFQ0_diff.g0  
 #       PDFQ0_diff.g2
 #       PDFQ0_diff.s0  
 #       PDFQ0_diff.s1  
 #       PDFQ0_diff.s2  
-
    }
         
    PrintResults                 true

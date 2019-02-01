@@ -44,7 +44,7 @@ IsNC                             true
 #   Percent =  14*true
 
 Data {{
-"xp"      "Q2"     "beta"           "mx"             "Sigma"          "stat"  "sys"    "tot"  "unc"    "lar" "ele"     thSpac  thLAr   "noise" "xpom"  "beta"   "bg"    "Plug"  "Q2err" "spa"    beta2  tra  TrigSpa TrigLAr
+"xp"      "Q2"     "beta"           "mx"             "Sigma"          "stat"  "sys"    "tot"  "unc"    "lar" "ele"     thSpac  thLAr   "noise" "xpom"  "Ubeta"   "bg"    "Plug"  "Q2err" "spa"    beta2  tra  TrigSpa TrigLAr
 0.0003    3.5 	 	 0.17 	     4.13379       	 0.0224 	 17.2 	 10.8 	 20.3 	 1.6 	 0.2 	 5.3 	 -1.7   0.0   	 -4.7 	 -0.6 	 -0.8 	 0.0 	 -0.0 	 3.0 	 1.7     0.0    0.0     1.0   0.0
 0.0003    3.5 	 	 0.27 	     3.07619       	 0.0262 	 7.6 	 6.4 	 9.9 	 1.6 	 0.2 	 1.3 	 2.7    0.0   	 -4.6 	 -0.4 	 -0.5 	 -0.1 	 -0.1 	 1.0 	 1.8     0.0    0.0     1.0   0.0
 0.0003    3.5 	 	 0.43 	     2.15396       	 0.0351 	 5.5 	 6.2 	 8.3 	 1.6 	 0.2 	 0.2 	 1.6    0.0   	 4.6 	 -1.6 	 -0.2 	 0.0 	 -0.1 	 1.2 	 0.7     0.0    0.0     1.0   0.0
@@ -350,7 +350,7 @@ Errors {{
   thLAr           thLAr             EYM1		  M
   noise          noise            EYM1		  M
   xpom           xpom             EYM1		  M
-  beta           beta             EYM1		  M
+  beta           Ubeta             EYM1		  M
   bg             bg               EYM1		  M
   Plug           Plug             EYM1		  M
   Q2             Q2err            EYM1		  M
