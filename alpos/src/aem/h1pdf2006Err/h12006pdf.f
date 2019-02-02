@@ -67,7 +67,8 @@ cKC
             WRITE(6,*) '[H12006PDF] Initializing Fit A'
             call i_2006_fita
             ierr=.false.
-      open(unit=1,file='a.data'
+      open(unit=1,file='/afs/desy.de/user/z/zlebcr/h1/diff/alpos/src/'//
+     & 'aem/h1pdf2006Err/a.data'
      &           ,status='OLD',
      &           err=444)
             ierr=.true.
@@ -88,8 +89,10 @@ c      open(unit=1,file='/h1wgs/h1mpim13/x02/usr/britzger/'//
 c     &'alphasfit/JetsAtHighQ2/FitDiffJets/Boris/ddis2jet/b.data'
 c     &           ,status='OLD',
 c     &           err=444)
-      open(unit=1,file='/afs/desy.de/user/b/britzger/'//
-     &'xxl/alpos/svn-neu/Alpos/Alpos/aem/Boris/ddis2jet/b.data'
+      open(unit=1,file='/afs/desy.de/user/z/zlebcr/h1/diff/alpos/src/'//
+     & 'aem/h1pdf2006Err/b.data'
+c      open(unit=1,file='/afs/desy.de/user/b/britzger/'//
+c     &'xxl/alpos/svn-neu/Alpos/Alpos/aem/Boris/ddis2jet/b.data'
      &           ,status='OLD',
      &           err=444)
             ierr=.true.

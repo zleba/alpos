@@ -75,7 +75,7 @@ shifts.append(['ap_IP', 'b0_IP'])
 shifts.append(['mu'])
 shifts.append(['Q0'])
 
-#shifts = shifts[0:2]
+shifts = shifts[0:2]
 
 
 #Create files with all variations

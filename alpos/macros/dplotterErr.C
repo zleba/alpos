@@ -4,6 +4,7 @@ R__LOAD_LIBRARY($PlH_DIR/plottingHelper_C.so)
 R__LOAD_LIBRARY($PROJECT_DIR/alposBuild/libaem.so)
 
 extern "C" void qcd_2006_(double *z,double *q2, int *ifit, double *xPq,       double *f2, double *fl, double *c2, double *cl);
+extern "C" void h12006pdf_(double *z, double *q2, int *ifit, int *ipdf, double *xpq, double *f2, double *fl, double *c2, double *cl);
 
 #include "plottingHelper.h"
 
@@ -63,6 +64,7 @@ struct dPlotter {
     void plotCorrelations();
 
     void plotPDF(double q2, int fl, bool inLog);
+    void plotPDFsErrors(bool inLog);
 
 
     pair<TGraphAsymmErrors*,TGraphAsymmErrors*> getBandModel(double q2);
@@ -92,16 +94,64 @@ pair<TGraphAsymmErrors*, TGraphAsymmErrors*> getGluonSinglet2006(TGraph *grRef, 
     return {grG, grS};
 }
 
+struct El {
+    double v, eH = 0, eL = 0;
+};
+
+//Get the gluon+singlet distribution from 2006 with errors
+pair<TGraphAsymmErrors*, TGraphAsymmErrors*> getGluonSinglet2006Err(TGraph *grRef, double q2, int ifit)
+{ 
+    TGraphAsymmErrors *grS = new TGraphAsymmErrors(grRef->GetN());
+    TGraphAsymmErrors *grG = new TGraphAsymmErrors(grRef->GetN());
+
+    int nShifts = (ifit == 1) ? 32 : 30;
+
+    for(int j = 0; j < grRef->GetN(); ++j) {
+        double xPq[13], f2[2], fl[2], c2[2], cl[2];
+        double z, vTemp;
+        grRef->GetPoint(j, z, vTemp);
+
+        El g, s;
+        int ipdf = 0;
+        h12006pdf_(&z,&q2, &ifit, &ipdf, xPq,f2,fl,c2,cl);
+        g.v =   xPq[6];
+        s.v = 6*xPq[7];
+        for(ipdf  = 1; ipdf <= nShifts; ++ipdf) {
+            cout << "RAdek " << ifit <<" "<< ipdf << endl;
+            h12006pdf_(&z,&q2, &ifit, &ipdf, xPq,f2,fl,c2,cl);
+            g.eH = hypot(g.eH, max(0., xPq[6] - g.v));
+            s.eH = hypot(s.eH, max(0.,6*xPq[7] - s.v));
+            g.eL = hypot(g.eL, max(0., g.v - xPq[6]));
+            s.eL = hypot(s.eL, max(0., s.v - 6*xPq[7]));
+        }
+
+        grS->SetPoint(j, z, s.v);
+        grG->SetPoint(j, z, g.v);
+
+        grS->SetPointError(j, 0, 0, s.eL, s.eH);
+        grG->SetPointError(j, 0, 0, g.eL, s.eH);
+    }
+    return {grG, grS};
+}
+
+
+
+
 
 void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
 {
     dPlotter dplt;
 
     dplt.readData(inFile, 1);
+
+    dplt.plotPDFsErrors(false);
+
     dplt.plotPDFs(false, true);
     dplt.plotPDFs(true, true);
     dplt.plotPDFs(false, false);
     dplt.plotPDFs(true, false);
+
+    return;
 
     for(double q2 : vector<double>({1.75, 8.5, 20, 90, 800})) {
         dplt.plotPDF(q2, 0, false);
@@ -676,9 +726,6 @@ void dPlotter::plotPDF(double q2, int flav, bool inLog)
 
     gr->SetLineColor(kBlue);
 
-    TGraphAsymmErrors *grfA = new TGraphAsymmErrors(gr->GetN());
-    TGraphAsymmErrors *grfB = new TGraphAsymmErrors(gr->GetN());
-
     TGraphAsymmErrors *grfA, *grfB;
     if(flav == 0) {
         grfA = getGluonSinglet2006(grTot, q2, 1).first;
@@ -770,5 +817,169 @@ void dPlotter::plotPDF(double q2, int flav, bool inLog)
     fStr += q2;
     if(inLog) can->SaveAs(outDir + "/pdf"+fStr+"Log.pdf");
     else      can->SaveAs(outDir + "/pdf"+fStr+"Lin.pdf");
+
+}
+
+
+
+
+void dPlotter::plotPDFsErrors(bool inLog)
+{
+    bool doRatio = true;
+    vector<double> q2s;
+    for(auto v : shifts[0].gluonQ2) {
+        q2s.push_back(v.first);
+    }
+
+    gStyle->SetOptStat(0);
+    TCanvas *can = new TCanvas(rn(),"", 600, 600);
+    SetLeftRight(0.1, 0.14);
+    SetTopBottom(0.1, 0.1);
+
+    double zMin = 4e-3;
+    DivideTransparent(group(1, 0.5, 2), group(1, 0, q2s.size()));
+
+    for(int i = 0; i < q2s.size(); ++i) {
+        //Fill Graph
+
+        TGraphAsymmErrors *grS = getBand(shifts[0].singletQ2.at(q2s[i]));
+        TGraphAsymmErrors *grG = getBand(shifts[0].gluonQ2.at(q2s[i]));
+
+        TGraphAsymmErrors *grSm, *grGm;
+        tie(grGm, grSm) = getBandModel(q2s[i]);
+
+        TGraphAsymmErrors *grStot = addBands({grS, grSm});
+        TGraphAsymmErrors *grGtot = addBands({grG, grGm});
+
+        grS->SetLineColor(kBlue);
+        grG->SetLineColor(kBlue);
+
+        TGraphAsymmErrors *grSfA, *grSfB;
+        TGraphAsymmErrors *grGfA, *grGfB;
+        tie(grGfA,grSfA) = getGluonSinglet2006Err(grGtot, q2s[i], 1);
+        tie(grGfB,grSfB) = getGluonSinglet2006Err(grGtot, q2s[i], 2);
+
+
+        if(doRatio) {
+            TGraph *grSRef = (TGraph*) grS->Clone();
+            grS    = GetFraction(grS, grSRef);
+            grStot = GetFraction(grStot, grSRef);
+            grSfA  = GetFraction(grSfA, grSRef);
+            grSfB  = GetFraction(grSfB, grSRef);
+
+            TGraph *grGRef =(TGraph*) grG->Clone();
+            grG    = GetFraction(grG, grGRef);
+            grGtot = GetFraction(grGtot, grGRef);
+            grGfA  = GetFraction(grGfA, grGRef);
+            grGfB  = GetFraction(grGfB, grGRef);
+        }
+
+
+        can->cd(2*i + 1);
+        TH1D *hFrS = new TH1D(rn(), "", 1, zMin, 1);
+        hFrS->Draw("axis");
+
+
+        grStot->SetFillColorAlpha(kRed, 0.5);
+        grStot->SetFillStyle(1001);
+        grStot->Draw("le3 same");
+
+
+        grS->SetFillColorAlpha(kBlue, 0.5);
+        grS->SetFillStyle(1001);
+        grS->Draw("le3 same");
+
+        grSfA->SetLineColor(kRed);
+        grSfB->SetLineColor(kMagenta);
+        grSfA->Draw("l same");
+        grSfB->Draw("l same");
+
+
+        if(doRatio) GetYaxis()->SetRangeUser(0.4, 1.6);
+        else        GetYaxis()->SetRangeUser(0, 0.27);
+        //GetYaxis()->SetRangeUser(0.9, 1.1);
+        GetYaxis()->SetNdivisions(503);
+        GetXaxis()->SetNdivisions(404);
+        SetFTO({15}, {6}, {1.4, 2.2, 0.4, 3.9});
+
+        if(inLog) gPad->SetLogx();
+
+        if(i == 0) {
+            DrawLatexUp(-1, "Singlet");
+            if(doRatio) GetYaxis()->SetTitle("#Sigma(z,Q^{2}) / #Sigma_{0}(z,Q^{2})");
+            else        GetYaxis()->SetTitle("z #Sigma(z,Q^{2})");
+
+        }
+        if(i == q2s.size()-1) {
+            GetXaxis()->SetTitle("z");
+        }
+        else {
+            GetXaxis()->SetLabelOffset(50000);
+        }
+
+
+        if(i == 3 && doRatio) {
+            auto *leg = newLegend(kPos7);
+            leg->SetNColumns(2);
+            leg->AddEntry(grG,   "OurFit", "lf");
+            leg->AddEntry(grGfA, "2006 FitA", "l");
+            leg->AddEntry((TObject*)nullptr, "", "");
+            leg->AddEntry(grGfB, "2006 FitB", "l");
+            DrawLegends({leg});
+        }
+
+
+        can->cd(2*i + 2);
+        TH1D *hFrG = new TH1D(rn(), "", 1, zMin, 1);
+        hFrG->Draw("axis");
+
+        grGtot->SetFillColorAlpha(kRed, 0.5);
+        grGtot->SetFillStyle(1001);
+        grGtot->Draw("le3 same");
+
+        grG->SetFillColorAlpha(kBlue, 0.5);
+        grG->SetFillStyle(1001);
+        grG->Draw("le3 same");
+
+        grGfA->SetLineColor(kRed);
+        grGfB->SetLineColor(kMagenta);
+        grGfA->Draw("l same");
+        grGfB->Draw("l same");
+
+        if(doRatio) GetYaxis()->SetRangeUser(0.4, 1.6);
+        else        GetYaxis()->SetRangeUser(0, 2.25);
+
+        //GetYaxis()->SetRangeUser(0.9, 1.1);
+        GetYaxis()->SetNdivisions(503);
+        GetXaxis()->SetNdivisions(404);
+        SetFTO({15}, {6}, {1.4, 2.2, 0.4, 3.9});
+        if(inLog) gPad->SetLogx();
+
+        if(i == 0) {
+            DrawLatexUp(-1, "Gluon");
+            if(doRatio) GetYaxis()->SetTitle("g(z,Q^{2}) / g_{0}(z,Q^{2})");
+            else        GetYaxis()->SetTitle("z g(z,Q^{2})");
+        }
+        if(i == q2s.size()-1) {
+            GetXaxis()->SetTitle("z");
+        }
+        else {
+            GetXaxis()->SetLabelOffset(50000);
+        }
+
+        DrawLatexRight(1, Form("Q^{2}=%g",q2s[i]), -1, "l");
+
+        if(i == 3 && !doRatio) {
+            auto *leg = newLegend(kPos9);
+            leg->AddEntry(grG,   "OurFit", "lf");
+            leg->AddEntry(grGfA, "2006 FitA", "l");
+            leg->AddEntry(grGfB, "2006 FitB", "l");
+            DrawLegends({leg});
+        }
+    }
+
+    TString sRat = doRatio ? "Rat" : "";
+    if(inLog) can->SaveAs(outDir + "/pdfs"+sRat+"ErrLog.pdf");
+    else      can->SaveAs(outDir + "/pdfs"+sRat+"ErrLin.pdf");
 
 }
