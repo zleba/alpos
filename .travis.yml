@@ -23,7 +23,7 @@ script:
 #Run test
     - cd alpos/farm/
     - ln -s $PROJECT_DIR/alpos/datafiles
-    - rd ./run.py -t -r
+    - rd ./run.py -t -r testPdfNLO
     - cd $PROJECT_DIR/alpos/macros
     - rd root -l -b -q dplotterErr.C
 
