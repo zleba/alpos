@@ -64,7 +64,7 @@ struct dPlotter {
     void plotCorrelations();
 
     void plotPDF(double q2, int fl, bool inLog);
-    void plotPDFsErrors(bool inLog);
+    void plotPDFsErrors(bool inLog, bool onlyErr=true);
 
 
     pair<TGraphAsymmErrors*,TGraphAsymmErrors*> getBandModel(double q2);
@@ -128,8 +128,26 @@ pair<TGraphAsymmErrors*, TGraphAsymmErrors*> getGluonSinglet2006Err(TGraph *grRe
         grS->SetPoint(j, z, s.v);
         grG->SetPoint(j, z, g.v);
 
-        grS->SetPointError(j, 0, 0, s.eL, s.eH);
-        grG->SetPointError(j, 0, 0, g.eL, s.eH);
+
+        double zLeft = z, zRight = z;
+        if(j > 0) {
+            double vTmp;
+            grS->GetPoint(j-1, zLeft, vTmp);
+        }
+        if(j < grS->GetN() - 1) {
+            double vTmp;
+            grS->GetPoint(j+1, zRight, vTmp);
+        }
+        double wL = (z-zLeft)/2, wH = (zRight-z)/2;
+
+
+        //grS->SetPointEYhigh(j, s.eH);
+        //grS->SetPointEYlow(j,  s.eL);
+        //grG->SetPointEYhigh(j, g.eH);
+        //grG->SetPointEYlow(j,  g.eL);
+
+        grS->SetPointError(j, wL, wH, s.eL, s.eH);
+        grG->SetPointError(j, wL, wH, g.eL, s.eH);
     }
     return {grG, grS};
 }
@@ -244,11 +262,8 @@ void sysShift::readData(TString inFile)
 void dPlotter::readData(TString inFile, int nErr)
 {
     shifts.resize(2*nErr+1);
-    shifts[0].readData(inFile+"0_dir/out.root");
-    for(int i = 0; i < nErr; ++i) {
-        shifts[2*i+1].readData(inFile+Form("%du_dir/out.root",i+1));
-        shifts[2*i+2].readData(inFile+Form("%dd_dir/out.root",i+1));
-    }
+    for(int i = 0; i < shifts.size(); ++i) 
+        shifts[i].readData(inFile+Form("%d_dir/out.root",i));
 
     outDir =  inFile(0, inFile.Last('/'));
     outDir += "/dPlots";
@@ -823,7 +838,7 @@ void dPlotter::plotPDF(double q2, int flav, bool inLog)
 
 
 
-void dPlotter::plotPDFsErrors(bool inLog)
+void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
 {
     bool doRatio = true;
     vector<double> q2s;
@@ -838,6 +853,15 @@ void dPlotter::plotPDFsErrors(bool inLog)
 
     double zMin = 4e-3;
     DivideTransparent(group(1, 0.5, 2), group(1, 0, q2s.size()));
+
+    //Init FitA + FitB
+    vector<TGraphAsymmErrors *> grSfAVec(q2s.size()), grSfBVec(q2s.size());
+    vector<TGraphAsymmErrors *> grGfAVec(q2s.size()), grGfBVec(q2s.size());
+    for(int i = 0; i < q2s.size(); ++i) 
+        tie(grGfAVec[i],grSfAVec[i]) = getGluonSinglet2006Err(shifts[0].singletQ2.at(q2s[i])[0], q2s[i], 1);
+    for(int i = 0; i < q2s.size(); ++i) 
+        tie(grGfBVec[i],grSfBVec[i]) = getGluonSinglet2006(shifts[0].gluonQ2.at(q2s[i])[0], q2s[i], 2);
+
 
     for(int i = 0; i < q2s.size(); ++i) {
         //Fill Graph
@@ -854,23 +878,26 @@ void dPlotter::plotPDFsErrors(bool inLog)
         grS->SetLineColor(kBlue);
         grG->SetLineColor(kBlue);
 
-        TGraphAsymmErrors *grSfA, *grSfB;
-        TGraphAsymmErrors *grGfA, *grGfB;
-        tie(grGfA,grSfA) = getGluonSinglet2006Err(grGtot, q2s[i], 1);
-        tie(grGfB,grSfB) = getGluonSinglet2006Err(grGtot, q2s[i], 2);
+        TGraphAsymmErrors *grSfA = grSfAVec[i], *grSfB = grSfBVec[i];
+        TGraphAsymmErrors *grGfA = grGfAVec[i], *grGfB = grSfBVec[i];
+        //tie(grGfA,grSfA) = getGluonSinglet2006Err(grGtot, q2s[i], 1);
+        //tie(grGfB,grSfB) = getGluonSinglet2006Err(grGtot, q2s[i], 2);
 
 
         if(doRatio) {
             TGraph *grSRef = (TGraph*) grS->Clone();
             grS    = GetFraction(grS, grSRef);
             grStot = GetFraction(grStot, grSRef);
-            grSfA  = GetFraction(grSfA, grSRef);
+            if(!onlyErr) grSfA  = GetFraction(grSfA, grSRef);
+            else         grSfA  = GetFraction(grSfA, (TGraph*)grSfA->Clone());
             grSfB  = GetFraction(grSfB, grSRef);
 
             TGraph *grGRef =(TGraph*) grG->Clone();
             grG    = GetFraction(grG, grGRef);
             grGtot = GetFraction(grGtot, grGRef);
-            grGfA  = GetFraction(grGfA, grGRef);
+            //grGfA  = GetFraction(grGfA, grGRef);
+            if(!onlyErr) grGfA  = GetFraction(grGfA, grGRef);
+            else         grGfA  = GetFraction(grGfA, (TGraph*)grGfA->Clone());
             grGfB  = GetFraction(grGfB, grGRef);
         }
 
@@ -891,8 +918,12 @@ void dPlotter::plotPDFsErrors(bool inLog)
 
         grSfA->SetLineColor(kRed);
         grSfB->SetLineColor(kMagenta);
-        grSfA->Draw("l same");
-        grSfB->Draw("l same");
+
+        grSfA->SetFillColor(kRed);
+        grSfA->SetFillStyle(3244);
+
+        grSfA->Draw("le3 same");
+        if(!onlyErr) grSfB->Draw("l same");
 
 
         if(doRatio) GetYaxis()->SetRangeUser(0.4, 1.6);
@@ -943,8 +974,12 @@ void dPlotter::plotPDFsErrors(bool inLog)
 
         grGfA->SetLineColor(kRed);
         grGfB->SetLineColor(kMagenta);
-        grGfA->Draw("l same");
-        grGfB->Draw("l same");
+
+        grGfA->SetFillColor(kRed);
+        grGfA->SetFillStyle(3244);
+
+        grGfA->Draw("le3 same");
+        if(!onlyErr) grGfB->Draw("l same");
 
         if(doRatio) GetYaxis()->SetRangeUser(0.4, 1.6);
         else        GetYaxis()->SetRangeUser(0, 2.25);

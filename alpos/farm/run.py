@@ -17,12 +17,13 @@ def valErr(cnt, err1, err2 = -999):
 def replace(fName, sh, shId, sign): #0=cnt, 1=up, 2=dn
     global pars
     with open(fName, "rt") as fin:
-        tag = ''
-        if sign == 1:
-            tag = 'u'
-        elif sign == 2:
-            tag = 'd'
-        fOutName = jobName +'/'+ fName+str(shId)+tag
+        #tag = ''
+        tag = 2*shId + sign - 2 if shId != 0 else 0
+        #if sign == 1:
+        #    tag = 'u'
+        #elif sign == 2:
+        #    tag = 'd'
+        fOutName = jobName +'/'+ fName+str(tag)
         with open(fOutName, "wt") as fout:
             #print( sh - 1)
             for line in fin:
@@ -31,7 +32,8 @@ def replace(fName, sh, shId, sign): #0=cnt, 1=up, 2=dn
                         line = line.replace('@'+p, str(pars[p][sign]))
                     else:
                         line = line.replace('@'+p, str(pars[p][0]))
-                line = line.replace('@outFile', fOutName+'_dir'+'/'+'out'+'.root')
+                import os
+                line = line.replace('@outFile', os.environ['ALPOS_DIR']+'/farm/'+ fOutName+'_dir'+'/'+'out'+'.root')
 
                 fout.write(line)
         print fOutName
@@ -75,15 +77,15 @@ shifts.append(['ap_IP', 'b0_IP'])
 shifts.append(['mu'])
 shifts.append(['Q0'])
 
-shifts = shifts[0:2]
+#shifts = shifts[0:2]
 
 
 #Create files with all variations
 inFiles = put2files('H1diffQcdnum_templ.str', shifts)
 
-#run all variations in parallel
-procs = []
-from subprocess import Popen
-for fIn in inFiles:
-    procs.append(Popen(['alpos', fIn]))
-for p in procs: p.wait()
+##run all variations in parallel
+#procs = []
+#from subprocess import Popen
+#for fIn in inFiles:
+#    procs.append(Popen(['alpos', fIn]))
+#for p in procs: p.wait()
