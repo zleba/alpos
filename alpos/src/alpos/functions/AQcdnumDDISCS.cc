@@ -180,7 +180,29 @@ bool AQcdnumDDISCS::Update() {
        double xpSigRed_IR =  flxIR*xpom[i] * (F2r  - y*y/yplus*FLr);
 
 
+
        fValue[i] = xpSigRed_IP + n_IR*xpSigRed_IR;
+
+
+       /*
+
+       //RADEK begin (published results for fitA)
+       double t = -1;
+       int Int = 1;
+       ifit = 1;
+       int ipom = 1;
+       double pomFluxA, regFluxA;
+       h12006flux_(&xpom[i], &t, &Int, &ifit, &ipom, &pomFluxA);
+       ipom = 2;
+       h12006flux_(&xpom[i], &t, &Int, &ifit, &ipom, &regFluxA);
+
+       double xpSigRedPub_IP =  pomFluxA*xpom[i] * (f2FitA[0]  - y*y/yplus*flFitA[0]);
+       double xpSigRedPub_IR =  regFluxA*xpom[i] * (f2FitA[1]  - y*y/yplus*flFitA[1]);
+       fValue[i] = xpSigRedPub_IP + xpSigRedPub_IR;
+       */
+
+
+
 
 
        // double sRedP = (f2[0]) - y*y/(1 + pow(1-y,2)) * (fl[0]);

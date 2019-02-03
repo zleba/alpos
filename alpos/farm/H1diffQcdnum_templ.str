@@ -14,7 +14,12 @@ DataTheorySets {{
   AlposName                     SteerFile                                   TheoryFunction            
 #  H1ZEUS-HERA-I-CCDISe+p        datafiles/h1zeus/0911.0884/H1ZEUS_CC_e+p_HERA1.dat                QcdnumDISCS
 #  H1incDDIS                   datafiles/h1/0606004/ddis.dat                   QcdnumDDISCS   # q2>=8.4   beta<=0.81
-  H1incDDIS-HERA-I-Q            datafiles/h1/0606004/h1_ddis_heraI.dat          QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
+#  H1incDDIS-HERA-I-Q            datafiles/h1/0606004/h1_ddis_heraI.dat          QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
+
+  H1incDDIS-HERA-I-LAr            datafiles/h1/0606004/h1_ddis_heraI-LAr.dat         QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
+  H1incDDIS-HERA-I-SpacMB         datafiles/h1/0606004/h1_ddis_heraI-SpaC-97MB.dat   QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
+  H1incDDIS-HERA-I-SpacTrg        datafiles/h1/0606004/h1_ddis_heraI-SpaC-97all.dat  QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
+
 #  H1incDDIS-HERA-I-A            datafiles/h1/0606004/h1_ddis_heraI.dat          ApfelxxDDISCS   # Q2>=8.4   beta<=0.81   mx>=2
 # H1incDDIS                   datafiles/h1/1203.4495/h1_ddis_Comb.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 # H1incDDIS                   datafiles/h1/1107.3420/h1_ddis_lowE.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
@@ -151,8 +156,8 @@ QcdnumInit.InitEvolution                 1       # 0:false, 1: true   # init QCD
 QcdnumInit.PDF                           ApfelxxPDF # PDFQ0_diff # LHAPDF  #QcdnumPDF # PDF1
 # -- if InitEvolution=1: take interanl PDF
 QcdnumInit.Q0                            @Q0  # FitB=1.5811, FitA=1.323 must below mcharm
-QcdnumInit.nxGrid                        80 #60 # number of x-grid points
-QcdnumInit.nqGrid                        60 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
+QcdnumInit.nxGrid                        380 #60 # number of x-grid points
+QcdnumInit.nqGrid                        260 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
 
 # QcdnumPDF defaults
 QcdnumPDF.QcdnumInit                     QcdnumInit   # one QcdnumInit function must made available

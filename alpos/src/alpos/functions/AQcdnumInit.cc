@@ -227,7 +227,8 @@ bool AQcdnumInit::Init() {
 
 
    // --- init x and muf grids to set nf in alpha_s
-   vector<double> xmin = {9.9e-7, 0.01e0, 0.10e0, 0.40e0, 0.70e0};
+   //vector<double> xmin = {9.9e-7, 0.01e0, 0.10e0, 0.40e0, 0.70e0};
+   vector<double> xmin = {1.0e-3};
    vector<int>    iwgt = {1,2,4,8,16};
    int nin = PAR(nxGrid); // number of x-grid points
    SetXGrid(xmin, iwgt, nin);

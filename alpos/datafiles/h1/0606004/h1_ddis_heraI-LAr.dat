@@ -40,11 +40,11 @@ IsNC                             true
 ##########################################################          
 
 #   ColumnType = 4*'Bin','Sigma',14*'Error'
-#   ColumnName = 'xp','Q2','beta','mx','reduced x-section','stat','sys','total','unc','lar','ele','theta','noise',xpom','beta','bg','Plug','Q2','spa' 
+#   ColumnName = 'xp','Q2','beta','mx','reduced x-section','stat','sys','total','unc','lar_LAr','ele_LAr','thLAr_LAr','noise_LAr','xpom_LAr','Ubeta_LAr','bg_LAr','Plug_LAr','beta2_LAr','tra_LAr' 
 #   Percent =  14*true
 
 Data {{
-"xp"      "Q2"     "beta"       "mx"   "Sigma"     "stat"     "sys"    "tot"  "unc"    "lar" "ele"     thLAr   "noise" "xpom"  "Ubeta"   "bg"  "Plug"    beta2  tra TrigLAr
+"xp"      "Q2"     "beta"       "mx"   "Sigma"     "stat"     "sys"    "tot"  "unc"    "lar_LAr" "ele_LAr"     "thLAr_LAr"   "noise_LAr" "xpom_LAr"  "Ubeta_LAr"   "bg_LAr"  "Plug_LAr"    "beta2_LAr"  "tra_LAr" TrigLAr
 0.01      200.0    0.32      20.6155   	 0.0321     5.8 	 6.6 	 8.8 	 3.6 	 -0.9 	 -0.1   -0.7 	 -0.5 	 1.0 	 -0.9 	 5.1 	 -0.7    1.0 	 -0.4   0.3  
 0.01      200.0    0.5       14.1421   	 0.0315     5.3 	 7.0 	 8.8 	 3.6 	 -1.3 	 0.9    -0.8 	 -1.6 	 0.9 	 -0.8 	 5.1 	 -0.6    0.6 	 -1.2   0.3  
 0.01      200.0    0.8       7.07107   	 0.0211     7.9 	 5.9 	 9.9 	 3.6 	 -1.6 	 1.8    -0.3 	 -3.0 	 1.0 	 -1.0 	 1.0 	 -1.0    0.4 	 -1.2   0.3  
@@ -79,20 +79,20 @@ Errors {{
  ErrorName       Column          Correlation      Nature
   stat           stat             ESM0            P
   unc            unc              EYM0		  M
-  lar            lar              EYM1		  M
-  ele            ele              EYM1		  M
-  thLAr          thLAr            EYM1		  M
-  noise          noise            EYM1		  M
-  xpom           xpom             EYM1		  M
-  beta           Ubeta            EYM1		  M
-  bg             bg               EYM1		  M
-  Plug           Plug             EYM1		  M
-  beta2          beta2            EYM1            M
-  tra            tra              EYM1            M
+  lar_LAr            lar_LAr              EYM1		  M
+  ele_LAr            ele_LAr             EYM1		  M
+  thLAr_LAr          thLAr_LAr           EYM1		  M
+  noise_LAr          noise_LAr            EYM1		  M
+  xpom_LAr           xpom_LAr             EYM1		  M
+  Ubeta_LAr           Ubeta_LAr            EYM1		  M
+  bg_LAr             bg_LAr               EYM1		  M
+  Plug_LAr           Plug_LAr             EYM1		  M
+  beta2_LAr          beta2_LAr            EYM1            M
+  tra_LAr            tra_LAr              EYM1            M
 # TrigLAr       TrigLAr            EYM0            M
 #  lumi           1.5              EYM1            M
 #  RadekNorm      10               EYM1            M
-  NormWrtSpaC     9.8            EYM1            M
+  NormWrtSpaC       7.616           EYM1            M
 
 }}
 
