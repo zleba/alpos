@@ -41,7 +41,7 @@ struct point {
 
 struct sysShift {
     std::vector<point> data;
-    TH1D *hPars;
+    TH1D *hPars, *hFixedPars;
     TH2D *hCorrs;
     map<double, vector<TGraph*>> singletQ2;
     map<double, vector<TGraph*>> gluonQ2;
@@ -61,10 +61,12 @@ struct dPlotter {
     void plotXpom();
     void plotPDFs(bool inLog, bool doRatio = false);
     void plotParameters(int sh);
+    void plotParameters();
     void plotCorrelations();
 
     void plotPDF(double q2, int fl, bool inLog);
     void plotPDFsErrors(bool inLog, bool onlyErr=true);
+    void plotShiftsChi2();
 
 
     pair<TGraphAsymmErrors*,TGraphAsymmErrors*> getBandModel(double q2);
@@ -160,7 +162,9 @@ void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
 {
     dPlotter dplt;
 
-    dplt.readData(inFile, 1);
+    dplt.readData(inFile, 100);
+
+    dplt.plotShiftsChi2();
 
     dplt.plotPDFsErrors(false);
 
@@ -168,6 +172,9 @@ void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
     dplt.plotPDFs(true, true);
     dplt.plotPDFs(false, false);
     dplt.plotPDFs(true, false);
+
+    dplt.plotParameters();
+
 
     return;
 
@@ -197,6 +204,7 @@ void sysShift::readData(TString inFile)
     cout << inFile << endl;
 
     hPars  = dynamic_cast<TH1D*>(file->Get("fitparameters"));
+    hFixedPars  = dynamic_cast<TH1D*>(file->Get("ASaveDataTheory/hFixedPars"));
     hCorrs = dynamic_cast<TH2D*>(file->Get("fitcorrelations"));
     if(!hPars || !hCorrs) {
         cout << "Not loaded " << __LINE__ << endl;
@@ -261,9 +269,18 @@ void sysShift::readData(TString inFile)
 
 void dPlotter::readData(TString inFile, int nErr)
 {
-    shifts.resize(2*nErr+1);
-    for(int i = 0; i < shifts.size(); ++i) 
-        shifts[i].readData(inFile+Form("%d_dir/out.root",i));
+    //shifts.resize(2*nErr+1);
+    //for(int i = 0; i < shifts.size(); ++i) 
+    //    shifts[i].readData(inFile+Form("%d_dir/out.root",i));
+    for(int i = 0; i <= nErr; ++i) {
+        TString fName = inFile+Form("%d_dir/out.root",i);
+
+        ifstream testFile(fName.Data());
+        if(testFile.fail())
+            break;
+        shifts.resize(shifts.size()+1);
+        shifts.back().readData(fName);
+    }
 
     outDir =  inFile(0, inFile.Last('/'));
     outDir += "/dPlots";
@@ -532,6 +549,118 @@ void dPlotter::plotParametersShifts(int sh)
     */
 
     can->SaveAs(outDir + Form("/parsErr%d.pdf",sh));
+}
+
+void dPlotter::plotShiftsChi2()
+{
+    map<TString,TGraphAsymmErrors*> grTab, grFit;
+    for(int i = 0; i < (shifts.size()-1)/2; ++i) {
+        //Find the change in fixedPars
+        double lowVal, highVal, cntVal;
+        TString vName;
+        for(int j = 1; j <= shifts[0].hFixedPars->GetNbinsX(); ++j) {
+            double diff1 = shifts[0].hFixedPars->GetBinContent(j) - shifts[2*i+1].hFixedPars->GetBinContent(j);
+            double diff2 = shifts[0].hFixedPars->GetBinContent(j) - shifts[2*i+2].hFixedPars->GetBinContent(j);
+            if(diff1 != 0 && diff2 != 0) {
+                cntVal  = shifts[0].hFixedPars->GetBinContent(j);
+                highVal = shifts[2*i+1].hFixedPars->GetBinContent(j);
+                lowVal  = shifts[2*i+2].hFixedPars->GetBinContent(j);
+                vName = shifts[0].hFixedPars->GetXaxis()->GetBinLabel(j);
+                break;
+            }
+        }
+        double cntChi2  = shifts[0].chi2;
+        double highChi2 = shifts[2*i+1].chi2;
+        double lowChi2  = shifts[2*i+2].chi2;
+
+        vector<double> xx = {lowVal, cntVal, highVal};
+        //vector<double> yy = {lowChi2, cntChi2, highChi2};
+        TMatrixD A(3,3);
+        for(int k = 0; k < 3; ++k) {
+            A(k,0) = 1;
+            A(k,1) = xx[k];
+            A(k,2) = xx[k]*xx[k];
+        }
+        TVectorD yy(3);
+        yy(0) = lowChi2; yy(1) = cntChi2; yy(2) = highChi2;
+        //cout << yy(0) << " "<< yy(1) <<" "<< yy(2) << endl;
+
+        const TVectorD coef = NormalEqn(A,yy);
+        //cout << coef(0) << " "<< coef(1) <<" "<< coef(2) << endl;
+        cout << xx[0] << " "<< xx[1] <<" "<< xx[2] << endl;
+        if(coef(2) > 0) {
+            double cnt = -coef(1)/(2*coef(2));
+            double minChi2  = coef(0) - coef(1)*coef(1) / (4*coef(2));
+            double w = 1./sqrt(coef(2));
+
+            cout << vName <<" : " << cnt <<" +- " << w << " | " << cnt-w <<" "<< cnt+w << endl;
+            grTab[vName] = new TGraphAsymmErrors(1);
+            grFit[vName] = new TGraphAsymmErrors(1);
+            grTab[vName]->SetPoint(0, cntVal, 0);
+            grTab[vName]->SetPointError(0, cntVal-lowVal, highVal-cntVal, 0.5,0.5);
+            grFit[vName]->SetPoint(0, cnt, 0);
+            grFit[vName]->SetPointError(0, w,w, 0.5,0.5);
+        }
+        else {
+            cout << vName <<" has no minimum! "<< yy(0) <<" "<<yy(1)<<" "<<yy(2) << endl;
+        }
+    }
+
+
+    int nShifts = grFit.size();
+
+    gStyle->SetOptStat(0);
+    TCanvas *can = new TCanvas(rn(),"", 600, 600);
+    SetLeftRight(0.43, 0.13);
+
+    DivideTransparent({1}, group(1, 1, nShifts));
+
+    int i = 1;
+    for(auto &gTab : grTab) {
+        TString n = gTab.first;
+
+        can->cd(i);
+        double x, yTemp;
+        grTab[n]->GetPoint(0, x, yTemp);
+        double vtH = x + grTab[n]->GetErrorXhigh(0);
+        double vtL = x - grTab[n]->GetErrorXlow(0);
+
+        grFit[n]->GetPoint(0, x, yTemp);
+        double vfH = x + grFit[n]->GetErrorXhigh(0);
+        double vfL = x - grFit[n]->GetErrorXlow(0);
+
+        double w =  max(vtH,vfH) - min(vtL,vfL);
+
+        //cout << efL << " "<< efH << endl;
+        TH1D *hFrame = new TH1D(rn(), "", 1, min(vtL,vfL)-w/4., max(vtH,vfH)+w/4.);
+        hFrame->Draw("axis");
+
+        grTab[n]->SetFillColor(kYellow);
+        grTab[n]->SetFillStyle(1001);
+        grTab[n]->DrawClone("pe2 same");
+
+        grTab[n]->SetPointEXlow(0,0);
+        grTab[n]->SetPointEXhigh(0,0);
+        grTab[n]->SetLineStyle(2);
+        grTab[n]->Draw("ze same");
+        grFit[n]->Draw("pe same");
+        GetYaxis()->SetRangeUser(-0.5, 0.5);
+        GetYaxis()->SetLabelOffset(50000);
+        GetYaxis()->SetTickSize(0);
+        GetXaxis()->SetNdivisions(404);
+
+        //GetFrame()->SetBorderSize(0);
+        //gPad->GetFrame()->SetLineWidth(0);
+        //gPad->GetFrame()->SetBorderMode(0);
+        //gPad->GetFrame()->SetBorderSize(0);
+
+        UpdateFrame();
+
+        DrawLatexLeft(1, n, -1, "r");
+        ++i;
+    }
+    can->SaveAs(outDir + "/ShiftsRew.pdf");
+
 }
 
 
@@ -1017,4 +1146,113 @@ void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
     if(inLog) can->SaveAs(outDir + "/pdfs"+sRat+"ErrLog.pdf");
     else      can->SaveAs(outDir + "/pdfs"+sRat+"ErrLin.pdf");
 
+}
+
+
+
+
+void dPlotter::plotParameters()
+{
+    map<TString, TGraphAsymmErrors*> grTab, grFit;
+    map<TString, vector<double>> pars;
+    //Parameters  for fitA
+    pars["g0"]  =  {  0.14591    ,   0.33171E-01   };
+    pars["g2"]  =   { -0.94705    ,   0.20309       };
+    pars["s0"] = {  1.0587     ,   0.322116   };
+    pars["s1"] = {   2.2964    ,   0.36439       };
+    pars["s2"] = {  0.56894    ,   0.14969       };
+    pars["IR_n"] =     {  0.16966E-02,   0.41732E-03   };
+    pars["IP_a0"] =   {   1.1182    ,   0.81319E-02 };
+
+
+    for(int i = 1; i <= shifts[0].hPars->GetNbinsX(); ++i) {
+        TString s = shifts[0].hPars->GetXaxis()->GetBinLabel(i);
+        grFit[s] = new TGraphAsymmErrors(1);
+        double cnt = shifts[0].hPars->GetBinContent(i);
+        double err = shifts[0].hPars->GetBinError(i);
+        grFit[s]->SetPoint(0, cnt, 0);
+        grFit[s]->SetPointError(0, err, err, 0.5,0.5);
+
+
+        int nFound = 0;
+        for(auto &p : pars) {
+            if(s.Contains(p.first)) {
+               grTab[s] = new TGraphAsymmErrors(1);
+               grTab[s]->SetPoint(0, p.second[0], 0);
+               grTab[s]->SetPointError(0, p.second[1], p.second[1], 0.5,0.5);
+
+               ++nFound;
+            }
+        }
+        if(nFound != 1) {
+            cout << "Parameter " << s <<" not found for fitA" << endl;
+            exit(1);
+        }
+
+    }
+
+
+    gStyle->SetOptStat(0);
+    TCanvas *can = new TCanvas(rn(),"", 600, 600);
+    SetLeftRight(0.43, 0.13);
+
+    DivideTransparent({1}, group(1, 1, shifts[0].hPars->GetNbinsX()));
+
+    int i = 1;
+    for(auto &gTab : grTab) {
+        TString n = gTab.first;
+
+        can->cd(i);
+        double x, yTemp;
+        grTab[n]->GetPoint(0, x, yTemp);
+        double vtH = x + grTab[n]->GetErrorXhigh(0);
+        double vtL = x - grTab[n]->GetErrorXlow(0);
+
+        grFit[n]->GetPoint(0, x, yTemp);
+        double vfH = x + grFit[n]->GetErrorXhigh(0);
+        double vfL = x - grFit[n]->GetErrorXlow(0);
+
+        double w =  max(vtH,vfH) - min(vtL,vfL);
+
+        //cout << efL << " "<< efH << endl;
+        TH1D *hFrame = new TH1D(rn(), "", 1, min(vtL,vfL)-w/4., max(vtH,vfH)+w/4.);
+        hFrame->Draw("axis");
+        cout << "I am here " << i <<" "<< n << endl;
+
+        grTab[n]->SetFillColor(kYellow);
+        grTab[n]->SetFillStyle(1001);
+        grTab[n]->DrawClone("pe2 same");
+
+        grTab[n]->SetPointEXlow(0,0);
+        grTab[n]->SetPointEXhigh(0,0);
+        grTab[n]->SetLineStyle(2);
+        grTab[n]->Draw("ze same");
+        grFit[n]->Draw("pe same");
+        GetYaxis()->SetRangeUser(-0.5, 0.5);
+        GetYaxis()->SetLabelOffset(50000);
+        GetYaxis()->SetTickSize(0);
+        GetXaxis()->SetNdivisions(404);
+
+        //GetFrame()->SetBorderSize(0);
+        //gPad->GetFrame()->SetLineWidth(0);
+        //gPad->GetFrame()->SetBorderMode(0);
+        //gPad->GetFrame()->SetBorderSize(0);
+
+        UpdateFrame();
+
+        DrawLatexLeft(1, n, -1, "r");
+        ++i;
+    }
+
+
+
+
+   /* 
+    TLegend *leg = newLegend(kPos9);
+    leg->AddEntry(shifts[0].hPars, "Our fit");
+    leg->AddEntry(hParsFitA, "H1 2006 FitA");
+    DrawLegends({leg});
+    */
+
+    can->SaveAs(outDir + Form("/pars.pdf"));
 }

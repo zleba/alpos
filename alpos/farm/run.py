@@ -77,15 +77,31 @@ shifts.append(['ap_IP', 'b0_IP'])
 shifts.append(['mu'])
 shifts.append(['Q0'])
 
-#shifts = shifts[0:2]
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("-t", "--test", help="run small number of shifts", action="store_true")
+parser.add_argument("-r", "--run", help="run in parallel the produced steerings", action="store_true")
+parser.add_argument("output", help="output folder")
+args = parser.parse_args()
+print args.output
+
+#just few shifts
+if args.test:
+    shifts = shifts[0:2]
+
+jobName = args.output 
+
+
 
 
 #Create files with all variations
 inFiles = put2files('H1diffQcdnum_templ.str', shifts)
 
-##run all variations in parallel
-#procs = []
-#from subprocess import Popen
-#for fIn in inFiles:
-#    procs.append(Popen(['alpos', fIn]))
-#for p in procs: p.wait()
+#run all variations in parallel
+if args.run:
+    procs = []
+    from subprocess import Popen
+    for fIn in inFiles:
+        procs.append(Popen(['alpos', fIn]))
+    for p in procs: p.wait()

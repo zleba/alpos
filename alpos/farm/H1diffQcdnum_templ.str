@@ -31,6 +31,7 @@ Tasks {{
    AFitter                MyFit
    StatAnalysis           Stat
    SaveDPDFTGraph         SaveDPDFTGraph
+   ASaveDataTheory        ASaveDataTheory
 }}
 
 
@@ -97,6 +98,9 @@ SaveDPDFTGraph {{{
    AsciiOutput          false
    Alphas               todo
 }}}
+
+ASaveDataTheory {{{
+}}}
 #################################################################
 #  Specify Alpos theory (in 'AlposTheory' namespace)
 #################################################################
@@ -147,8 +151,8 @@ QcdnumInit.InitEvolution                 1       # 0:false, 1: true   # init QCD
 QcdnumInit.PDF                           ApfelxxPDF # PDFQ0_diff # LHAPDF  #QcdnumPDF # PDF1
 # -- if InitEvolution=1: take interanl PDF
 QcdnumInit.Q0                            @Q0  # FitB=1.5811, FitA=1.323 must below mcharm
-QcdnumInit.nxGrid                        180 #60 # number of x-grid points
-QcdnumInit.nqGrid                        160 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
+QcdnumInit.nxGrid                        80 #60 # number of x-grid points
+QcdnumInit.nqGrid                        60 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
 
 # QcdnumPDF defaults
 QcdnumPDF.QcdnumInit                     QcdnumInit   # one QcdnumInit function must made available

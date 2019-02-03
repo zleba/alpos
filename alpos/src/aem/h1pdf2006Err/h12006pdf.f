@@ -37,6 +37,7 @@
 
       double precision z,q2,xpq(-6:6),f2(2),fl(2),c2(2),cl(2)
       integer ifit,ipdf,ifit2,maxpdf,i
+      character*1000 alposDir,pathA, pathB
 
       logical ierr
       data ierr/.false./
@@ -59,7 +60,10 @@ cKC
 cKC      WRITE(*,*)'KAREL ifit,ipdf = ',ifit,ipdf
 cKC
 
-
+      call getenv('ALPOS_DIR', alposDir)
+      pathA = trim(alposDir) // trim('/src/aem/h1pdf2006Err/a.data')
+      pathB = trim(alposDir) // trim('/src/aem/h1pdf2006Err/b.data')
+      
 
       if (ifit.eq.1) then
          maxpdf=32
@@ -67,8 +71,7 @@ cKC
             WRITE(6,*) '[H12006PDF] Initializing Fit A'
             call i_2006_fita
             ierr=.false.
-      open(unit=1,file='/afs/desy.de/user/z/zlebcr/h1/diff/alpos/src/'//
-     & 'aem/h1pdf2006Err/a.data'
+      open(unit=1,file=pathA
      &           ,status='OLD',
      &           err=444)
             ierr=.true.
@@ -89,8 +92,7 @@ c      open(unit=1,file='/h1wgs/h1mpim13/x02/usr/britzger/'//
 c     &'alphasfit/JetsAtHighQ2/FitDiffJets/Boris/ddis2jet/b.data'
 c     &           ,status='OLD',
 c     &           err=444)
-      open(unit=1,file='/afs/desy.de/user/z/zlebcr/h1/diff/alpos/src/'//
-     & 'aem/h1pdf2006Err/b.data'
+      open(unit=1,file=pathB
 c      open(unit=1,file='/afs/desy.de/user/b/britzger/'//
 c     &'xxl/alpos/svn-neu/Alpos/Alpos/aem/Boris/ddis2jet/b.data'
      &           ,status='OLD',

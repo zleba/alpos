@@ -5,6 +5,7 @@
 #include "alpos/AData.h"
 #include "alpos/ASubsetData.h"
 #include "alpos/ASubsetFunction.h"
+#include "alpos/ATheory.h"
 #include <iostream>
 #include <map>
 #include <string>
@@ -155,6 +156,44 @@ bool ASaveDataTheory::Execute(){
 
    const std::vector<double>* errsData = &dataChildren[iChild]->GetSumError("AA", "AbsAvTot");
    const std::vector<double>* errsTheo = &theoChildren[iChild]->GetSumError("AA", "AbsAvTot");
+
+   //string asfunc = STRING_NS(Alphas,NS());
+   //cout << asfunc << endl;
+
+   vector<string> parameters = {
+           "QcdnumInit.AlphasMz"  ,
+           "QcdnumInit.ScaleFacMuR",
+           "QcdnumInit.ScaleFacMuF",
+           "QcdnumInit.mcharm",
+           "QcdnumInit.mbottom",
+           "QcdnumInit.Q0",
+           "DPDF.Flux_pom1_ap",
+           "DPDF.Flux_pom1_b0",
+           "DPDF.Flux_reg1_a0",
+           "DPDF.Flux_reg1_ap",
+           "DPDF.Flux_reg1_b0"};
+
+
+   TH1D *hFixedPars = new TH1D("hFixedPars", "Fixed Parameters varied by theor-unc.", parameters.size(), -0.5, parameters.size() - 0.5);
+   for(int i = 0; i < parameters.size(); ++i) {
+       hFixedPars->SetBinContent(i+1, PAR_ANY(parameters[i]));
+       hFixedPars->GetXaxis()->SetBinLabel(i+1, parameters[i].c_str());
+   }
+
+   /*
+   cout << "Radek : " << PAR_ANY("QcdnumInit.AlphasMz")  << endl;
+   cout << "Radek : " << PAR_ANY("QcdnumInit.ScaleFacMuR")  << endl;
+   cout << "Radek : " << PAR_ANY("QcdnumInit.ScaleFacMuF")  << endl;
+   cout << "Radek : " << PAR_ANY("QcdnumInit.mcharm")  << endl;
+   cout << "Radek : " << PAR_ANY("QcdnumInit.mbottom")  << endl;
+   cout << "Radek : " << PAR_ANY("QcdnumInit.Q0")  << endl;
+   cout << "Radek : " << PAR_ANY("DPDF.Flux_pom1_ap")  << endl;
+   cout << "Radek : " << PAR_ANY("DPDF.Flux_pom1_b0")  << endl;
+   cout << "Radek : " << PAR_ANY("DPDF.Flux_reg1_a0")  << endl;
+   cout << "Radek : " << PAR_ANY("DPDF.Flux_reg1_ap")  << endl;
+   cout << "Radek : " << PAR_ANY("DPDF.Flux_reg1_b0")  << endl;
+   exit(0);
+   */
 
    file->Write();
 
