@@ -62,7 +62,7 @@ MyFit {{{
    PrintLevel                   3
    Tolerance                    1
    Strategy                     1
-   Chisq                        LogNormal
+   Chisq                        NuisanceMult
    
    FitParameters { 
        #IP_ap
@@ -87,8 +87,8 @@ MyFit {{{
 
 
 Stat {{{
-   Chisq                        LogNormal
-   Chisq2                       LogNormalNuisance
+   Chisq                        NuisanceMult
+#   Chisq2                       LogNormalNuisance
    DoChisq                      true
    DoPValue                     true
 }}}
