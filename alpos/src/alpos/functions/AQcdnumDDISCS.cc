@@ -68,6 +68,7 @@ bool AQcdnumDDISCS::Update() {
    vector<double> q2       = DOUBLE_COL_NS(Data,Q2,GetAlposName());
    vector<double> beta     = DOUBLE_COL_NS(Data,beta,GetAlposName());
    vector<double> sigmaVec = DOUBLE_COL_NS(Data,Sigma,GetAlposName());
+   const double sqrts = DOUBLE_NS(sqrt-s,GetAlposName());
 
 
    // cout << "q2Vector size " << q2.size() << endl;
@@ -140,9 +141,9 @@ bool AQcdnumDDISCS::Update() {
    // ------ calc reduced CS
    for (unsigned int i =0; i<q2.size(); i++) {
 
-       double Ep = (q2[i] < 120) ? 820 : 920;
-       double Ee = 27.5;
-       const double s = 4*Ep * Ee;
+       // double Ep = (q2[i] < 120) ? 820 : 920;
+       // double Ee = 27.5;
+       const double s = sqrts*sqrts; //4*Ep * Ee;
 
        double x = beta[i]*xpom[i];
        double y = q2[i]/(s-mp2)/x;

@@ -89,7 +89,8 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
       return pdf;
    }
    double xpom = xpom_zpom_muf[0];
-   if ( xpom == 0 ) xpom = PAR(xpom);
+   static const double& xxpom = PAR(xpom);
+   if ( xpom == 0 ) xpom = xxpom;//PAR(xpom);
    if ( xpom < 1.e-5 || xpom > 1 ) {
       error["Quick"]<<"Unreasonale xpom value:" << xpom<<endl; 
       cout<<"xpom in:  "<<xpom_zpom_muf[0]<<endl;
@@ -100,15 +101,15 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
    double muf  = xpom_zpom_muf[2];
 
    // flux parameters
-   double tcut = PAR(tcut);
-   double xPomNorm= PAR(xPomFluxNorm);
+   static const double& tcut = PAR(tcut);
+   static const double& xPomNorm= PAR(xPomFluxNorm);
 
    // pomeron
    pdf = QUICK(pom1,({zpom,muf}));
    //Pomeron flux
-   double a0_IP = PAR(Flux_pom1_a0);
-   double ap_IP = PAR(Flux_pom1_ap);
-   double b0_IP = PAR(Flux_pom1_b0);
+   static const double& a0_IP = PAR(Flux_pom1_a0);
+   static const double& ap_IP = PAR(Flux_pom1_ap);
+   static const double& b0_IP = PAR(Flux_pom1_b0);
    double flxIP = rflux(xpom, tcut, a0_IP, ap_IP, b0_IP, xPomNorm);
 
    // cout<<"ADPDF! flxIP = " << flxIP <<endl;
@@ -118,32 +119,30 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
 
    for ( auto& p : pdf ) p*=flxIP;
 
-
-
    // pom2
-   double a0_P2 = PAR(Flux_pom2_a0);
+   static const double& a0_P2 = PAR(Flux_pom2_a0);
    if ( a0_P2!=0 ) {
       vector<double> pom2 = QUICK(pom2,({zpom,muf}));
       if ( pom2.size() != 13 ) {
 	 error["Quick"]<<"pom2 is requested (Flux_pom2_a0!=0), but no reasonable PDF function is provided."<<endl;
 	 exit(1);
       }
-      double ap_P2 = PAR(Flux_pom2_ap);
-      double b0_P2 = PAR(Flux_pom2_b0);
+      static const double& ap_P2 = PAR(Flux_pom2_ap);
+      static const double& b0_P2 = PAR(Flux_pom2_b0);
       double flxP2 = rflux(xpom, tcut, a0_P2, ap_P2, b0_P2, xPomNorm);
       for ( int i = 0 ; i < 13 ; i++ ) 
 	 pdf[i] += pom2[i] * flxP2;
    }
    
    // reggeon
-   vector<double> reg1 = QUICK(reg1,({zpom,muf}));
    //Reggeon flux 
-   double n_IR = PAR(reg1_n);
+   static const double& n_IR = PAR(reg1_n);
    if ( n_IR!=0 ) {
-      double a0_IR = PAR(Flux_reg1_a0);
-      double ap_IR = PAR(Flux_reg1_ap);
-      double b0_IR = PAR(Flux_reg1_b0);
+      static const double& a0_IR = PAR(Flux_reg1_a0);
+      static const double& ap_IR = PAR(Flux_reg1_ap);
+      static const double& b0_IR = PAR(Flux_reg1_b0);
       double flxIR = rflux(xpom, tcut, a0_IR, ap_IR, b0_IR, xPomNorm);
+      vector<double> reg1 = QUICK(reg1,({zpom,muf}));
       if ( reg1.size()==13) {
 	 for ( int i = 0 ; i < 13 ; i++ ) 
 	    pdf[i] += reg1[i] * flxIR * n_IR;
@@ -162,21 +161,40 @@ bool ADPDF::Update() {
    debug["Update"]<<"GetAlposName:" <<GetAlposName()<<endl;
    //fValue.resize(GetRequirements().size());
    //fError.resize(GetRequirements().size());
-
+   
    // update
    SET(pom1.xp,PAR(zpom),0);
    SET(pom1.muf,PAR(muf),0);
    UPDATE(pom1);
-   if ( PAR(Flux_pom2_a0) ) {
+   // pom2
+   double a0_P2 = PAR(Flux_pom2_a0);
+   if ( a0_P2!=0 ) {
       SET(pom2.xp,PAR(zpom),0);
       SET(pom2.muf,PAR(muf),0);
+      PAR(Flux_pom2_ap);
+      PAR(Flux_pom2_b0);
       UPDATE(pom2);
    }
-   if ( PAR(reg1_n) != 0 ) {
+   double n_IR = PAR(reg1_n);
+   if ( n_IR != 0 ) {
       SET(reg1.xp,PAR(zpom),0);
       SET(reg1.muf,PAR(muf),0);
       UPDATE(reg1);
+      PAR(Flux_reg1_a0);
+      PAR(Flux_reg1_ap);
+      PAR(Flux_reg1_b0);
    }
+
+   // --- update all parameters (and then use 'quick')
+   PAR(xpom);
+   // flux parameters
+   PAR(tcut);
+   PAR(xPomFluxNorm);
+   //Pomeron flux
+   PAR(Flux_pom1_a0);
+   PAR(Flux_pom1_ap);
+   PAR(Flux_pom1_b0);
+   
 
    fValue = GetQuick(vector<double>{PAR(xpom),PAR(zpom),PAR(muf)});
 

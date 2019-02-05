@@ -59,7 +59,8 @@ const std::vector<std::string> AApfelxxDDISCS::fRequirements = {
    "e-charge",
    "e-polarity",
    "iOrd",
-   "mc","mb","mt"
+   "mc","mb","mt",
+   "nGridFac"
 }; //!< List of all AParm's which this function depends on
 const std::vector<std::string> AApfelxxDDISCS::fStopFurtherNotification = {}; //!< List of Parm's which have changed, but this function does not notify further dependencies
 const std::string AApfelxxDDISCS::fFunctionName = "ApfelxxDDISCS"; //!< The function's name
@@ -115,12 +116,15 @@ bool AApfelxxDDISCS::Init() { //alpos
 
    fDPDF = TheoryHandler::Handler()->GetFuncD(this->GetAlposName()+std::string(".DPDF"));
    fAs   = TheoryHandler::Handler()->GetFuncD(this->GetAlposName()+std::string(".Alpha_s"));
+   int nGridFac = PAR(nGridFac);
+   CONST(nGridFac);
    //const apfel::Grid g{{apfel::SubGrid{100,1e-5,3}, apfel::SubGrid{60,1e-1,3}, apfel::SubGrid{50,6e-1,3}, apfel::SubGrid{50,8e-1,3}}};
    fGrid = unique_ptr<const apfel::Grid>(new apfel::Grid({
-	    apfel::SubGrid{100,1e-5,3}, 
-	    apfel::SubGrid{60,1e-1,3}, 
-	    apfel::SubGrid{50,6e-1,3}, 
-	    apfel::SubGrid{50,8e-1,3}
+	    //apfel::SubGrid{10*nGridFac,1e-3,3}, 
+	    apfel::SubGrid{5*nGridFac,1e-3,3}, 
+	    apfel::SubGrid{5*nGridFac,1e-1,3}, 
+	    apfel::SubGrid{5*nGridFac,6e-1,3}, 
+	    apfel::SubGrid{5*nGridFac,8e-1,3}
 	 }));
    const vector<double> Thresholds = {0, 0, 0, PAR(mc), PAR(mb), PAR(mt)};
    fF2Obj = apfel::InitializeF2NCObjectsZM(*fGrid, Thresholds);
@@ -265,7 +269,7 @@ bool AApfelxxDDISCS::Update() {  //alpos
       double fl = FL.at(0).Evaluate(Q).Evaluate(beta[i]);
       double f3 = 0;//F3.at(0).Evaluate(Q).Evaluate(beta[i]);
 
-      cout<<"Apfel++ Q2="<<Q*Q<<"\tf2="<<f2<<"\tfl="<<fl<<"\tf3="<<f3<<"\tq="<<charge<<"\tpol="<<polty<<endl;
+      //cout<<"Apfel++ Q2="<<Q*Q<<"\tf2="<<f2<<"\tfl="<<fl<<"\tf3="<<f3<<"\tq="<<charge<<"\tpol="<<polty<<endl;
    
       if ( IsNC ) {
 	 f3 *= -1.*charge;
