@@ -118,13 +118,15 @@ pair<TGraphAsymmErrors*, TGraphAsymmErrors*> getGluonSinglet2006Err(TGraph *grRe
         h12006pdf_(&z,&q2, &ifit, &ipdf, xPq,f2,fl,c2,cl);
         g.v =   xPq[6];
         s.v = 6*xPq[7];
-        for(ipdf  = 1; ipdf <= nShifts; ++ipdf) {
-            cout << "RAdek " << ifit <<" "<< ipdf << endl;
+        for(ipdf  = 0; ipdf <= nShifts; ++ipdf) {
+            //cout << "RAdek " << ifit <<" "<< ipdf << endl;
             h12006pdf_(&z,&q2, &ifit, &ipdf, xPq,f2,fl,c2,cl);
             g.eH = hypot(g.eH, max(0., xPq[6] - g.v));
             s.eH = hypot(s.eH, max(0.,6*xPq[7] - s.v));
             g.eL = hypot(g.eL, max(0., g.v - xPq[6]));
             s.eL = hypot(s.eL, max(0., s.v - 6*xPq[7]));
+            //cout << "q2 z iPdf G : "  << q2 <<" "<< z <<" "<< ipdf <<" | "<<g.v <<" "<< xPq[6] <<" | "<< g.eL <<" "<< g.eH << endl;
+            //cout << "q2 z iPdf S : "  << q2 <<" "<< z <<" "<< ipdf <<" | "<<s.v <<" "<< 6*xPq[7] <<" | "<< s.eL <<" "<< s.eH << endl;
         }
 
         grS->SetPoint(j, z, s.v);
@@ -134,22 +136,33 @@ pair<TGraphAsymmErrors*, TGraphAsymmErrors*> getGluonSinglet2006Err(TGraph *grRe
         double zLeft = z, zRight = z;
         if(j > 0) {
             double vTmp;
-            grS->GetPoint(j-1, zLeft, vTmp);
+            grRef->GetPoint(j-1, zLeft, vTmp);
         }
-        if(j < grS->GetN() - 1) {
+        if(j < grRef->GetN() - 1) {
             double vTmp;
-            grS->GetPoint(j+1, zRight, vTmp);
+            grRef->GetPoint(j+1, zRight, vTmp);
         }
-        double wL = (z-zLeft)/2, wH = (zRight-z)/2;
+        double dL = (zLeft - z)/2, dH = (zRight - z)/2;
 
+        if(dL * dH > 0) {
+            cout << "Problem " <<dL <<" "<<dH << endl;
+            for(int k = 0; k < grRef->GetN(); ++k) {
+                double vTmp;
+                grRef->GetPoint(k, z, vTmp);
+                cout << k<<" "<<z << endl;
+            }
+            exit(0);
+        }
+        if(dL > 0)
+            swap(dL, dH);
 
         //grS->SetPointEYhigh(j, s.eH);
         //grS->SetPointEYlow(j,  s.eL);
         //grG->SetPointEYhigh(j, g.eH);
         //grG->SetPointEYlow(j,  g.eL);
 
-        grS->SetPointError(j, wL, wH, s.eL, s.eH);
-        grG->SetPointError(j, wL, wH, g.eL, s.eH);
+        grS->SetPointError(j,-dL, dH, s.eL, s.eH);
+        grG->SetPointError(j,-dL, dH, g.eL, g.eH);
     }
     return {grG, grS};
 }
@@ -158,15 +171,20 @@ pair<TGraphAsymmErrors*, TGraphAsymmErrors*> getGluonSinglet2006Err(TGraph *grRe
 
 
 
-void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
+void dplotterErr(TString inDir = "../farm/checkFitB")
 {
     dPlotter dplt;
 
-    dplt.readData(inFile, 100);
+    dplt.readData(inDir, 100);
 
+
+    dplt.plotPDFsErrors(true, true);
+    dplt.plotPDFsErrors(false, true);
+    return 0;
+    /*
     dplt.plotShiftsChi2();
+    */
 
-    dplt.plotPDFsErrors(false);
 
     dplt.plotPDFs(false, true);
     dplt.plotPDFs(true, true);
@@ -200,8 +218,8 @@ void dplotterErr(TString inFile = "../farm/testPdfNLO/H1diffQcdnum_templ.str")
 
 void sysShift::readData(TString inFile)
 {
-    TFile *file = TFile::Open(inFile);
     cout << inFile << endl;
+    TFile *file = TFile::Open(inFile);
 
     hPars  = dynamic_cast<TH1D*>(file->Get("fitparameters"));
     hFixedPars  = dynamic_cast<TH1D*>(file->Get("ASaveDataTheory/hFixedPars"));
@@ -215,27 +233,30 @@ void sysShift::readData(TString inFile)
 
 
     int nShifts = 2*hPars->GetNbinsX() + 1;
-    vector<double> q2Vals = {1.75, 8.5, 20, 90, 800};
+    //vector<double> q2Vals = {1.75, 8.5, 20, 90, 800};
+    vector<double> q2Vals = {2.5, 8.5, 20, 90, 800};
     for(double q2 : q2Vals) {
         singletQ2[q2].resize(nShifts, nullptr);
         gluonQ2[q2].resize(nShifts, nullptr);
 
         for(int i = 0; i < nShifts; ++i) {
             cout << Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_gluon", q2, i ) << endl;
-            cout << Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_d", q2, i ) << endl;
+            cout << Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_SIGMA", q2, i ) << endl;
             gluonQ2[q2][i]   = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_gluon", q2, i )));
-            singletQ2[q2][i] = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_d", q2, i )));
+            singletQ2[q2][i] = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_SIGMA", q2, i )));
             if(!gluonQ2[q2][i] || !singletQ2[q2][i]) {
                 cout << "Not loaded " << __LINE__  << endl;
                 exit(1);
             }
 
+            /*
             //Rescale singlet by 6:
             for(int k = 0; k < singletQ2[q2][i]->GetN(); ++k) {
                 double x, y;
                 singletQ2[q2][i]->GetPoint(k, x, y);
                 singletQ2[q2][i]->SetPoint(k, x, 6*y);
             }
+            */
         }
     }
 
@@ -267,13 +288,14 @@ void sysShift::readData(TString inFile)
 
 }
 
-void dPlotter::readData(TString inFile, int nErr)
+void dPlotter::readData(TString inDir, int nErr)
 {
     //shifts.resize(2*nErr+1);
     //for(int i = 0; i < shifts.size(); ++i) 
     //    shifts[i].readData(inFile+Form("%d_dir/out.root",i));
     for(int i = 0; i <= nErr; ++i) {
-        TString fName = inFile+Form("%d_dir/out.root",i);
+        TString fName = inDir+Form("/steering.str%d_dir/out.root",i);
+        cout << fName << endl;
 
         ifstream testFile(fName.Data());
         if(testFile.fail())
@@ -282,8 +304,13 @@ void dPlotter::readData(TString inFile, int nErr)
         shifts.back().readData(fName);
     }
 
-    outDir =  inFile(0, inFile.Last('/'));
-    outDir += "/dPlots";
+    if(shifts.size() == 0) {
+        cout << "Nothing read" << endl;
+        exit(1);
+    }
+
+    //outDir =  inFile(0, inFile.Last('/'));
+    outDir = inDir + "/dPlots";
     gSystem->mkdir(outDir, true);
 }
 
@@ -404,7 +431,7 @@ pair<TGraphAsymmErrors*,TGraphAsymmErrors*> dPlotter::getBandModel(double q2)
     vector<TGraph*> gluons, singlets;
     for(int i = 0; i < shifts.size(); ++i) {
         singlets.push_back(shifts[i].singletQ2.at(q2)[0]);
-        gluons.push_back(shifts[i].singletQ2.at(q2)[0]);
+        gluons.push_back(shifts[i].gluonQ2.at(q2)[0]);
     }
 
     return {getBand(gluons), getBand(singlets)};
@@ -971,9 +998,11 @@ void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
 {
     bool doRatio = true;
     vector<double> q2s;
+    //cout << "Radek " << endl;
     for(auto v : shifts[0].gluonQ2) {
         q2s.push_back(v.first);
     }
+    cout << "I am here " <<__LINE__ <<  endl;
 
     gStyle->SetOptStat(0);
     TCanvas *can = new TCanvas(rn(),"", 600, 600);
@@ -982,6 +1011,7 @@ void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
 
     double zMin = 4e-3;
     DivideTransparent(group(1, 0.5, 2), group(1, 0, q2s.size()));
+    cout << "I am here " <<__LINE__ <<  endl;
 
     //Init FitA + FitB
     vector<TGraphAsymmErrors *> grSfAVec(q2s.size()), grSfBVec(q2s.size());
@@ -989,9 +1019,12 @@ void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
     for(int i = 0; i < q2s.size(); ++i) 
         tie(grGfAVec[i],grSfAVec[i]) = getGluonSinglet2006Err(shifts[0].singletQ2.at(q2s[i])[0], q2s[i], 1);
     for(int i = 0; i < q2s.size(); ++i) 
-        tie(grGfBVec[i],grSfBVec[i]) = getGluonSinglet2006(shifts[0].gluonQ2.at(q2s[i])[0], q2s[i], 2);
+        tie(grGfBVec[i],grSfBVec[i]) = getGluonSinglet2006Err(shifts[0].gluonQ2.at(q2s[i])[0], q2s[i], 2);
+    cout << "I am here " <<__LINE__ <<  endl;
 
+    //cout << "Radek " << endl;
 
+    cout << "I am here " <<__LINE__ <<  endl;
     for(int i = 0; i < q2s.size(); ++i) {
         //Fill Graph
 
@@ -1040,19 +1073,20 @@ void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
         grStot->SetFillStyle(1001);
         grStot->Draw("le3 same");
 
-
         grS->SetFillColorAlpha(kBlue, 0.5);
         grS->SetFillStyle(1001);
         grS->Draw("le3 same");
 
+
         grSfA->SetLineColor(kRed);
         grSfB->SetLineColor(kMagenta);
 
-        grSfA->SetFillColor(kRed);
+        grSfA->SetFillColorAlpha(kRed,0.5);
         grSfA->SetFillStyle(3244);
+        //grSfA->SetFillStyle(1001);
 
-        grSfA->Draw("le3 same");
-        if(!onlyErr) grSfB->Draw("l same");
+        grSfA->Draw("le02 same");
+        if(!onlyErr) grSfB->Draw("lX same");
 
 
         if(doRatio) GetYaxis()->SetRangeUser(0.4, 1.6);
@@ -1093,6 +1127,7 @@ void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
         TH1D *hFrG = new TH1D(rn(), "", 1, zMin, 1);
         hFrG->Draw("axis");
 
+
         grGtot->SetFillColorAlpha(kRed, 0.5);
         grGtot->SetFillStyle(1001);
         grGtot->Draw("le3 same");
@@ -1101,14 +1136,25 @@ void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
         grG->SetFillStyle(1001);
         grG->Draw("le3 same");
 
+
+        if(q2s[i] == 8.5) {
+            for(int i = 0; i < grGfA->GetN(); ++i) {
+                double x, y;
+                grGfA->GetPoint(i, x, y);
+                cout << x << " "<<y <<" : " << grGfA->GetErrorYlow(i) <<" "<< grGfA->GetErrorYhigh(i) << endl;
+            }
+            //exit(0);
+        }
+
+
         grGfA->SetLineColor(kRed);
         grGfB->SetLineColor(kMagenta);
 
-        grGfA->SetFillColor(kRed);
+        grGfA->SetFillColorAlpha(kRed,0.5);
         grGfA->SetFillStyle(3244);
+        grGfA->Draw("le2 same");
 
-        grGfA->Draw("le3 same");
-        if(!onlyErr) grGfB->Draw("l same");
+        if(!onlyErr) grGfB->Draw("lX same");
 
         if(doRatio) GetYaxis()->SetRangeUser(0.4, 1.6);
         else        GetYaxis()->SetRangeUser(0, 2.25);
@@ -1141,10 +1187,13 @@ void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
             DrawLegends({leg});
         }
     }
+    cout << "I am here Before saving " <<__LINE__ <<  endl;
 
     TString sRat = doRatio ? "Rat" : "";
+    cout << outDir + "/pdfs"+sRat+"ErrLog.pdf" << endl;
     if(inLog) can->SaveAs(outDir + "/pdfs"+sRat+"ErrLog.pdf");
     else      can->SaveAs(outDir + "/pdfs"+sRat+"ErrLin.pdf");
+    cout << "I am here After saving " <<__LINE__ <<  endl;
 
 }
 

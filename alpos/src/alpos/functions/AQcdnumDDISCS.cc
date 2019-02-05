@@ -184,8 +184,8 @@ bool AQcdnumDDISCS::Update() {
        fValue[i] = xpSigRed_IP + n_IR*xpSigRed_IR;
 
 
-       /*
 
+        /*
        //RADEK begin (published results for fitA)
        double t = -1;
        int Int = 1;
@@ -200,6 +200,7 @@ bool AQcdnumDDISCS::Update() {
        double xpSigRedPub_IR =  regFluxA*xpom[i] * (f2FitA[1]  - y*y/yplus*flFitA[1]);
        fValue[i] = xpSigRedPub_IP + xpSigRedPub_IR;
        */
+
 
 
 

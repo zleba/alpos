@@ -23,7 +23,7 @@ def replace(fName, sh, shId, sign): #0=cnt, 1=up, 2=dn
         #    tag = 'u'
         #elif sign == 2:
         #    tag = 'd'
-        fOutName = jobName +'/'+ fName+str(tag)
+        fOutName = jobName +'/steering.str'+ str(tag) # fName
         with open(fOutName, "wt") as fout:
             #print( sh - 1)
             for line in fin:
@@ -45,6 +45,8 @@ def put2files(fName, shifts):
     import os
     if os.path.isdir(jobName) == False:
         os.mkdir(jobName)
+    if os.path.isdir(jobName+'/logs') == False:
+        os.mkdir(jobName+'/logs')
     inFiles = []
     inFiles.append(replace(fName, [], 0, 0))
     for i in range(len(shifts)):
@@ -64,7 +66,8 @@ pars['b0_IR']   =  valErr(1.6,   0.4, -1.6)
 pars['ap_IP']   =  valErr(0.06, 0.19, -0.06)
 pars['b0_IP']   =  valErr(5.5,   0.7, -2.0)
 pars['mu']      =  [1, 2, 0.5]
-pars['Q0']      =  [sqrt(1.75), sqrt(2.05), sqrt(1.15)] 
+#pars['Q0']      =  [sqrt(1.75), sqrt(2.05), sqrt(1.15)] 
+pars['Q0']      =  [sqrt(2.5), sqrt(2.5), sqrt(2.5)] 
 
 shifts = []
 shifts.append(['alphaS'])
@@ -82,22 +85,22 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--test", help="run small number of shifts", action="store_true")
 parser.add_argument("-r", "--run", help="run in parallel the produced steerings", action="store_true")
-parser.add_argument("output", help="output folder")
+parser.add_argument("steering_template", help="input steering file")
+parser.add_argument("output_directory", help="output folder")
 args = parser.parse_args()
-print args.output
+#print args.output
 
 #just few shifts
 if args.test:
     shifts = shifts[0:2]
 
-jobName = args.output 
+jobName = args.output_directory
 
 
 
 
 #Create files with all variations
-inFiles = put2files('H1diffQcdnum_templ.str', shifts)
-
+inFiles = put2files(args.steering_template, shifts)
 #run all variations in parallel
 if args.run:
     procs = []

@@ -64,7 +64,7 @@ c
        pdf(0) = val(8)                             
       return                                       
 c                                                  
-      entry H1readb                                 
+      entry H1readb
 c                                                  
       read(1,*)nmem,ndef                           
       read(1,1000) (xl_bin(nx),nx=1,n_bin_x)       

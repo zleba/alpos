@@ -198,16 +198,16 @@ Errors {{
  ErrorName       Column          Correlation      Nature
   stat           stat             ESM0            P
   unc            unc              EYM0		  M
-  lar            lar              EYM1		  M
-  ele            ele              EYM1		  M
-  thSpac         thSpac           EYM1		  M
-  noise          noise            EYM1		  M
-  xpom           xpom             EYM1		  M
-  Ubeta           Ubeta             EYM1		  M
-  bg             bg               EYM1		  M
-  Plug           Plug             EYM1		  M
-  Q2err          Q2err            EYM1		  M
-  spa            spa              EYM1            M
+  lar_spc            lar              EYM1		  M
+  ele_spc            ele              EYM1		  M
+  thSpac_spc         thSpac           EYM1		  M
+  noise_spc          noise            EYM1		  M
+  xpom_spc           xpom             EYM1		  M
+  Ubeta_spc           Ubeta             EYM1		  M
+  bg_spc             bg               EYM1		  M
+  Plug_spc           Plug             EYM1		  M
+  Q2err_spc          Q2err            EYM1		  M
+  spa_spc            spa              EYM1            M
   NormSpac       6.074            EYM1            M
 }}
 

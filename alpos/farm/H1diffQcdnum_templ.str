@@ -73,7 +73,7 @@ MyFit {{{
        IP_a0
        IR_n 
        PDFQ0_diff.g0  
-       PDFQ0_diff.g2
+#       PDFQ0_diff.g2
        PDFQ0_diff.s0  
        PDFQ0_diff.s1  
        PDFQ0_diff.s2  
@@ -99,7 +99,7 @@ SaveDPDFTGraph {{{
    nzpom                330
    zmin                 0.001
    xpomValues           {  0.003 }
-   Q2Values             { 1.75, 8.5, 20, 90, 800 }
+   Q2Values             { 2.5, 8.5, 20, 90, 800 }
    AsciiOutput          false
    Alphas               todo
 }}}
@@ -305,7 +305,8 @@ PDFQ0_diff.vTF1               "x*0"
 #   6   a0pom        1.1110       0.73433E-02   
 PDFQ0_diff.g0                 0.14591
 PDFQ0_diff.g1                 0
-PDFQ0_diff.g2                 -0.94705
+#PDFQ0_diff.g2                 -0.94705
+PDFQ0_diff.g2                 0
 PDFQ0_diff.g3                 0
 PDFQ0_diff.g4                 0
 			      

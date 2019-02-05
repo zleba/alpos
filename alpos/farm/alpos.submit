@@ -10,14 +10,16 @@ getenv = True
 #+PreCmd        = "tree"
 #+PreArguments  = "-o tree_before.$(Cluster).$(Process).txt"
 
+dirName = checkFitB
+
 executable          = alpos.sh
-arguments           = "$ENV(ALPOS_DIR)/farm/testPdfNLO/H1diffQcdnum_templ.str$(Process)"
+arguments           = "$ENV(ALPOS_DIR)/farm/$(dirName)/steering.str$(Process)"
 #transfer_executable = True
 universe            = vanilla
 #input               = /nfs/dust/my/path/to/data/mypayload.data
-output              = logs/$(Process).out
-error               = logs/$(Process).err
-log                 = logs/$(Process).log
+output              = $(dirName)/logs/$(Process).out
+error               = $(dirName)/logs/$(Process).err
+log                 = $(dirName)/logs/$(Process).log
 #_$(Cluster)_$(Process) gets substituted by cluster and process ID, putting it in the output files leads to individual files
 #for each job. Remember that regular filesystem rules about maximum files in a directory and maximum filesizes apply (warning)
 #htcondor will (as any other batchsystem) not create any directories for you, hence these need to exist.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-cd /afs/desy.de/user/z/zlebcr/h1/diff
+cd $PROJECT_DIR
 source setup.sh
 cd -
 alpos $1
