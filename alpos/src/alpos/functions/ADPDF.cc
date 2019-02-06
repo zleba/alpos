@@ -73,6 +73,39 @@ std::vector<double> ADPDF::GetQuick(int n, ...) {
     
 }
 
+//tcut is negative : tcut = -1
+double rfluxRaw(double xpom, double a0, double ap, double b0, double tcut)
+{
+   const double mp = 0.93827231;
+
+   //     calc min. kinematically  allowed t
+   double tmin= -pow(mp*xpom,2)/(1.-xpom);
+
+   double logXPinv =  - log(xpom);
+   //     c*xpom**(-(2apom-1))
+   double fl =  exp((2.0*a0-1.)*logXPinv);
+   double b  =  b0+2.0*ap*logXPinv;
+
+   //   at fixed t:  exp(Bt)
+   //  fl = fl * exp(b*tcut);
+
+   //   t-integrated: (1/B)*[exp(-B*tmax)-exp(-B*tmin)]
+   fl = fl * (exp(tmin*b)-exp(tcut*b))/b;
+
+   return fl;
+}
+
+
+static double getNormFlux(double a0, double ap, double b0)
+{
+   double xPomNorm = 0.003;
+   double tCutNorm = -1;
+   const double dm =  rfluxRaw(xPomNorm, a0, ap, b0, tCutNorm);
+   double  norm=(1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
+   return norm;
+}
+
+
 
 // ______________________________________________________________________________________ //
 std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
@@ -84,6 +117,7 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
    //!   xp_mur[0] = xp
    //!   xp_muf[0] = Q
 
+   //cout << "Start DPDF" << endl;
    std::vector<double> pdf(fValue.size(),0);
    //for(auto &p: pdf) p = rand()/(RAND_MAX+0.);
    //return pdf; //RADEK add
@@ -117,7 +151,7 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
    static const double& a0_IP = PAR(Flux_pom1_a0);
    static const double& ap_IP = PAR(Flux_pom1_ap);
    static const double& b0_IP = PAR(Flux_pom1_b0);
-   double flxIP = rflux(xpom, tcut, a0_IP, ap_IP, b0_IP, xPomNorm);
+   double flxIP = fPomNorm * rfluxRaw(xpom, a0_IP, ap_IP, b0_IP, tcut);
 
    // cout<<"ADPDF! flxIP = " << flxIP <<endl;
    // cout<<"ADPDF! gluon   " <<pdf[6]<<endl;
@@ -141,12 +175,6 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
        }
    }
    */
-
-
-
-
-
-
 
    for ( auto& p : pdf ) p*=flxIP;
 
@@ -173,7 +201,8 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
        static const double& a0_IR = PAR(Flux_reg1_a0);
        static const double& ap_IR = PAR(Flux_reg1_ap);
        static const double& b0_IR = PAR(Flux_reg1_b0);
-       double flxIR = rflux(xpom, tcut, a0_IR, ap_IR, b0_IR, xPomNorm);
+       //double flxIR = rflux(xpom, tcut, a0_IR, ap_IR, b0_IR, xPomNorm);
+       double flxIR = fRegNorm * rfluxRaw(xpom, a0_IR, ap_IR, b0_IR, tcut);
        //reg1 = QUICK(reg1,({zpom,muf}));
 
        //RADEK boost
@@ -184,6 +213,7 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
        catch(...) { //if not in cache
            reg1 = QUICK(reg1,({zpom,muf}));
            regVals[{zpom,muf}] = reg1;
+           //cout << "new reading " << regVals.size() << endl;
        }
 
        if ( reg1.size()==13) {
@@ -210,6 +240,10 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
 }
 
 
+
+
+
+
 // __________________________________________________________________________________________ //
 bool ADPDF::Update() {
    debug["Update"]<<"GetAlposName:" <<GetAlposName()<<endl;
@@ -220,6 +254,9 @@ bool ADPDF::Update() {
    SET(pom1.xp,PAR(zpom),0);
    SET(pom1.muf,PAR(muf),0);
    UPDATE(pom1);
+
+
+
    // pom2
    double a0_P2 = PAR(Flux_pom2_a0);
    if ( a0_P2!=0 ) {
@@ -237,6 +274,7 @@ bool ADPDF::Update() {
       PAR(Flux_reg1_a0);
       PAR(Flux_reg1_ap);
       PAR(Flux_reg1_b0);
+      fRegNorm = getNormFlux(PAR(Flux_reg1_a0),PAR(Flux_reg1_ap), PAR(Flux_reg1_b0));
    }
 
    // --- update all parameters (and then use 'quick')
@@ -249,7 +287,7 @@ bool ADPDF::Update() {
    PAR(Flux_pom1_ap);
    PAR(Flux_pom1_b0);
    
-
+   fPomNorm = getNormFlux(PAR(Flux_pom1_a0),PAR(Flux_pom1_ap), PAR(Flux_pom1_b0));
    fValue = GetQuick(vector<double>{PAR(xpom),PAR(zpom),PAR(muf)});
 
    cout<<this->GetAlposName();
@@ -259,26 +297,6 @@ bool ADPDF::Update() {
    return true;
 }
 
-//tcut is negative : tcut = -1
-double ADPDF::rfluxRaw(double xpom, double a0, double ap, double b0, double tcut)
-{
-   const double mp = 0.93827231;
-
-   //     calc min. kinematically  allowed t
-   double tmin= -pow(mp*xpom,2)/(1.-xpom);
-
-   //     c*xpom**(-(2apom-1))
-   double fl =  exp((2.0*a0-1.)*log(1.0/xpom));
-   double b=(b0+2.0*ap*log(1.0/xpom));
-
-   //   at fixed t:  exp(Bt)
-   //  fl = fl * exp(b*tcut);
-
-   //   t-integrated: (1/B)*[exp(-B*tmax)-exp(-B*tmin)]
-   fl = fl * (exp(tmin*b)-exp(tcut*b))/b;
-
-   return fl;
-}
 
 
 double ADPDF::rflux(double xpom, double tcut, double a0, double ap, double b0, double xPomNorm)
@@ -290,6 +308,4 @@ double ADPDF::rflux(double xpom, double tcut, double a0, double ap, double b0, d
 
    return  norm * rfluxRaw(xpom, a0, ap, b0, tcut);
 }
-
-
 
