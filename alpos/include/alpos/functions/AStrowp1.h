@@ -30,7 +30,7 @@ private:
    static const std::vector<std::string> fStopFurtherNotification; //!< List of Parm's which have changed, but this function does not notify further dependencies
 
 protected:
-   
+   std::map<std::pair<double,double>,std::vector<double>> fValCache;
 
 };
 

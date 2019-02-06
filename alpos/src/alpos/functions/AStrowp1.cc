@@ -60,14 +60,17 @@ std::vector<double> AStrowp1::GetQuick(const vector<double>& xp_muf) {
    //!   xp_mur[0] = xp
    //!   xp_muf[0] = Q
 
+   double x   = xp_muf[0];
+   double muf = xp_muf[1];
+   if ( fValCache.count({x,muf}) != 0 ) 
+      return fValCache.at({x,muf});
+
    std::vector<double> ret(fValue.size());
    if ( xp_muf.size() != 2) {
       cout<<"Error in AStrowp1::GetQuick(vector). Quick acces is implemented for two parameter which are 'xp' and 'muf'."<<endl;
       return ret;
    }
 
-   double x   = xp_muf[0];
-   double muf = xp_muf[1];
    double UPV, DNV, SEA, STR, CHM, GL;
    strowp1_(&x, &muf, &UPV, &DNV, &SEA, &STR, &CHM, &GL);
    // C...Put into output arrays.
@@ -96,6 +99,8 @@ std::vector<double> AStrowp1::GetQuick(const vector<double>& xp_muf) {
    ret[10] = CHM;
    ret[11] = 0;
    ret[12] = 0;
+
+   fValCache[{x,muf}] = ret;// cache
 
    return ret;
   

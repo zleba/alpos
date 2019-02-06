@@ -203,7 +203,6 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
    // reggeon
    //Reggeon flux 
    static const double& n_IR = PAR(reg1_n);
-   vector<double> reg1;
    if ( n_IR!=0 ) {
        static const double& a0_IR = PAR(Flux_reg1_a0);
        static const double& ap_IR = PAR(Flux_reg1_ap);
@@ -214,15 +213,9 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
 
        //RADEK boost
        static map<pair<double,double>,vector<double>> regVals;
-       try { //try to read it from the cache
-           reg1 = regVals.at({zpom,muf});
-       }
-       catch(...) { //if not in cache
-          //reg1 = QUICK(reg1,({zpom,muf}));
-          //regVals[{zpom,muf}] = reg1;
+       if ( regVals.count({zpom,muf}) == 0 )
           regVals[{zpom,muf}] = fReg1->GetQuick(vector<double>{zpom,muf});
-           //cout << "new reading " << regVals.size() << endl;
-       }
+       const vector<double>& reg1 = regVals.at({zpom,muf});
 
        if ( reg1.size()==13) {
            for ( int i = 0 ; i < 13 ; i++ ) 
