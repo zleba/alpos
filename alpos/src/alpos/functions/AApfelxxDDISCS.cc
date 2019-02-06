@@ -57,7 +57,7 @@ const std::vector<std::string> AApfelxxDDISCS::fRequirements = {
    "DPDF", // evolved PDF function
    "Alpha_s", // alpha_s evolution function
    "e-charge",
-   "e-polarity",
+//   "e-polarity",
    "iOrd",
    "mc","mb","mt",
    "nGridFac"
@@ -255,19 +255,36 @@ bool AApfelxxDDISCS::Update() {  //alpos
    //const auto F3 = apfel::BuildStructureFunctions(fF3Obj, PDFsalpos, PerturbativeOrder, asalpos, fDq);
 
 
+   // calculate q2 evolution only once.
+   // take care for xpom !!
+   map<pair<double,double>,apfel::Distribution> q2_f2, q2_fl, q2_f3;
+   for ( unsigned int i =0 ; i<q2.size() ; i++ ) {
+      double Q   = sqrt(q2[i]);
+      SET(DPDF.xpom,xpom[i],0); 
+      UPDATE(DPDF);
+      if ( q2_f2.count({q2[i],xpom[i]}) == 0 ) {
+         q2_f2.insert({{q2[i],xpom[i]},F2.at(0).Evaluate(Q)});
+         q2_fl.insert({{q2[i],xpom[i]},FL.at(0).Evaluate(Q)});
+         //q2_f3.insert({{q2[i],xpom[i]},F3.at(0).Evaluate(Q)});
+      }
+   }
+
    // ------ calc structure functions
    for ( unsigned int i =0 ; i<q2.size() ; i++ ) {
-     double Q = sqrt(q2[i]);
-
+      double Q = sqrt(q2[i]);
       double yplus  = 1+(1-y[i])*(1-y[i]);
       double yminus = 1-(1-y[i])*(1-y[i]);
 
-      SET(DPDF.xpom,xpom[i],0); 
-      UPDATE(DPDF);
+      //    SET(DPDF.xpom,xpom[i],0); 
+      //    UPDATE(DPDF);
+      //    double f2 = F2.at(0).Evaluate(Q).Evaluate(beta[i]);
+      //    double fl = FL.at(0).Evaluate(Q).Evaluate(beta[i]);
+      //    double f3 = 0;//F3.at(0).Evaluate(Q).Evaluate(beta[i]);
+      //    cout<<"q2="<<q2[i]<<"\tf2="<<f2<<"\tfl="<<fl<<endl;
 
-      double f2 = F2.at(0).Evaluate(Q).Evaluate(beta[i]);
-      double fl = FL.at(0).Evaluate(Q).Evaluate(beta[i]);
-      double f3 = 0;//F3.at(0).Evaluate(Q).Evaluate(beta[i]);
+      double f2 = q2_f2.at({q2[i],xpom[i]}).Evaluate(beta[i]);
+      double fl = q2_fl.at({q2[i],xpom[i]}).Evaluate(beta[i]);
+      double f3 = 0;//q2_f3.at({q2[i],xpom[i]}).Evaluate(beta[i]);
 
       //cout<<"Apfel++ Q2="<<Q*Q<<"\tf2="<<f2<<"\tfl="<<fl<<"\tf3="<<f3<<"\tq="<<charge<<"\tpol="<<polty<<endl;
    
