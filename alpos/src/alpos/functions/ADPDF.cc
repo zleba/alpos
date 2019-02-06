@@ -3,6 +3,7 @@
 #include "apfel/dglapbuilder.h"
 
 #include <iostream>
+#include <map>
 
 
 //! 
@@ -84,6 +85,9 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
    //!   xp_muf[0] = Q
 
    std::vector<double> pdf(fValue.size(),0);
+   //for(auto &p: pdf) p = rand()/(RAND_MAX+0.);
+   //return pdf; //RADEK add
+
    if ( xpom_zpom_muf.size() != 3) {
       error["GetQuick"]<<"Quick acces is implemented for two parameter which are 'xpom','zpom' and 'muf'."<<endl;
       return pdf;
@@ -99,6 +103,9 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
    }
    double zpom = xpom_zpom_muf[1];
    double muf  = xpom_zpom_muf[2];
+
+
+
 
    // flux parameters
    static const double& tcut = PAR(tcut);
@@ -116,6 +123,30 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
    // cout<<"ADPDF! gluon   " <<pdf[6]<<endl;
    // cout<<"ADPDF! up      " <<pdf[7]<<endl;
    // cout<<"ADPDF! dn      " <<pdf[8]<<endl;
+
+
+   /*
+   static map<vector<double>, double> myMap;
+   vector<double> vNow = {zpom, muf};
+   if(myMap.count(vNow) == 0) {
+       myMap[vNow] = pdf[6];
+       cout << "First" << endl;
+   }
+   else {
+       if(myMap[vNow] == pdf[6])
+           cout << "same" << endl;
+       else {
+           cout << "different " << myMap[vNow]<<" "<< pdf[6] <<  endl;
+           myMap[vNow] = pdf[6];
+       }
+   }
+   */
+
+
+
+
+
+
 
    for ( auto& p : pdf ) p*=flxIP;
 
@@ -137,20 +168,43 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
    // reggeon
    //Reggeon flux 
    static const double& n_IR = PAR(reg1_n);
+   vector<double> reg1;
    if ( n_IR!=0 ) {
-      static const double& a0_IR = PAR(Flux_reg1_a0);
-      static const double& ap_IR = PAR(Flux_reg1_ap);
-      static const double& b0_IR = PAR(Flux_reg1_b0);
-      double flxIR = rflux(xpom, tcut, a0_IR, ap_IR, b0_IR, xPomNorm);
-      vector<double> reg1 = QUICK(reg1,({zpom,muf}));
-      if ( reg1.size()==13) {
-	 for ( int i = 0 ; i < 13 ; i++ ) 
-	    pdf[i] += reg1[i] * flxIR * n_IR;
-      }
+       static const double& a0_IR = PAR(Flux_reg1_a0);
+       static const double& ap_IR = PAR(Flux_reg1_ap);
+       static const double& b0_IR = PAR(Flux_reg1_b0);
+       double flxIR = rflux(xpom, tcut, a0_IR, ap_IR, b0_IR, xPomNorm);
+       //reg1 = QUICK(reg1,({zpom,muf}));
+
+       //RADEK boost
+       static map<pair<double,double>,vector<double>> regVals;
+       try { //try to read it from the cache
+           reg1 = regVals.at({zpom,muf});
+       }
+       catch(...) { //if not in cache
+           reg1 = QUICK(reg1,({zpom,muf}));
+           regVals[{zpom,muf}] = reg1;
+       }
+
+       if ( reg1.size()==13) {
+           for ( int i = 0 ; i < 13 ; i++ ) 
+               pdf[i] += reg1[i] * flxIR * n_IR;
+       }
    }
 
    //cout<<"muf="<<muf<<"\txpom="<<xpom<<"\tzpom="<<zpom<<"\tpdf0="<<pdf[0]<<"\tpdf6="<<pdf[6]<<endl;
    
+
+   /*
+   auto pos = myMap.lower_bound(xpom_zpom_muf);
+   if(pos != myMap.end() && !(mYmap.key_comp()(xpom_zpom_muf, pos->first)))
+   {
+   }
+   else {
+   }
+    */
+
+
    return pdf;
   
 }
