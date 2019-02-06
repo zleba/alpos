@@ -31,9 +31,13 @@ public:
 private:
    static const std::vector<std::string> fRequirements; //< List of all AParm's which this function depends on
    static const std::vector<std::string> fStopFurtherNotification; //< List of Parm's which have changed, but this function does not notify further dependencies
-   double fPomNorm, fRegNorm;
 
 protected:
+   AFuncD* fPom1 = NULL;
+   AFuncD* fPom2 = NULL;
+   AFuncD* fReg1 = NULL;
+   double fPomNorm, fRegNorm;
+
 };
 
 

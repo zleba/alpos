@@ -51,6 +51,11 @@ bool ADPDF::Init() {
    // CONST(pom1);
    // CONST(pom2);
    // CONST(reg1);
+
+   // init members
+   fPom1 = TheoryHandler::Handler()->GetFuncD(this->GetAlposName()+std::string(".pom1"));
+   fPom2 = TheoryHandler::Handler()->GetFuncD(this->GetAlposName()+std::string(".pom2"));
+   fReg1 = TheoryHandler::Handler()->GetFuncD(this->GetAlposName()+std::string(".reg1"));
    
    return true;
 }
@@ -146,7 +151,8 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
    static const double& xPomNorm= PAR(xPomFluxNorm);
 
    // pomeron
-   pdf = QUICK(pom1,({zpom,muf}));
+   //pdf = QUICK(pom1,({zpom,muf}));
+   pdf = fPom1->GetQuick(vector<double>{zpom,muf});
    //Pomeron flux
    static const double& a0_IP = PAR(Flux_pom1_a0);
    static const double& ap_IP = PAR(Flux_pom1_ap);
@@ -181,7 +187,8 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
    // pom2
    static const double& a0_P2 = PAR(Flux_pom2_a0);
    if ( a0_P2!=0 ) {
-      vector<double> pom2 = QUICK(pom2,({zpom,muf}));
+      //vector<double> pom2 = QUICK(pom2,({zpom,muf}));
+      vector<double> pom2 = fPom2->GetQuick(vector<double>{zpom,muf});
       if ( pom2.size() != 13 ) {
 	 error["Quick"]<<"pom2 is requested (Flux_pom2_a0!=0), but no reasonable PDF function is provided."<<endl;
 	 exit(1);
@@ -211,8 +218,9 @@ std::vector<double> ADPDF::GetQuick(const vector<double>& xpom_zpom_muf) {
            reg1 = regVals.at({zpom,muf});
        }
        catch(...) { //if not in cache
-           reg1 = QUICK(reg1,({zpom,muf}));
-           regVals[{zpom,muf}] = reg1;
+          //reg1 = QUICK(reg1,({zpom,muf}));
+          //regVals[{zpom,muf}] = reg1;
+          regVals[{zpom,muf}] = fReg1->GetQuick(vector<double>{zpom,muf});
            //cout << "new reading " << regVals.size() << endl;
        }
 
@@ -283,9 +291,6 @@ bool ADPDF::Update() {
    PAR(tcut);
    PAR(xPomFluxNorm);
    //Pomeron flux
-   PAR(Flux_pom1_a0);
-   PAR(Flux_pom1_ap);
-   PAR(Flux_pom1_b0);
    
    fPomNorm = getNormFlux(PAR(Flux_pom1_a0),PAR(Flux_pom1_ap), PAR(Flux_pom1_b0));
    fValue = GetQuick(vector<double>{PAR(xpom),PAR(zpom),PAR(muf)});
