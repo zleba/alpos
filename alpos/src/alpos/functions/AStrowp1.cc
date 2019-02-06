@@ -65,7 +65,7 @@ std::vector<double> AStrowp1::GetQuick(const vector<double>& xp_muf) {
       cout<<"Error in AStrowp1::GetQuick(vector). Quick acces is implemented for two parameter which are 'xp' and 'muf'."<<endl;
       return ret;
    }
-   
+
    double x   = xp_muf[0];
    double muf = xp_muf[1];
    double UPV, DNV, SEA, STR, CHM, GL;
