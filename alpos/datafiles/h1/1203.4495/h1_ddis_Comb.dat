@@ -335,13 +335,9 @@ TheoryFactors { }
 ErrorSet                   "H1"
 ErrorUnit                  percent
 
-SysCorr                   1
-
 Errors {{
  ErrorName       Column          Correlation      Nature
   stat           stat             ESM0            P
-  sys            sys              EYM1		  M
-#  tot            tot              EYM1		  M
   unc            unc              EYM0		  M
   d0             d0               EYM1        M
   d1             d1               EYM1        M
