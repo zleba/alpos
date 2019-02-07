@@ -1,0 +1,49 @@
+&InFiles
+  ! Specify data files to be averaged
+  NInputFiles = 4
+  InputFileNames(1) = 'h1_fps_23062011-17_50_eb.dat'
+  InputFileNames(2) = 'zeus_lps_23062011-12_15_eb.dat'
+  InputFileNames(3) = 'h1_fps1_27102011-12_33_eb.dat'
+  InputFileNames(4) = 'zeus_lps1_28112011-18_52_eb.dat'
+!  InputFileNames(1) = '../test/elz.dat'
+!  InputFileNames(2) = '../test/muz.dat'
+!  InputFileNames(3) = '../test/elzFwd.dat'
+&End
+
+&CommonGrid
+  ! Main steering file
+!  GridType = 'External'              !  'External' or 'Auto'
+  GridType = 'Auto'              !  'External' or 'Auto'
+  GridFiles = '../test/grid.dat'
+  AveSameExp = .true.
+&End
+
+&HERAverager
+ ! Type of output:
+  OutputMode  = 'ORTH'
+ !  OutputMode  = 'ORIG'
+ ! Add a prefix for output file names, syst. sources: 
+  OutputPrefix = 'FPSLPS' 
+  OutputFolder = 'output'
+&End
+
+&BiasCorrection
+ ! Additive (ADD) -- no bias correction, linear average
+ ! Multiplicative (MULT) -- all errors are multiplicative   
+ ! AverageType = 'MIXED' -- according to the dataset prescription <== NEW!
+ AverageType = 'MULT'
+  !*
+  ! Readable only if the 'MULT' or 'Mixed' option is choosen:
+  Iteration = 4
+ !***
+ ! Rescale the stat and uncorr uncertainties separately:
+  RescaleStatSep = .true.
+ ! Correction of the syst bias for stat errors
+  CorrectStatBias = .true.
+ ! Keeping the stat errors fixed'
+  FixStat = .false.
+&End
+
+&Systematics
+  ! Optional, for systematic uncertainties
+&End
