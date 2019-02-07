@@ -70,6 +70,11 @@ bool AQcdnumDDISCS::Update() {
    vector<double> sigmaVec = DOUBLE_COL_NS(Data,Sigma,GetAlposName());
    const double sqrts = DOUBLE_NS(sqrt-s,GetAlposName());
 
+   const bool Is4D = EXIST_NS(Is4D,GetAlposName()) && BOOL_NS(Is4D,GetAlposName());
+   vector<double> tval;
+   if ( Is4D ) {
+      tval = DOUBLE_COL_NS(-t,Sigma,GetAlposName());
+   }
 
    // cout << "q2Vector size " << q2.size() << endl;
    // for(int i = 0; i < xpom.size(); ++i)
@@ -239,7 +244,7 @@ bool AQcdnumDDISCS::Update() {
 
 
 //tcut is negative : tcut = -1
-static double rfluxRaw(double x_pom, double a0, double ap, double b0, double tcut)
+double AQcdnumDDISCS::rfluxRaw(double x_pom, double a0, double ap, double b0, double tcut) const
 {
     const double mp = 0.93827231;
 
@@ -261,7 +266,7 @@ static double rfluxRaw(double x_pom, double a0, double ap, double b0, double tcu
 
 
 
-double rflux(double x_pom, double a0, double ap, double b0)
+double AQcdnumDDISCS::rflux(double x_pom, double a0, double ap, double b0) const
 {
     double tcut = -1;
     double xPomNorm = 0.003;
