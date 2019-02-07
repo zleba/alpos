@@ -93,7 +93,9 @@ Errors {{
   vm             vm               EYM1            M
   com            com              EYM1            M
   bcc            bcc              EYM1            M
-#  norm            4               EYM1        M
+  normFLD         7.0             EYM1            M
+  lumiLME         4.0             EYM1            M
+#  norm            8.1             EYM1            M
 }}
 
 
