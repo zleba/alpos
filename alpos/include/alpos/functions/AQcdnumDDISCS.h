@@ -25,6 +25,9 @@ public:
    static const std::string fFunctionName; //< The function's name
    virtual std::vector<double> GetQuick(int n,...) { return std::vector<double>(1);}; //< The possibilty to implement a quick access without changing of any parameters
    virtual std::vector<double> GetQuick(const std::vector<double>&) { return std::vector<double>(1);}; //< Another possibilty to implement a quick access without changing of any parameters or recent (member-)values
+
+   //double rfluxRaw(double x_pom, double a0, double ap, double b0, double tcut) const;
+   //double rflux(double x_pom, double a0, double ap, double b0) const;
    
 private:
    static const std::vector<std::string> fRequirements; //< List of all AParm's which this function depends on

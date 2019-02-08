@@ -15,7 +15,8 @@ extern "C" {
 
   //hqstfun_(iF2, &icharm,&CEP2F[0],&beta[0],&q2[0],&F2c[0],&npts,&ichk);
 
-double rfluxInt(double x_pom, double a0, double ap, double b0, double tAbsMin, double tAbsMax);
+double rfluxInt(double a0, double ap, double b0, double x_pom, double tAbsMin, double tAbsMax);
+double rflux(double a0, double ap, double b0, double x_pom, double tAbs);
 
 
 #include <iostream>
@@ -64,12 +65,18 @@ bool AQcdnumDDISCS::Update() {
    // 'Update' PDF and Alpha_s values to ensure that 'Quick'-access are correct.
    UPDATE(QcdnumInit);
    
+
    vector<double> xpom     = DOUBLE_COL_NS(Data,xp,GetAlposName());
    vector<double> q2       = DOUBLE_COL_NS(Data,Q2,GetAlposName());
    vector<double> beta     = DOUBLE_COL_NS(Data,beta,GetAlposName());
    vector<double> sigmaVec = DOUBLE_COL_NS(Data,Sigma,GetAlposName());
    const double sqrts = DOUBLE_NS(sqrt-s,GetAlposName());
 
+   const bool Is4D = EXIST_NS(Is4D,GetAlposName()) && BOOL_NS(Is4D,GetAlposName());
+   vector<double> tAbsVal;
+   if ( Is4D ) {
+      tAbsVal = DOUBLE_COL_NS(Data,tAbs,GetAlposName());
+   }
 
    // cout << "q2Vector size " << q2.size() << endl;
    // for(int i = 0; i < xpom.size(); ++i)
@@ -134,8 +141,8 @@ bool AQcdnumDDISCS::Update() {
    // //exit(3);
 
 
-   const double tAbsMin = PAR(tAbsMin);
-   const double tAbsMax = PAR(tAbsMax);
+   const double tAbsMin = 0;//PAR(tAbsMin); TODO
+   const double tAbsMax = 1;//PAR(tAbsMax); TODO
 
 
    const double mp2 = pow(0.92, 2);
@@ -156,16 +163,21 @@ bool AQcdnumDDISCS::Update() {
        double F2 = F2l[i] + F2c[i] + F2b[i];
        double FL = FLl[i] + FLc[i] + FLb[i];
 
+       double flxIP;
        //Pomeron flux
-       double flxIP = rfluxInt(xpom[i], a0_IP, ap_IP, b0_IP, tAbsMin, tAbsMax);
+       if (Is4D) flxIP = rflux   (a0_IP, ap_IP, b0_IP, xpom[i], tAbsVal[i]);
+       else      flxIP = rfluxInt(a0_IP, ap_IP, b0_IP, xpom[i], tAbsMin, tAbsMax);
 
        //Reduced x-section for pomeron
        double xpSigRed_IP =  flxIP*xpom[i] * (F2  - y*y/yplus*FL);
 
        //cout<<"QCDNUM  Q2="<<q2[i]<<"\tf2*flxIP="<<F2*flxIP<<"\tfl*flx="<<FL*flxIP<<endl;
 
+       double flxIR;
        //Reggeon flux
-       double flxIR = rfluxInt(xpom[i], a0_IR, ap_IR, b0_IR, tAbsMin, tAbsMax);
+       if (Is4D) flxIR = rflux   (a0_IR, ap_IR, b0_IR, xpom[i], tAbsVal[i]);
+       else      flxIR = rfluxInt(a0_IR, ap_IR, b0_IR, xpom[i], tAbsMin, tAbsMax);
+
 
        //Get the Reggeon structure function from the H12006
        static bool isFirst = true; //hack for faster calculation
@@ -240,7 +252,7 @@ bool AQcdnumDDISCS::Update() {
 //
 
 
-static double rfluxRawInt(double x_pom, double a0, double ap, double b0, double tAbsMin, double tAbsMax)
+static double rfluxRawInt(double a0, double ap, double b0,  double x_pom, double tAbsMin, double tAbsMax)
 {
     const double mp = 0.93827231;
 
@@ -262,7 +274,7 @@ static double rfluxRawInt(double x_pom, double a0, double ap, double b0, double 
     return fl;
 }
 
-static double rfluxRaw(double x_pom, double a0, double ap, double b0, double tAbs)
+static double rfluxRaw(double a0, double ap, double b0, double x_pom, double tAbs)
 {
     //     c*xpom**(-(2apom-1))
     double fl =  exp((2.0*a0-1.)*log(1.0/x_pom));
@@ -277,15 +289,24 @@ static double rfluxRaw(double x_pom, double a0, double ap, double b0, double tAb
 
 
 
-double rflux(double x_pom, double a0, double ap, double b0, double tAbsMin, double tAbsMax)
+double rfluxInt(double a0, double ap, double b0, double x_pom, double tAbsMin, double tAbsMax)
 {
-    double tcutNorm = 1;
+    double tAbscutNorm = 1;
     double xPomNorm = 0.003;
-    const double dm =  rfluxRawInt(xPomNorm, a0, ap, b0, 0, tcutNorm);
+    const double dm =  rfluxRawInt(a0, ap, b0, xPomNorm,  0, tAbscutNorm);
     double  norm=(1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
 
-    return  norm * rfluxRawInt(x_pom, a0, ap, b0, tAbsMin, tAbsMax);
+    return  norm * rfluxRawInt(a0, ap, b0, x_pom, tAbsMin, tAbsMax);
 }
 
 
+double rflux(double a0, double ap, double b0, double x_pom, double tAbs)
+{
+    double tAbscutNorm = 1;
+    double xPomNorm = 0.003;
+    const double dm =  rfluxRawInt(a0, ap, b0, xPomNorm,  0, tAbscutNorm);
+    double  norm=(1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
+
+    return  norm * rfluxRaw(a0, ap, b0, x_pom, tAbs);
+}
 
