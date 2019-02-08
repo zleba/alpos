@@ -394,8 +394,8 @@ Errors {{
   PyFPS          PyFPS             EYM1            M
   DifQ2          DifQ2             EYM1            M
   VtxEff         VtxEff            EYM1            M
-  Backgr         Backgr            EYM1            M
-  Bcccor         Bcccor            EYM1            M
+  Backgr         Backgr            EYM0            M
+  Bcccor         Bcccor            EYM0            M
   norm            4.8              EYM1            M
 #  Pdiss           1              EYM1            M
 }}
