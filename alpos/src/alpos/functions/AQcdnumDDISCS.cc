@@ -15,7 +15,7 @@ extern "C" {
 
   //hqstfun_(iF2, &icharm,&CEP2F[0],&beta[0],&q2[0],&F2c[0],&npts,&ichk);
 
-double rflux(double x_pom, double a0, double ap, double b0);
+double rfluxInt(double x_pom, double a0, double ap, double b0, double tAbsMin, double tAbsMax);
 
 
 #include <iostream>
@@ -134,6 +134,8 @@ bool AQcdnumDDISCS::Update() {
    // //exit(3);
 
 
+   const double tAbsMin = PAR(tAbsMin);
+   const double tAbsMax = PAR(tAbsMax);
 
 
    const double mp2 = pow(0.92, 2);
@@ -155,7 +157,7 @@ bool AQcdnumDDISCS::Update() {
        double FL = FLl[i] + FLc[i] + FLb[i];
 
        //Pomeron flux
-       double flxIP = rflux(xpom[i], a0_IP, ap_IP, b0_IP);
+       double flxIP = rfluxInt(xpom[i], a0_IP, ap_IP, b0_IP, tAbsMin, tAbsMax);
 
        //Reduced x-section for pomeron
        double xpSigRed_IP =  flxIP*xpom[i] * (F2  - y*y/yplus*FL);
@@ -163,7 +165,7 @@ bool AQcdnumDDISCS::Update() {
        //cout<<"QCDNUM  Q2="<<q2[i]<<"\tf2*flxIP="<<F2*flxIP<<"\tfl*flx="<<FL*flxIP<<endl;
 
        //Reggeon flux
-       double flxIR = rflux(xpom[i], a0_IR, ap_IR, b0_IR);
+       double flxIR = rfluxInt(xpom[i], a0_IR, ap_IR, b0_IR, tAbsMin, tAbsMax);
 
        //Get the Reggeon structure function from the H12006
        static bool isFirst = true; //hack for faster calculation
@@ -238,13 +240,14 @@ bool AQcdnumDDISCS::Update() {
 //
 
 
-//tcut is negative : tcut = -1
-static double rfluxRaw(double x_pom, double a0, double ap, double b0, double tcut)
+static double rfluxRawInt(double x_pom, double a0, double ap, double b0, double tAbsMin, double tAbsMax)
 {
     const double mp = 0.93827231;
 
     //     calc min. kinematically  allowed t
-    double tmin= -pow(mp*x_pom,2)/(1.-x_pom);
+    double tAbsMinKin = pow(mp*x_pom,2)/(1.-x_pom);
+    tAbsMin = max(tAbsMin, tAbsMinKin);
+    assert(tAbsMin < tAbsMax);
 
     //     c*xpom**(-(2apom-1))
     double fl =  exp((2.0*a0-1.)*log(1.0/x_pom));
@@ -254,21 +257,34 @@ static double rfluxRaw(double x_pom, double a0, double ap, double b0, double tcu
     //  fl = fl * exp(b*tcut);
 
     //   t-integrated: (1/B)*[exp(-B*tmax)-exp(-B*tmin)]
-    fl = fl * (exp(tmin*b)-exp(tcut*b))/b;
+    fl = fl * (exp(-tAbsMin*b)-exp(-tAbsMax*b))/b;
+
+    return fl;
+}
+
+static double rfluxRaw(double x_pom, double a0, double ap, double b0, double tAbs)
+{
+    //     c*xpom**(-(2apom-1))
+    double fl =  exp((2.0*a0-1.)*log(1.0/x_pom));
+    double b=(b0+2.0*ap*log(1.0/x_pom));
+
+    //   at fixed t:  exp(Bt)
+    //  fl = fl * exp(b*tcut);
+    fl = fl * exp(-b*tAbs);
 
     return fl;
 }
 
 
 
-double rflux(double x_pom, double a0, double ap, double b0)
+double rflux(double x_pom, double a0, double ap, double b0, double tAbsMin, double tAbsMax)
 {
-    double tcut = -1;
+    double tcutNorm = 1;
     double xPomNorm = 0.003;
-    const double dm =  rfluxRaw(xPomNorm, a0, ap, b0, tcut);
+    const double dm =  rfluxRawInt(xPomNorm, a0, ap, b0, 0, tcutNorm);
     double  norm=(1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
 
-    return  norm * rfluxRaw(x_pom, a0, ap, b0, tcut);
+    return  norm * rfluxRawInt(x_pom, a0, ap, b0, tAbsMin, tAbsMax);
 }
 
 
