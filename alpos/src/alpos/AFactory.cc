@@ -186,6 +186,7 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
       exit(1);
       return NULL;
    }
+   say::info["AFactory::FunctionFactory"]<<"Initializing function of type '"<<functype<<"', as name '"<<funcname <<"' DONE."<<endl;
    
    return ptr;
 }

@@ -54,6 +54,43 @@ public:
    AError();
    AError(const std::string& ErrorName, const std::string& ErrorSet="");
    ~AError();
+   
+   //Assignment operator due to TMatrix inside
+   AError& operator=(AError &obj) { 
+   //AError(const AError &obj) {
+      fIsStat = obj.fIsStat; 
+      fIsTheo = obj.fIsTheo; 
+      fIsMult = obj.fIsMult;
+      fRelVals = obj.fRelVals; 
+      fNature = obj.fNature; 
+      fErrorSet = obj.fErrorSet; 
+      fErrorName = obj.fErrorName;
+      fColUp = obj.fColUp; 
+      fColDn = obj.fColDn;
+      
+      // error values
+      fErrUp = obj.fErrUp; //!< The up error (relative)
+      fErrDn = obj.fErrDn; //!< The up error (relative)
+      fSigma = obj.fSigma; //!< cross section
+      fUpDnAvg = obj.fUpDnAvg;
+      fCorrFrac = obj.fCorrFrac;
+
+      fMatErr = obj.fMatErr; //!< The (uncorrelated) error of 'matrix' type uncertainties (relative)
+      fMatErrAbs = obj.fMatErrAbs; //!< The (uncorrelated) error of 'matrix' type uncertainties (absolute)
+
+      fCorr.ResizeTo(obj.fCorr);
+      fCorr = obj.fCorr; //!< correlation matrix
+      
+      // new error interface
+      for(const auto & el : obj.fErrorMats) {
+         fErrorMats[el.first].ResizeTo(el.second);
+         fErrorMats[el.first] = el.second;
+      }
+
+      fErrors = obj.fErrors;
+      fType = obj.fType; //!< Error type: {[E,T],[S,Y],[C,N],[A,M]}: [E,T]=Exp|Theo, [S,Y]=Stat|Sys, [C,N]=MatrixType|NoMatriType, [A,M]=Additive|Multiplicative
+      return *this;
+   }
 
    void SetErrorName(const std::string& ErrorName, const std::string& ErrorSet); //!< Set error name. ErrorName an ErrorSet is required
 

@@ -33,7 +33,7 @@ def replace(fName, sh, shId, sign): #0=cnt, 1=up, 2=dn
                     else:
                         line = line.replace('@'+p, str(pars[p][0]))
                 import os
-                line = line.replace('@outFile', os.environ['ALPOS_DIR']+'/farm/'+ fOutName+'_dir'+'/'+'out'+'.root')
+                line = line.replace('@outFile', os.environ['ALPOS_DIR']+'/farm/variants/'+ fOutName+'_dir'+'/'+'out'+'.root')
 
                 fout.write(line)
         print fOutName
@@ -54,31 +54,36 @@ def put2files(fName, shifts):
         inFiles.append(replace(fName, shifts[i], i+1, 2))
     return inFiles
 
+
 pars = {} 
-
-#pars['alphaS']  =  valErr(0.118, 0.002)
-pars['alphaS'] =  valErr(0.106, 0.002)
-pars['mCharm']  =  valErr(1.4, 0.2)
-pars['mBottom'] =  valErr(4.5, 0.5)
-pars['a0_IR']   =  valErr(0.5,   0.1)
-pars['ap_IR']   =  valErr(0.3,   0.6, -0.3)
-pars['b0_IR']   =  valErr(1.6,   0.4, -1.6)
-pars['ap_IP']   =  valErr(0.06, 0.19, -0.06)
-pars['b0_IP']   =  valErr(5.5,   0.7, -2.0)
-pars['mu']      =  [1, 2, 0.5]
-#pars['Q0']      =  [sqrt(1.75), sqrt(2.05), sqrt(1.15)] 
-pars['Q0']      =  [sqrt(2.5), sqrt(2.5), sqrt(2.5)] 
-
 shifts = []
-shifts.append(['alphaS'])
-shifts.append(['mCharm'])
-shifts.append(['mBottom'])
-shifts.append(['a0_IR'])
-shifts.append(['ap_IR'])
-shifts.append(['b0_IR'])
-shifts.append(['ap_IP', 'b0_IP'])
-shifts.append(['mu'])
-shifts.append(['Q0'])
+
+#import sys
+#sys.exit(0)
+
+#
+##pars['alphaS']  =  valErr(0.118, 0.002)
+#pars['alphaS'] =  valErr(0.106, 0.002)
+#pars['mCharm']  =  valErr(1.4, 0.2)
+#pars['mBottom'] =  valErr(4.5, 0.5)
+#pars['a0_IR']   =  valErr(0.5,   0.1)
+#pars['ap_IR']   =  valErr(0.3,   0.6, -0.3)
+#pars['b0_IR']   =  valErr(1.6,   0.4, -1.6)
+#pars['ap_IP']   =  valErr(0.06, 0.19, -0.06)
+#pars['b0_IP']   =  valErr(5.5,   0.7, -2.0)
+#pars['mu']      =  [1, 2, 0.5]
+#pars['Q0']      =  [sqrt(1.75), sqrt(2.05), sqrt(1.15)] 
+##pars['Q0']      =  [sqrt(2.5), sqrt(2.5), sqrt(2.5)] 
+#
+#shifts.append(['alphaS'])
+#shifts.append(['mCharm'])
+#shifts.append(['mBottom'])
+#shifts.append(['a0_IR'])
+#shifts.append(['ap_IR'])
+#shifts.append(['b0_IR'])
+#shifts.append(['ap_IP', 'b0_IP'])
+#shifts.append(['mu'])
+#shifts.append(['Q0'])
 
 
 import argparse
@@ -86,15 +91,31 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--test", help="run small number of shifts", action="store_true")
 parser.add_argument("-r", "--run", help="run in parallel the produced steerings", action="store_true")
 parser.add_argument("steering_template", help="input steering file")
-parser.add_argument("output_directory", help="output folder")
+#parser.add_argument("output_directory", help="output folder")
 args = parser.parse_args()
 #print args.output
+
+
+with open(args.steering_template, "rt") as fin:
+    isIn = False
+    for line in fin:
+        if  '##Model systematics {{' == line.rstrip():
+            isIn = True
+        elif '##Model systematics }}' == line.rstrip():
+            isIn = False
+        if isIn:
+            exec(line[1:])
+
+print pars
+print shifts
+
+
 
 #just few shifts
 if args.test:
     shifts = shifts[0:2]
 
-jobName = args.output_directory
+jobName = args.steering_template + '_dir'
 
 
 

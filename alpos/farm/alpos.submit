@@ -1,3 +1,4 @@
+#!/usr/bin/env  condor_submit
 #example submit file with transfer of the executable and usage of the shared filesystem
 #transfer of executable can be handy as you can keep working on the executable localy while the job is running
 #without interference with the binary the job is running
@@ -10,7 +11,7 @@ getenv = True
 #+PreCmd        = "tree"
 #+PreArguments  = "-o tree_before.$(Cluster).$(Process).txt"
 
-dirName = checkFitB
+#dirName = checkFitAjetsext
 
 executable          = alpos.sh
 arguments           = "$ENV(ALPOS_DIR)/farm/$(dirName)/steering.str$(Process)"

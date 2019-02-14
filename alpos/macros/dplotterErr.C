@@ -171,16 +171,18 @@ pair<TGraphAsymmErrors*, TGraphAsymmErrors*> getGluonSinglet2006Err(TGraph *grRe
 
 
 
-void dplotterErr(TString inDir = "../farm/checkFitB")
+void dplotterErr(TString inDir = "../farm/checkFitAjetsext")
 {
     dPlotter dplt;
 
-    dplt.readData(inDir, 100);
+    dplt.readData(inDir, 14);
 
 
+    /*
     dplt.plotPDFsErrors(true, true);
     dplt.plotPDFsErrors(false, true);
     return 0;
+    */
     /*
     dplt.plotShiftsChi2();
     */
@@ -233,8 +235,8 @@ void sysShift::readData(TString inFile)
 
 
     int nShifts = 2*hPars->GetNbinsX() + 1;
-    //vector<double> q2Vals = {1.75, 8.5, 20, 90, 800};
-    vector<double> q2Vals = {2.5, 8.5, 20, 90, 800};
+    vector<double> q2Vals = {1.75, 8.5, 20, 90, 800};
+    //vector<double> q2Vals = {2.5, 8.5, 20, 90, 800};
     for(double q2 : q2Vals) {
         singletQ2[q2].resize(nShifts, nullptr);
         gluonQ2[q2].resize(nShifts, nullptr);

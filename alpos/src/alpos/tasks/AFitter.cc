@@ -58,6 +58,8 @@ bool AFitter::Init() {
    fFitter->Config().MinimizerOptions().SetStrategy(Strategy);
    fFitter->Config().MinimizerOptions().SetMaxFunctionCalls(300000);
    fFitter->Config().MinimizerOptions().SetMaxIterations(300000);
+   //fFitter->Config().MinimizerOptions().SetMaxFunctionCalls(3);
+   //fFitter->Config().MinimizerOptions().SetMaxIterations(3);
 
 
    // --- get fit parameters from steering

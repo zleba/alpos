@@ -105,7 +105,9 @@ bool ASaveDataTheory::Execute(){
    std::vector<AData*> dataChildren = supdata->GetChildren();           //TODO: handle subsets correctly
    std::vector<AParmFuncBase<double>*> theoChildren = suptheo->GetChildren();   //TODO: handle subsets correctly
 
-   int iChild = 0;
+   cout << "dataSize theorSize " << dataChildren.size() << " "<< theoChildren.size() << endl;
+
+   int iChild = 1;
 
    const std::vector<double>* dataPts = &dataChildren[iChild]->GetValues();
    const std::vector<double>* theoPts = &theoChildren[iChild]->GetValues();

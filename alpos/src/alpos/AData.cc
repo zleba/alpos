@@ -100,6 +100,7 @@ void AData::ReadErrors(const std::string& DataName) {
    //! Read errors from the steering file of dataset 'DataName'
    //! returns a vector of all AError's
 
+
    using namespace AlposTools;
    debug["ReadErrors"]<<"DataName: "<<DataName<<endl;
    //std::map<std::string,AError> AllErrors; // return value;
@@ -122,7 +123,7 @@ void AData::ReadErrors(const std::string& DataName) {
    string ErrorSet         = STRING_NS(ErrorSet,DataName);
    string units            = STRING_NS(ErrorUnit,DataName);
    bool relval = true;
-   
+
    vector<string> header = TABLEHEADER_NS(Errors,DataName);
    bool OldFormat = std::find(header.begin(),header.end(),"Correlation") != header.end();
    //vector<string> cors = STRING_COL_NS(Errors,Correlation,DataName);
@@ -137,47 +138,47 @@ void AData::ReadErrors(const std::string& DataName) {
       string edn = col[i];;
       size_t pos = col[i].find(":");
       if ( pos != string::npos ) {
-	 eup = col[i].substr(0,pos);
-	 edn = col[i].substr(pos+1);
-	 debug["ReadErrors"]<<"Reading columns '"<<eup<<"' and '"<<edn<<"' as up and down errors."<<endl;
+         eup = col[i].substr(0,pos);
+         edn = col[i].substr(pos+1);
+         debug["ReadErrors"]<<"Reading columns '"<<eup<<"' and '"<<edn<<"' as up and down errors."<<endl;
       }
       if ( read_steer::CheckNumber(eup) ) { //! Error is specified directly
-	 ErrUp.clear(); ErrDn.clear();
-	 double evalup = stod(eup);
-	 ErrUp.resize(fValue.size(),evalup);
-	 if ( pos != string::npos ) {
-	    double evaldn = stod(edn);
-	    ErrDn.resize(fValue.size(),evaldn);
-	 }
-	 else
-	    ErrDn=ErrUp;
-	 if ( ErrDn[0]*ErrUp[0]>0 ) ErrDn *= -1.;
+         ErrUp.clear(); ErrDn.clear();
+         double evalup = stod(eup);
+         ErrUp.resize(fValue.size(),evalup);
+         if ( pos != string::npos ) {
+            double evaldn = stod(edn);
+            ErrDn.resize(fValue.size(),evaldn);
+         }
+         else
+            ErrDn=ErrUp;
+         if ( ErrDn[0]*ErrUp[0]>0 ) ErrDn *= -1.;
       }
       else { // error is specified in column
-	 ErrUp = read_steer::getdoublecolumn("Data",eup,DataName);
-	 ErrDn = read_steer::getdoublecolumn("Data",edn,DataName);
-	 if ( ErrUp.empty() || ErrDn.empty() ) {
-	    error["ReadErrors"]<<"Error '"<<col[i]<<"' could not be read properly. Exiting."<<endl;
-	    exit(1);
-	 }
-	 if ( pos == string::npos ) {
-	    int i0 = 0;
-	    while (ErrDn[i0]==0 && ErrUp[i0]==0 && i0<ErrDn.size())i0++;
-	    if ( ErrDn[i0]*ErrUp[i0]>0 ) ErrDn *= -1.;
-	    //if ( ErrDn[0]*ErrUp[0]>0 ) ErrDn *= -1.;
-	 }
+         ErrUp = read_steer::getdoublecolumn("Data",eup,DataName);
+         ErrDn = read_steer::getdoublecolumn("Data",edn,DataName);
+         if ( ErrUp.empty() || ErrDn.empty() ) {
+            error["ReadErrors"]<<"Error '"<<col[i]<<"' could not be read properly. Exiting."<<endl;
+            exit(1);
+         }
+         if ( pos == string::npos ) {
+            int i0 = 0;
+            while (ErrDn[i0]==0 && ErrUp[i0]==0 && i0<ErrDn.size())i0++;
+            if ( ErrDn[i0]*ErrUp[i0]>0 ) ErrDn *= -1.;
+            //if ( ErrDn[0]*ErrUp[0]>0 ) ErrDn *= -1.;
+         }
       }
 
       // adjust units
       if ( units=="Relative" || units=="relative") relval=true;
       else if (units=="Absolute" || units=="absolute") relval=false;
       else if (units=="Percent" || units=="percent") {
-	 relval=true;
-	 ErrUp /= 100.;
-	 ErrDn /= 100.;
+         relval=true;
+         ErrUp /= 100.;
+         ErrDn /= 100.;
       }
       else {
-	 error["ReadErrors"]<<"The key 'ErrorUnit' in dataset '"<<DataName<<" must be 'Absolute', 'Relative' or 'Percent', but is: "<<units<<". Exiting."<<endl; exit(1);
+         error["ReadErrors"]<<"The key 'ErrorUnit' in dataset '"<<DataName<<" must be 'Absolute', 'Relative' or 'Percent', but is: "<<units<<". Exiting."<<endl; exit(1);
       }
 
       // --- instantiate new error
@@ -186,39 +187,39 @@ void AData::ReadErrors(const std::string& DataName) {
       // --- specify 'type'
       //if ( OldFormat ) {
       if (type[i].find("Matrix") !=string::npos) {
-	 type[i].replace(type[i].find("Matrix"),6,"C");
+         type[i].replace(type[i].find("Matrix"),6,"C");
       }
       if (type[i].find("matrix") !=string::npos ) {
-	 type[i].replace(type[i].find("matrix"),6,"C");
+         type[i].replace(type[i].find("matrix"),6,"C");
       }
 
       // --- sanity checks
       if ( type[i].find("S") != string::npos && type[i].find("Y") !=string::npos ) {
-	 error["ReadErrors"]<<"Error type may be either of statistical ('S') or systematic ('Y') nature but is both in: "<<type[i]<<" for error source '"<<tmp.GetErrorName()<<"'."<<endl;
-	 exit(3);
+         error["ReadErrors"]<<"Error type may be either of statistical ('S') or systematic ('Y') nature but is both in: "<<type[i]<<" for error source '"<<tmp.GetErrorName()<<"'."<<endl;
+         exit(3);
       }
       if ( type[i].find("E") != string::npos && type[i].find("T") !=string::npos ) {
-	 error["ReadErrors"]<<"Error type may be either of experimental ('E') or theoretical ('T') nature but is both in: "<<type[i]<<" for error source '"<<tmp.GetErrorName()<<"'."<<endl;
-	 exit(3);
+         error["ReadErrors"]<<"Error type may be either of experimental ('E') or theoretical ('T') nature but is both in: "<<type[i]<<" for error source '"<<tmp.GetErrorName()<<"'."<<endl;
+         exit(3);
       }
       if ( type[i].find("T") != string::npos && Alpos::Current()->Settings()->IgnoreTheoryErrors ) {
-	 info["ReadErrors"]<<"Global flag 'IgnoreTheoryErrors' set to true. Ignoring error '"<<errname[i]<<"' because it is of type 'theory'."<<endl;
-	 continue;
+         info["ReadErrors"]<<"Global flag 'IgnoreTheoryErrors' set to true. Ignoring error '"<<errname[i]<<"' because it is of type 'theory'."<<endl;
+         continue;
       }
       if ( type[i].find("N") != string::npos && type[i].find("C") !=string::npos ) {
-	 error["ReadErrors"]<<"Error type may be either specified as matrix ('C') or column ('N') but is both in: "<<type[i]<<" for error source '"<<tmp.GetErrorName()<<"'."<<endl;
-	 exit(3);
+         error["ReadErrors"]<<"Error type may be either specified as matrix ('C') or column ('N') but is both in: "<<type[i]<<" for error source '"<<tmp.GetErrorName()<<"'."<<endl;
+         exit(3);
       }
       if ( type[i].find("A") != string::npos && type[i].find("M") !=string::npos ) {
-	 error["ReadErrors"]<<"Error type may be either specified as multiplicative ('M') or additive ('A') but is both in: "<<type[i]<<" for error source '"<<tmp.GetErrorName()<<"'."<<endl;
-	 exit(3);
+         error["ReadErrors"]<<"Error type may be either specified as multiplicative ('M') or additive ('A') but is both in: "<<type[i]<<" for error source '"<<tmp.GetErrorName()<<"'."<<endl;
+         exit(3);
       }
 
       // --- add error to list of errors
       fAllErrors[tmp.GetErrorName()] = tmp;
       AError& err = fAllErrors[tmp.GetErrorName()];
 
-      
+
       // --- stat or systematic
       if ( type[i].find("S") != string::npos || type[i].find("s") !=string::npos ) err.SetIsStat();
       if ( /*OldFormat &&*/ i==0 && ( err.GetErrorName().find("stat") != string::npos || err.GetErrorName().find("Stat") != string::npos ) ) err.SetIsStat();
@@ -236,98 +237,98 @@ void AData::ReadErrors(const std::string& DataName) {
       // --- specify correlations (corrfrac or matrix)
       // Matrix type uncertainty
       if ( type[i].find("C") != string::npos || type[i].find("c") !=string::npos ){
-	 string format  = read_steer::getstring(errname[i]+"_Matrix_Format",DataName);
-	 string mattype = read_steer::getstring(errname[i]+"_Matrix_Type",DataName);
-	 vector<vector<double> > mvals = read_steer::getdoubletable(errname[i]+"_Matrix",DataName);
-	 vector<string> mhead = read_steer::gettableheader(errname[i]+"_Matrix",DataName);
-	 vector<string> dhead = TABLEHEADER_NS(Data,fDataName); // 'Data'
-	 vector<vector<double> > dat = DOUBLE_TAB_NS(Data,fDataName); // 'Data'
-	 //TMatrixDSym mat = ReadMatrix(mvals,format); // call for "Matrix"
-	 TMatrixDSym Mat = ReadMatrix(mvals,format,mhead,dhead,dat); 	 
-	 info["ReadErrors"]<<"mat: ncol="<<Mat.GetNcols() <<"\tnrow="<< Mat.GetNrows()<<endl;
-	 // recalculate 'percent' notation
-	 if ( mattype == "CorrelationPercent" || mattype=="correlationpercent" ) {
-	    for ( unsigned int x = 0 ; x<dat.size() ; x++ ) {
-	       for ( unsigned int y = 0 ; y<dat.size() ; y++ ) 
-	       	  Mat[x][y] = Mat[x][y]/100.;
-	    }
-	    mattype = "Correlation";
-	 }
+         string format  = read_steer::getstring(errname[i]+"_Matrix_Format",DataName);
+         string mattype = read_steer::getstring(errname[i]+"_Matrix_Type",DataName);
+         vector<vector<double> > mvals = read_steer::getdoubletable(errname[i]+"_Matrix",DataName);
+         vector<string> mhead = read_steer::gettableheader(errname[i]+"_Matrix",DataName);
+         vector<string> dhead = TABLEHEADER_NS(Data,fDataName); // 'Data'
+         vector<vector<double> > dat = DOUBLE_TAB_NS(Data,fDataName); // 'Data'
+         //TMatrixDSym mat = ReadMatrix(mvals,format); // call for "Matrix"
+         TMatrixDSym Mat = ReadMatrix(mvals,format,mhead,dhead,dat); 	 
+         info["ReadErrors"]<<"mat: ncol="<<Mat.GetNcols() <<"\tnrow="<< Mat.GetNrows()<<endl;
+         // recalculate 'percent' notation
+         if ( mattype == "CorrelationPercent" || mattype=="correlationpercent" ) {
+            for ( unsigned int x = 0 ; x<dat.size() ; x++ ) {
+               for ( unsigned int y = 0 ; y<dat.size() ; y++ ) 
+                  Mat[x][y] = Mat[x][y]/100.;
+            }
+            mattype = "Correlation";
+         }
 
-	 //
-	 bool bMIsCorr = true;
-	 if ( mattype == "Covariance" ) {
-	    debug["ReadErrors"]<<"A check if the diagonal elements are about the value in the 'Data'-table could be helpful."<<endl;
-	    bMIsCorr=false;	    // i.e. mat[i][i] ~= Data_Col<errorname>[i]**2
-	 }
-	 else if ( mattype == "Correlation" || mattype == "correlation" ) {
-	    // set diagonal elements.
-	    bMIsCorr = true;
-	    for ( unsigned int x = 0 ; x<dat.size() ; x++ )
-	       Mat[x][x] = 1.;
-	 }
+         //
+         bool bMIsCorr = true;
+         if ( mattype == "Covariance" ) {
+            debug["ReadErrors"]<<"A check if the diagonal elements are about the value in the 'Data'-table could be helpful."<<endl;
+            bMIsCorr=false;	    // i.e. mat[i][i] ~= Data_Col<errorname>[i]**2
+         }
+         else if ( mattype == "Correlation" || mattype == "correlation" ) {
+            // set diagonal elements.
+            bMIsCorr = true;
+            for ( unsigned int x = 0 ; x<dat.size() ; x++ )
+               Mat[x][x] = 1.;
+         }
 
-	 debug["ReadErrors"]<<"mattype="<<mattype<<"\tbMIsCorr="<<bMIsCorr<<", relval="<<relval<<"\te[0]="<<ErrUp[0]<<"\te[3]="<<ErrUp[3]<<endl; //
-	 // set error
-	 err.SetMatrixError(ErrUp, Mat,Sigma,relval,bMIsCorr,nature[i]);
-	 err.SetColUpDn(eup,edn);
+         debug["ReadErrors"]<<"mattype="<<mattype<<"\tbMIsCorr="<<bMIsCorr<<", relval="<<relval<<"\te[0]="<<ErrUp[0]<<"\te[3]="<<ErrUp[3]<<endl; //
+         // set error
+         err.SetMatrixError(ErrUp, Mat,Sigma,relval,bMIsCorr,nature[i]);
+         err.SetColUpDn(eup,edn);
 
       }
       // 'normal' uncertainty
       else {//if ( read_steer::CheckNumber(cors[i]) ) {
-	 double corrfrac = 1;
-	 if ( type[i].find("0") != string::npos || type[i].find(".") !=string::npos || type[i].find("1") !=string::npos  ) {
-	    if ( type[i].find("0") != string::npos && type[i].find(".") ==string::npos )
-	       corrfrac = 0;
-	    else if ( type[i].find("1") !=string::npos && type[i].find(".") ==string::npos) 
-	       corrfrac = 1;
-	    else if ( type[i].find("1.") !=string::npos ) 
-	       corrfrac = 1;
-	    else {
-	       size_t send ;
-	       corrfrac = stod(type[i].substr(type[i].find(".")),&send);
-	    }
-	 }
-	 else {
-	    debug["ReadErrors"]<<"Take correlation coefficient '1' for error source '"<< err.GetErrorName()<<"'."<<endl;
-	    err.SetCorrelatedFraction(1);
-	 }
-	 // set error
-	 //err.SetAsymError(ErrUp,ErrDn,Sigma,relval,corrfrac,nature[i],AError::kSignImprovedQuadratic);
-	 err.SetAsymError(ErrUp,ErrDn,Sigma,relval,corrfrac,nature[i],Alpos::Current()->Settings()->ErrorSymmetrization);
-	 err.SetColUpDn(eup,edn);
-	 err.SetCorrelatedFraction(corrfrac);
+         double corrfrac = 1;
+         if ( type[i].find("0") != string::npos || type[i].find(".") !=string::npos || type[i].find("1") !=string::npos  ) {
+            if ( type[i].find("0") != string::npos && type[i].find(".") ==string::npos )
+               corrfrac = 0;
+            else if ( type[i].find("1") !=string::npos && type[i].find(".") ==string::npos) 
+               corrfrac = 1;
+            else if ( type[i].find("1.") !=string::npos ) 
+               corrfrac = 1;
+            else {
+               size_t send ;
+               corrfrac = stod(type[i].substr(type[i].find(".")),&send);
+            }
+         }
+         else {
+            debug["ReadErrors"]<<"Take correlation coefficient '1' for error source '"<< err.GetErrorName()<<"'."<<endl;
+            err.SetCorrelatedFraction(1);
+         }
+         // set error
+         //err.SetAsymError(ErrUp,ErrDn,Sigma,relval,corrfrac,nature[i],AError::kSignImprovedQuadratic);
+         err.SetAsymError(ErrUp,ErrDn,Sigma,relval,corrfrac,nature[i],Alpos::Current()->Settings()->ErrorSymmetrization);
+         err.SetColUpDn(eup,edn);
+         err.SetCorrelatedFraction(corrfrac);
       }
-   } // errors done.
-   
+      } // errors done.
 
-   fSumErrMats.clear();
-   fSumErrors.clear();
 
-   // not needed
-   //CalculateMatrices();
+      fSumErrMats.clear();
+      fSumErrors.clear();
 
-   // TODO: remnants of old interface -> remove once these become accessible through new interface
-   // fErrMat, fErrMatRel (matrix-type uncertainties) excluding stat
-   fErrMat.clear();
-   fErrMatRel.clear();
-   fErrMat.resize(fValue.size());
-   fErrMatRel.resize(fValue.size());
-   for ( const auto& ierr : fAllErrors ) {
-      if ( !ierr.second.GetIsStat() && ierr.second.GetIsMatType()) {
-         for ( unsigned int iea = 0 ; iea<fValue.size() ; iea++ ) {
-            fErrMat[iea]    += pow(ierr.second.GetMatError()[iea],2) ;
-            fErrMatRel[iea] += pow(ierr.second.GetMatErrorRel()[iea],2) ;
+      // not needed
+      //CalculateMatrices();
+
+      // TODO: remnants of old interface -> remove once these become accessible through new interface
+      // fErrMat, fErrMatRel (matrix-type uncertainties) excluding stat
+      fErrMat.clear();
+      fErrMatRel.clear();
+      fErrMat.resize(fValue.size());
+      fErrMatRel.resize(fValue.size());
+      for ( const auto& ierr : fAllErrors ) {
+         if ( !ierr.second.GetIsStat() && ierr.second.GetIsMatType()) {
+            for ( unsigned int iea = 0 ; iea<fValue.size() ; iea++ ) {
+               fErrMat[iea]    += pow(ierr.second.GetMatError()[iea],2) ;
+               fErrMatRel[iea] += pow(ierr.second.GetMatErrorRel()[iea],2) ;
+            }
          }
       }
-   }
-   for ( unsigned int iea = 0 ; iea<fValue.size() ; iea++ ) {
-      fErrMat[iea]    = sqrt(fErrMat[iea]);
-      fErrMatRel[iea] = sqrt(fErrMatRel[iea]);
-   }
+      for ( unsigned int iea = 0 ; iea<fValue.size() ; iea++ ) {
+         fErrMat[iea]    = sqrt(fErrMat[iea]);
+         fErrMatRel[iea] = sqrt(fErrMatRel[iea]);
+      }
 
-   //return AllErrors;
-}
+      //return AllErrors;
+   }
 
 
 // __________________________________________________________________________________________ //
@@ -372,80 +373,80 @@ TMatrixDSym AData::ReadMatrix(const std::vector<vector<double> >& values, const 
    if ( format=="Matrix" || format=="matrix" ) {
       //check correct size
       if ( values.size() != values.back().size() ){
-	 error["ReadMatrix"]<<"The input table 'values', has the wrong format: n-rows="<<values.size()<<", n-columns="<<values.back().size()<<endl;
-	 return mat;
+         error["ReadMatrix"]<<"The input table 'values', has the wrong format: n-rows="<<values.size()<<", n-columns="<<values.back().size()<<endl;
+         return mat;
       }
       mat.ResizeTo(values.size(),values.size());
       //loop over values and fill into matrix:
       for ( unsigned int y = 0 ; y<values.size() ; y++ ) {
-	 // check again correct size:
-	 //if ( values[y].size() != y+1 && values[y].size() != values.size() ) 
-	 if ( values[y].size() < y+1 || values[y].size() > values.size() ) 
-	    error["ReadMatrix"]<<"Wrong format of input table in column "<<y<<endl;
-	 for ( unsigned int x = 0 ; x<y+1 ; x++ ) {
-	    mat[y][x]  = values[y][x];
-	    mat[x][y]  = values[y][x];
-	 }
+         // check again correct size:
+         //if ( values[y].size() != y+1 && values[y].size() != values.size() ) 
+         if ( values[y].size() < y+1 || values[y].size() > values.size() ) 
+            error["ReadMatrix"]<<"Wrong format of input table in column "<<y<<endl;
+         for ( unsigned int x = 0 ; x<y+1 ; x++ ) {
+            mat[y][x]  = values[y][x];
+            mat[x][y]  = values[y][x];
+         }
       }
    }
    else if ( format=="SingleValues" || format=="singlevalues" ) {
       // get number of identifiers:
       if ( (values[0].size()-1)%2 != 0 )
-	 error["ReadMatrix"]<<"Wrong size of columns."<<endl;
+         error["ReadMatrix"]<<"Wrong size of columns."<<endl;
       mat.ResizeTo(DataVals.size(),DataVals.size());
       int nid = (values[0].size()-1)/2;
       vector<int> pos;
       for ( int i=0 ; i<nid ;i++ ) {
-	 int ipos=-1;
-	 debug["ReadMatrix"]<<"Looking for column with name '"<<matHeader[i]<<"' in 'Data'-table."<<endl;
-	 if ( matHeader[i] != matHeader[i+nid] )
-	    error["ReadMatrix"]<<"Identifiers must be present twice, but the second one ws not found for "<<matHeader[i]<<endl;
-	 for ( unsigned int h = 0 ; h<DataHeader.size() ; h++ ) {
-	    if ( matHeader[i]==DataHeader[h] ) {
-	       if ( ipos == -1 ) {
-		  ipos=h;
-		  pos.push_back(h);
-		  //cout<<"found col. matHeader[i]="<<matHeader[i]<<", pos="<<h<<endl;
-	       }
-	       else 
-		  warn["ReadMatrix"]<<"Found column '"<<matHeader[i]<<"' multiple times in 'Data'-table."<<endl;
-	    }
-	 }
-	 if ( ipos==-1) {
-	    error["ReadMatrix"]<<"Could not identify the requested column '"<<matHeader[i]<<"'."<<endl;
-	    exit(1);
-	 }
+         int ipos=-1;
+         debug["ReadMatrix"]<<"Looking for column with name '"<<matHeader[i]<<"' in 'Data'-table."<<endl;
+         if ( matHeader[i] != matHeader[i+nid] )
+            error["ReadMatrix"]<<"Identifiers must be present twice, but the second one ws not found for "<<matHeader[i]<<endl;
+         for ( unsigned int h = 0 ; h<DataHeader.size() ; h++ ) {
+            if ( matHeader[i]==DataHeader[h] ) {
+               if ( ipos == -1 ) {
+                  ipos=h;
+                  pos.push_back(h);
+                  //cout<<"found col. matHeader[i]="<<matHeader[i]<<", pos="<<h<<endl;
+               }
+               else 
+                  warn["ReadMatrix"]<<"Found column '"<<matHeader[i]<<"' multiple times in 'Data'-table."<<endl;
+            }
+         }
+         if ( ipos==-1) {
+            error["ReadMatrix"]<<"Could not identify the requested column '"<<matHeader[i]<<"'."<<endl;
+            exit(1);
+         }
       }
       if ( int(pos.size()) != nid ) {
-	 error["ReadMatrix"]<<"Could not identify the requested columns."<<endl;
+         error["ReadMatrix"]<<"Could not identify the requested columns."<<endl;
       }
 
       // fill matrix
       int x=-1,y=-1;
       for ( unsigned int i = 0 ; i<values.size() ;i++ ) { // all specified values
-	 for ( unsigned int d = 0 ; d<DataVals.size() ;d++ ) { // find the two rows
-	    if ( nid == 1 ) {
-	       if ( DataVals[d][pos[0]] == values[i][0])      x=d;
-	       if ( DataVals[d][pos[0]] == values[i][0+nid] )  y=d;
-	    }
-	    else if ( nid == 2 ) {
-	       if ( DataVals[d][pos[0]] == values[i][0]     && DataVals[d][pos[1]] == values[i][1] )     x=d;
-	       if ( DataVals[d][pos[0]] == values[i][0+nid] && DataVals[d][pos[1]] == values[i][1+nid] ) y=d;
-	    }
-	    else if ( nid == 3 ) {
-	       if ( DataVals[d][pos[0]] == values[i][0]     && DataVals[d][pos[1]] == values[i][1]     && DataVals[d][pos[2]] == values[i][2] )     x=d;
-	       if ( DataVals[d][pos[0]] == values[i][0+nid] && DataVals[d][pos[1]] == values[i][1+nid] && DataVals[d][pos[2]] == values[i][2+nid] ) y=d;
-	    }
-	    else if ( nid == 4 ) {
-	       if ( DataVals[d][pos[0]] == values[i][0] && DataVals[d][pos[1]] == values[i][1] && DataVals[d][pos[2]] == values[i][2] && DataVals[d][pos[3]] == values[i][3] ) x=d;
-	       if ( DataVals[d][pos[0]] == values[i][0+nid] && DataVals[d][pos[1]] == values[i][1+nid] && DataVals[d][pos[2]] == values[i][2+nid] && DataVals[d][pos[3]] == values[i][3+nid] ) y=d;
-	    }
-	 }
-	 if ( x==-1 ) { error["ReadMatrix"]<<"Could not find x-index in row "<<i<<endl; continue; }
-	 if ( y==-1 ) { error["ReadMatrix"]<<"Could not find y-index in row "<<i<<endl; continue; }
-	 //cout<<"Found values. x="<<x<<"\ty="<<y<<"\tval="<<values[i].back()<<endl;
-	 mat[x][y] = values[i].back();
-	 mat[y][x] = values[i].back();
+         for ( unsigned int d = 0 ; d<DataVals.size() ;d++ ) { // find the two rows
+            if ( nid == 1 ) {
+               if ( DataVals[d][pos[0]] == values[i][0])      x=d;
+               if ( DataVals[d][pos[0]] == values[i][0+nid] )  y=d;
+            }
+            else if ( nid == 2 ) {
+               if ( DataVals[d][pos[0]] == values[i][0]     && DataVals[d][pos[1]] == values[i][1] )     x=d;
+               if ( DataVals[d][pos[0]] == values[i][0+nid] && DataVals[d][pos[1]] == values[i][1+nid] ) y=d;
+            }
+            else if ( nid == 3 ) {
+               if ( DataVals[d][pos[0]] == values[i][0]     && DataVals[d][pos[1]] == values[i][1]     && DataVals[d][pos[2]] == values[i][2] )     x=d;
+               if ( DataVals[d][pos[0]] == values[i][0+nid] && DataVals[d][pos[1]] == values[i][1+nid] && DataVals[d][pos[2]] == values[i][2+nid] ) y=d;
+            }
+            else if ( nid == 4 ) {
+               if ( DataVals[d][pos[0]] == values[i][0] && DataVals[d][pos[1]] == values[i][1] && DataVals[d][pos[2]] == values[i][2] && DataVals[d][pos[3]] == values[i][3] ) x=d;
+               if ( DataVals[d][pos[0]] == values[i][0+nid] && DataVals[d][pos[1]] == values[i][1+nid] && DataVals[d][pos[2]] == values[i][2+nid] && DataVals[d][pos[3]] == values[i][3+nid] ) y=d;
+            }
+         }
+         if ( x==-1 ) { error["ReadMatrix"]<<"Could not find x-index in row "<<i<<endl; continue; }
+         if ( y==-1 ) { error["ReadMatrix"]<<"Could not find y-index in row "<<i<<endl; continue; }
+         //cout<<"Found values. x="<<x<<"\ty="<<y<<"\tval="<<values[i].back()<<endl;
+         mat[x][y] = values[i].back();
+         mat[y][x] = values[i].back();
       }
    }
    else {
@@ -462,7 +463,7 @@ bool AData::AddColumnToDataTable(const std::string& colname, const std::vector<d
    //! return true, if no conflict or problem occured
    //! return false, if a columns with same name already exists
    //! return false, if size of array does not match the size of the array 'Sigma'
-   
+
    if (fOrigData.count(colname) > 0 ) {
       warn["AddColumnToDataTable"]<<"A column with the same name already exists: '"<<colname<<"'. Ignoring call."<<endl;
       return false;
@@ -504,16 +505,16 @@ void AData::InitSubsets(){
       set<double> subval;
       for ( const auto& v: val ) subval.insert(v);
       for ( const auto& subv : subval ) {
-	 int n=0;
-	 vector<bool> valpts(fValue.size());
-	 for ( unsigned int iv = 0 ; iv<val.size() ;iv++ ) {
-	    if ( val[iv] == subv ) { valpts[iv] = true; n++; }
-	    else valpts[iv] = false;
-	 }
-	 double ssub = subv;
-	 string subname = sub+"=="+to_string(ssub);
-	 fSubsets[subname] = valpts;
-	 debug["InitSubsets"]<<"Set subset '"<<subname<<"' with "<< n << " valid points."<<endl;
+         int n=0;
+         vector<bool> valpts(fValue.size());
+         for ( unsigned int iv = 0 ; iv<val.size() ;iv++ ) {
+            if ( val[iv] == subv ) { valpts[iv] = true; n++; }
+            else valpts[iv] = false;
+         }
+         double ssub = subv;
+         string subname = sub+"=="+to_string(ssub);
+         fSubsets[subname] = valpts;
+         debug["InitSubsets"]<<"Set subset '"<<subname<<"' with "<< n << " valid points."<<endl;
       }
    }
 
@@ -541,7 +542,7 @@ struct sCut {
 // __________________________________________________________________________________________ //
 void AData::InitSubsetWithCuts(){
    using namespace AlposTools;
-   
+
    //! Init vector of 'ValidPoints'
    vector<string> cutsIn;
    if (EXISTARRAY_NS(Cuts,fDataName))
@@ -560,11 +561,11 @@ void AData::InitSubsetWithCuts(){
       string valname=cut, cmpop, scut;
       const vector<string> cmpops{"==",">=","<=",">","<","!=",".gt.",".lt.",".eq.",".ge.",".le."}; // mind the order!
       for ( auto op : cmpops ) {
-	 if ( cut.find(op)!=string::npos ) {
-	    read_steer::separatetag(valname, scut, op);
-	    cmpop=op;
-	    break; // respect the order!
-	 }
+         if ( cut.find(op)!=string::npos ) {
+            read_steer::separatetag(valname, scut, op);
+            cmpop=op;
+            break; // respect the order!
+         }
       }
       sCut acut;
       acut.valname=valname;
@@ -580,30 +581,30 @@ void AData::InitSubsetWithCuts(){
    for ( const auto& icut : cuts ) { // cut1 && cut2 && cut3 ...
       const vector<double>& val = read_steer::getdoublecolumn("Data",icut.valname,fDataName);
       for ( unsigned int iv = 0 ; iv<val.size() ;iv++ ) {
-	 if ( !valpts[iv] ) continue;
-	 double cval = icut.vcut;
-	 if ( icut.cmp=="==" && !(val[iv]==cval) )  
-	    valpts[iv]=false; 
-	 if ( icut.cmp==".eq." && !(val[iv]==cval) )  
-	    valpts[iv]=false; 
-	 if ( icut.cmp=="!=" && !(val[iv]!=cval) )  
-	    valpts[iv]=false; 
-	 if ( icut.cmp==">=" && !(val[iv]>=cval) )  
-	    valpts[iv]=false; 
-	 if ( icut.cmp=="<=" && !(val[iv]<=cval) ) 
-	    valpts[iv]=false; 
-	 if ( icut.cmp==">" && !(val[iv]>cval) )  
-	    valpts[iv]=false; 
-	 if ( icut.cmp=="<" && !(val[iv]<cval) ) 
-	    valpts[iv]=false; 
-	 if ( icut.cmp==".ge." && !(val[iv]>=cval) )  
-	    valpts[iv]=false; 
-	 if ( icut.cmp==".le." && !(val[iv]<=cval) ) 
-	    valpts[iv]=false; 
-	 if ( icut.cmp==".gt." && !(val[iv]>cval) )  
-	    valpts[iv]=false; 
-	 if ( icut.cmp==".lt." && !(val[iv]<cval) ) 
-	    valpts[iv]=false; 
+         if ( !valpts[iv] ) continue;
+         double cval = icut.vcut;
+         if ( icut.cmp=="==" && !(val[iv]==cval) )  
+            valpts[iv]=false; 
+         if ( icut.cmp==".eq." && !(val[iv]==cval) )  
+            valpts[iv]=false; 
+         if ( icut.cmp=="!=" && !(val[iv]!=cval) )  
+            valpts[iv]=false; 
+         if ( icut.cmp==">=" && !(val[iv]>=cval) )  
+            valpts[iv]=false; 
+         if ( icut.cmp=="<=" && !(val[iv]<=cval) ) 
+            valpts[iv]=false; 
+         if ( icut.cmp==">" && !(val[iv]>cval) )  
+            valpts[iv]=false; 
+         if ( icut.cmp=="<" && !(val[iv]<cval) ) 
+            valpts[iv]=false; 
+         if ( icut.cmp==".ge." && !(val[iv]>=cval) )  
+            valpts[iv]=false; 
+         if ( icut.cmp==".le." && !(val[iv]<=cval) ) 
+            valpts[iv]=false; 
+         if ( icut.cmp==".gt." && !(val[iv]>cval) )  
+            valpts[iv]=false; 
+         if ( icut.cmp==".lt." && !(val[iv]<cval) ) 
+            valpts[iv]=false; 
       }      
    }
    int n=0;
