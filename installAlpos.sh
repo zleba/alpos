@@ -12,7 +12,7 @@ if [ `command -v cmake3`  ]; then
 fi
 echo using $cmakeCMD
 
-$cmakeCMD  ../alpos -DFNLO_PREFIX=$FNLODIR -DQCDNUM_PREFIX=$pwd/qcdnumBuild -DAPFELxx_PREFIX=$pwd/apfelxx -DCMAKE_INSTALL_PREFIX=$pwd/alposBuild
+$cmakeCMD  ../alpos -DFNLO_PREFIX=$FNLODIR -DQCDNUM_PREFIX=$pwd/qcdnumBuild -DAPFEL_PREFIX=$pwd/apfel -DAPFELxx_PREFIX=$pwd/apfelxx -DCMAKE_INSTALL_PREFIX=$pwd/alposBuild
 
 make -j`nproc`
 #make install

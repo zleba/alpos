@@ -14,7 +14,12 @@
 // functions
 #include "alpos/functions/AExampleFunction.h"
 #include "alpos/functions/ACRunDecFunction.h"
+#if _CMAKE_FOUND_APFEL
 #include "alpos/functions/AApfel.h"
+#include "alpos/functions/AApfelDISCS.h"
+#include "alpos/functions/AApfelDDISCS.h"
+#include "alpos/functions/AApfelDISCSEWFit.h"
+#endif //_CMAKE_FOUND_APFEL
 #include "alpos/functions/ALhapdf6.h"
 #include "alpos/functions/ALhapdf6Alphas.h"
 #include "alpos/functions/AStrowp1.h"
@@ -55,8 +60,6 @@
 #include "alpos/functions/AQcdnumDDISCS.h"
 #include "alpos/functions/APDFQ0_diff.h"
 #include "alpos/functions/AQcdnumDISCSEWFit.h"
-#include "alpos/functions/AApfelDISCS.h"
-#include "alpos/functions/AApfelDISCSEWFit.h"
 #include "alpos/functions/AAlphaEmRun.h"
 #include "alpos/functions/AEprc.h"
 #include "alpos/functions/APDFQ0_LHAPDF.h"
@@ -119,6 +122,7 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
    else if ( functype == AApfelQEDEvol::fFunctionName )     ptr = new AApfelQEDEvol(funcname);
    else if ( functype == AApfelDISCS::fFunctionName )       ptr = new AApfelDISCS(funcname);
    else if ( functype == AApfelDISCSEWFit::fFunctionName )  ptr = new AApfelDISCSEWFit(funcname);
+   else if ( functype == AApfelDDISCS::fFunctionName )      ptr = new AApfelDDISCS(funcname);
 #endif //_CMAKE_FOUND_APFEL
 #if _CMAKE_FOUND_APFELxx
    else if ( functype == AApfelxxDISCS::fFunctionName )       ptr = new AApfelxxDISCS(funcname);
