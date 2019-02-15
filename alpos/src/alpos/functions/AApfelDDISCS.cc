@@ -75,9 +75,6 @@ bool AApfelDDISCS::Init() { //alpos
 bool AApfelDDISCS::Update() {  //alpos
    debug["Update"]<<"AlposName: "<<GetAlposName()<<endl;
 
-   return true;
-
-/*
    // 'Update' PDF and Alpha_s values to ensure that 'Quick'-access are correct.
    UPDATE(ApfelInit); 
    polty  = PAR(e-polarity);
@@ -100,6 +97,9 @@ bool AApfelDDISCS::Update() {  //alpos
    // APFEL::SetTargetDIS("proton");
    //APFEL::SelectCharge(string selch)://selects one particular charge in the NC structure functions ('selch' = 'down', 'up', 'strange', 'charm', 'bottom', 'top', 'all', default 'selch' = 'all')
 
+
+   cout<<" Daniel hier. Todo."<<endl;
+   /*
    // ------ calc structure functions
    set<double> q2val;
    for ( unsigned int i =0 ; i<q2.size() ; i++ ) q2val.insert(q2[i]);
