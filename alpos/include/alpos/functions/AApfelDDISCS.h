@@ -36,9 +36,13 @@ private:
    virtual std::vector<double> GetQuick(const std::vector<double>&) { return std::vector<double>(1);}; //!< Another possibilty to implement a quick access without changing of any parameters or recent (member-)values
 
 protected:
-   std::vector<double> q2,y,x;
+   std::vector<double> q2,xpom,beta,sigmaData,y;
    double charge, polty;
    bool IsRedCS, IsNC;
+
+   /* // caches for faster access */
+   /* AFuncD* fDPDF = NULL; */
+   /* AFuncD* fAs  = NULL; */
    
 };
 

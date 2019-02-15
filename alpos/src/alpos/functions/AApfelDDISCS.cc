@@ -36,26 +36,36 @@ bool AApfelDDISCS::Init() { //alpos
 
    // get points
    q2 = DOUBLE_COL_NS(Data,Q2,GetAlposName());
-   x = DOUBLE_COL_NS(Data,x,GetAlposName());
    y = DOUBLE_COL_NS(Data,y,GetAlposName());
+   xpom = DOUBLE_COL_NS(Data,xp,GetAlposName());
+   beta = DOUBLE_COL_NS(Data,beta,GetAlposName());
+   sigmaData = DOUBLE_COL_NS(Data,Sigma,GetAlposName());
    fValue.resize(q2.size());
    fError.resize(q2.size());
 
+   static const double mp2 = pow(0.92, 2);
    if ( y.empty() ) {
       double sqs=DOUBLE_NS(sqrt-s,GetAlposName());
       double ss = sqs*sqs;
       y.resize(q2.size());
-      for ( unsigned int i = 0 ; i<q2.size() ; i++ ) { 
-	 y[i] = q2[i] / (x[i]*ss);
+      for ( unsigned int i = 0 ; i<q2.size() ; i++ ) {
+         double x = beta[i]*xpom[i];
+         y[i] = q2[i]/(ss-mp2)/x;
+         //y[i] = q2[i] / (x[i]*ss); 
       }
    }
+
    // conceptually, these should be taken as alpos parameters like: PAR(charge)
    // charge = DOUBLE_NS(e-charge,GetAlposName()); 
    // polty  = DOUBLE_NS(e-polarity,GetAlposName());
    charge = PAR(e-charge);
-   
+   CONST(e-charge);
+
    IsRedCS  = BOOL_NS(IsReducedCS,GetAlposName()); // access directly from steering
    IsNC     = BOOL_NS(IsNC,GetAlposName());
+
+   // fDPDF = TheoryHandler::Handler()->GetFuncD(this->GetAlposName()+std::string(".DPDF"));
+   // fAs   = TheoryHandler::Handler()->GetFuncD(this->GetAlposName()+std::string(".Alpha_s"));
 
    return true;
 }
@@ -65,6 +75,9 @@ bool AApfelDDISCS::Init() { //alpos
 bool AApfelDDISCS::Update() {  //alpos
    debug["Update"]<<"AlposName: "<<GetAlposName()<<endl;
 
+   return true;
+
+/*
    // 'Update' PDF and Alpha_s values to ensure that 'Quick'-access are correct.
    UPDATE(ApfelInit); 
    polty  = PAR(e-polarity);
@@ -157,7 +170,7 @@ bool AApfelDDISCS::Update() {  //alpos
       //exit(1);
    }
    return true;
-
+*/
 }
 
 //______________________________________________________________________________
