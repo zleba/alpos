@@ -16,31 +16,15 @@ DataTheorySets {{
 #  H1incDDIS                   datafiles/h1/0606004/ddis.dat                   QcdnumDDISCS   # q2>=8.4   beta<=0.81
 #  H1incDDIS-HERA-I-Q            datafiles/h1/0606004/h1_ddis_heraI.dat          QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
 
-#  H1incDDIS-HERA-I-LAr            datafiles/h1/0606004/h1_ddis_heraI-LAr.dat         QcdnumDDISCS    ##Q2>=8.4   beta<=0.81   mx>=2
-#  H1incDDIS-HERA-I-SpacMB         datafiles/h1/0606004/h1_ddis_heraI-SpaC-97MB.dat   QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
-#  H1incDDIS-HERA-I-SpacTrg        datafiles/h1/0606004/h1_ddis_heraI-SpaC-97all.dat  QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
+  H1incDDIS-HERA-I-LAr            datafiles/h1/0606004/h1_ddis_heraI-LAr.dat         QcdnumDDISCS    ##Q2>=8.4   beta<=0.81   mx>=2
+  H1incDDIS-HERA-I-SpacMB         datafiles/h1/0606004/h1_ddis_heraI-SpaC-97MB.dat   QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
+  H1incDDIS-HERA-I-SpacTrg        datafiles/h1/0606004/h1_ddis_heraI-SpaC-97all.dat  QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
 
 #  H1incDDIS-HERA-I-LAr-A++            datafiles/h1/0606004/h1_ddis_heraI-LAr.dat      ApfelxxDDISCS    ###Q2>=8.4   beta<=0.81   mx>=2
 #  H1incDDIS-HERA-I-SpacMB-A++         datafiles/h1/0606004/h1_ddis_heraI-SpaC-97MB.dat   ApfelxxDDISCS    Q2>=8.4   beta<=0.81   mx>=2
 #  H1incDDIS-HERA-I-SpacTrg-A++        datafiles/h1/0606004/h1_ddis_heraI-SpaC-97all.dat  ApfelxxDDISCS    Q2>=8.4   beta<=0.81   mx>=2
 
-#  H1-LRG-DiffDijets           datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets.dat         fastNLODiffDIS              # ptmin>=11 
-
-#  H1incDDIS-HII            datafiles/h1/1203.4495/h1_ddis_Comb.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
-
-#  H1FLD-225            datafiles/h1/1107.3420/h1_ddis_lowE_225.dat         QcdnumDDISCS #   Q2>=8.4   beta<=0.81   mx>=2
-  H1FLD-225-A          datafiles/h1/1107.3420/h1_ddis_lowE_225.dat         ApfelDDISCS  #  Q2>=8.4   beta<=0.81   mx>=2
-
-
-#  H1FLD-252            datafiles/h1/1107.3420/h1_ddis_lowE_252.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
-##  H1FLD-319            datafiles/h1/1107.3420/h1_ddis_lowE_319.dat         QcdnumDDISCS  # Q2>=8.4   beta<=0.81   mx>=2
-
-#   H1FPS-HII            datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS.dat         QcdnumDDISCS  Q2>=8.4   beta<=0.81  mx>=2  #xp<0.03
-#   H1FPS-HII-t0p55       datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS-tmax0p55.dat         QcdnumDDISCS  Q2>=8.4  # beta<=0.81   mx>=2 xp<0.03
-#   H1ZEUS-FPSLPS-f2avg   datafiles/h1zeus/1207.4864/H1ZEUS-FPS-comb.dat                     QcdnumDDISCS  Q2>=8.4  beta<=0.81   mx>=2 xp<0.03
-#   H1FPS-HII-4D            datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS-4D.dat         QcdnumDDISCS  Q2>=8.4   beta<=0.81  mx>=2  #xp<0.03
-
-#   ZSLPS-HII            datafiles/zeus/0812.2003/ZEUS-DDIS-HERAII-LPS.dat         QcdnumDDISCS  Q2>=2.4   beta<=0.81 mx>=2  #xp<0.03
+  H1-LRG-DiffDijets           datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets.dat         fastNLODiffDIS              # ptmin>=11 
 
 #  H1incDDIS-HERA-I-A            datafiles/h1/0606004/h1_ddis_heraI.dat          ApfelxxDDISCS   # Q2>=8.4   beta<=0.81   mx>=2
 # H1incDDIS                   datafiles/h1/1203.4495/h1_ddis_Comb.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
@@ -53,13 +37,12 @@ DataTheorySets {{
 # --------------------------------------------------------------#
 Tasks {{
   TaskType                TaskName
-#  PrintSteering           PrintSteering
+  PrintSteering           PrintSteering
    PrintTheorySet         PrintTheorySet
-#   AFitter                MyFit
+   AFitter                MyFit
    StatAnalysis           Stat
-#   SaveDPDFTGraph         SaveDPDFTGraph
-#   ASaveDataTheory        ASaveDataTheory
-   PrintDataTheory    PrintDataTheory
+   SaveDPDFTGraph         SaveDPDFTGraph
+   ASaveDataTheory        ASaveDataTheory
 }}
 
 
@@ -67,31 +50,12 @@ Tasks {{
 #  Alpos global settings
 # --------------------------------------------------------------#
 ErrorSymmetrization             SignImprovedQuadratic
-Output                          #out_test5_LogNormal_jets             # commonoutput file for outputs of all tasks
+Output                          out_test3_LogNormal_jets             # commonoutput file for outputs of all tasks
 GlobalVerbosity                 Info # Debug, Warning, Error
 InitSubsets                     false  # Init subsets of datasets
 IgnoreTheoryErrors              false                            # Ignore all theory errors when calculating chi2 value
 MatrixInversionTolerance        1.e-6                           # Tolerance of matrix inversion algorithm
 # ALPOS_DIR                       <specify your directory>      # use env-variable ALPOS_DIR or specify it herewith
-
-
-PrintDataTheory {{{
-   Columns {
-      Q2
-      xp
-      beta
-      iData
-      Data
-      ErrTot
-      ErrTheoFunc
-      ErrData
-      Theory
-      Ratio
-      Pull
-   }
-
-   ColumnWidth        12
-}}}
 
 
 # --------------------------------------------------------------#
@@ -112,7 +76,6 @@ MyFit {{{
        #IR_a0
        #IR_ap
        #IR_b0
-
        IP_a0
        IR_n 
        PDFQ0_diff.g0  
@@ -130,7 +93,7 @@ MyFit {{{
 
 Stat {{{
    Chisq                        LogNormal # NuisanceMult #LogNormal
-   Chisq2                       # LogNormalNuisance
+   Chisq2                       #LogNormalNuisance
    DoChisq                      true
    DoPValue                     true
 }}}
@@ -160,13 +123,12 @@ AlposTheory {{{
 InitFunctions {{
    FunctionName          FunctionType         # one line here! (header of 'table')
    PDFQ0_diff            PDFQ0_diff
-   ApfelInit             ApfelInit
    QcdnumInit            QcdnumInit
    QcdnumPDF             QcdnumPDF
    ApfelxxAlphas            ApfelxxAlphas
 #   ApfelxxPDF               ApfelxxPDF
    STROWP1                   STROWP1
-   GRVPION                    LHAPDF6
+#   GRVPION                    LHAPDF6
    DPDF                      DPDF
    H1DPDF2006                H1DPDF2006
    h12006_IP                 H1DPDF2006
@@ -204,8 +166,8 @@ QcdnumInit.InitEvolution                 1       # 0:false, 1: true   # init QCD
 QcdnumInit.PDF                           ApfelxxPDF # PDFQ0_diff # LHAPDF  #QcdnumPDF # PDF1
 # -- if InitEvolution=1: take interanl PDF
 QcdnumInit.Q0                            mu0  # FitB=1.5811, FitA=1.323 must below mcharm
-QcdnumInit.nxGrid                        80 #60 # number of x-grid points
-QcdnumInit.nqGrid                        60 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
+QcdnumInit.nxGrid                        120 #60 # number of x-grid points
+QcdnumInit.nqGrid                        80 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
 
 # QcdnumPDF defaults
 QcdnumPDF.QcdnumInit                     QcdnumInit   # one QcdnumInit function must made available
@@ -265,7 +227,7 @@ DPDF.zpom                                 0.5
 DPDF.muf                                  5
 DPDF.pom1                                 QcdnumPDF # ApfelxxPDF # QcdnumPDF # ApfelxxPDF # use any pomeron PDF
 DPDF.pom2                                 0
-DPDF.reg1                                 GRVPION #STROWP1 # use GRVPION or STROWP1
+DPDF.reg1                                 STROWP1   # use GRVPION or STROWP1
 DPDF.xPomFluxNorm                         0.003
 DPDF.tcut                                 -1
 
@@ -323,55 +285,7 @@ ApfelxxDDISCS.iOrd	      iOrd
 ApfelxxDDISCS.mc	      mc
 ApfelxxDDISCS.mb	      mb
 ApfelxxDDISCS.mt              mt
-ApfelxxDDISCS.nGridFac        4
-
-# --- APFEL
-ApfelDDISCS.ApfelInit              ApfelInit
-
-ApfelDDISCS.e-charge               1
-ApfelDDISCS.e-polarity             0
-
-# --- APFEL
-ApfelInit.iOrd                     iOrd
-ApfelInit.Q0                       1.37840 #1.41421
-ApfelInit.nf                       0  #the Fixed-Flavour Number Scheme with 'nf' active flavours. 0 denotes VFNS
-ApfelInit.PDFQ0                    DPDF # PDFQ0_HERA #PDFQ0_HERA #PDFQ0_LHAPDF
-ApfelInit.theory                   "QCD"  # the theory to be used in the evolution: (theory = 'QCD','QED','QUniD', default 'QCD')
-ApfelInit.QCDRefAs                 AlphasMz #0.35 # reference values of alphas at the scale 'QCDRefQRef' [GeV] to alpharef
-ApfelInit.QCDRefQRef               mZ #1.41421356
-ApfelInit.QEDRefAem                7.496252e-3 # reference values of alpha (em) at the scale 'QEDRefQRef' [GeV] to alpharef
-ApfelInit.QEDRefQRef               1.777
-ApfelInit.LambdaQCDRef             0.220 # value of LambdaQCD [GeV] with 'nref'flavours to 'lambdaref' (default '0.220')
-ApfelInit.LambdaQCDnref            5     # value of LambdaQCD [GeV] with 'nref'flavours to 'lambdaref' (default '5')
-ApfelInit.mc                       mc   # pole mass
-ApfelInit.mb                       mb   # pole mass
-ApfelInit.mt                       mt   # pole mass
-ApfelInit.mcMSbar                  mc
-ApfelInit.mbMSbar                  mb
-ApfelInit.mtMSbar                  mt
-ApfelInit.mtau                     1.777
-ApfelInit.EnableMassRunning        1 # dis/en-ables the running of the MSbar masses
-ApfelInit.MaxFlavourAlpha          6 # maximum number of active flavours in the couplings evolution (including the masses)
-ApfelInit.MaxFlavourPDFs           6 # maximum number of active flavours in the PDF evolution (default 'nf' = 6)
-ApfelInit.RenFacRatio              1
-ApfelInit.SmallxResummation        0 # 'LL', 'NLL' or 0 to disable Small x resummation
-ApfelInit.AlphaEvolution           "exact" # solution of the beta function equations for the running couplings ('evol' = 'exact','expanded','lambda')
-ApfelInit.PDFEvolution             "exactalpha" #sets the solution of the DGLAP equations for PDFs ('evolp' = 'exactmu', 'expandalpha', 'expandalpha')
-ApfelInit.QLimitMin                0.5 #range where it is possible to perform the evolution
-ApfelInit.QLimitMax                1000 #
-ApfelInit.FastEvolution            1 # fast PDF evolution (default 1)
-ApfelInit.EnableLeptonEvolution    0 # enables the evolution of the lepton PDFs when the fast QUniD is used (default false).
-ApfelInit.mZ                       mZ  # mass of Z boson
-ApfelInit.mW                       mW   # mass of W boson
-ApfelInit.Gf                       1.16638e-5   # g Fermi
-ApfelInit.MassScheme               ZM-VFNS # mass scheme for structure functions ('ZM-VFNS', 'FFNS', 'FONLL-A', 'FONLL-B', 'FONLL-C')
-ApfelInit.nGridPts0                80 # number of grid points for grid 0 (x>5.e-6)
-ApfelInit.nGridPts1                40 # number of grid points for grid 1 (x>1.e-1)
-ApfelInit.nGridPts2                20 # number of grid points for grid 2 (x>8.e-1)
-
-ApfelInit.SinThetaW                0.23126 # weinberg angle
-ApfelInit.TargetMassCorrections    0
-
+ApfelxxDDISCS.nGridFac        3
 
 # -----------------------------------------------------
 # PDFQ0_diff
@@ -455,17 +369,17 @@ ApfelxxAlphas.mt                mt
 # --------------------------------------------------------------#
 # fastNLODiffDIS
 fastNLODiffDIS.Filename                table.tab                       # default value! Always overwritten by data steering
-fastNLODiffDIS.ScaleFacMuR             2                               # default value! Often overwritten by data steering
-fastNLODiffDIS.ScaleFacMuF             2                               #
+fastNLODiffDIS.ScaleFacMuR             1                               # default value! Often overwritten by data steering
+fastNLODiffDIS.ScaleFacMuF             1                               #
 fastNLODiffDIS.Units                   1                               # 0: absoluteUnits, 1: PublicationUnits
 fastNLODiffDIS.iOrd                    2 #iOrd                            #
 fastNLODiffDIS.xpom_min                0
 fastNLODiffDIS.xpom_max                0
-fastNLODiffDIS.nxpom                   15
+fastNLODiffDIS.nxpom                   3
 fastNLODiffDIS.logxpom                 0
 # flexiDiffDISble-scale options
-fastNLODiffDIS.MuRFuncForm             2                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
-fastNLODiffDIS.MuFFuncForm             2                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
+fastNLODiffDIS.MuRFuncForm             0                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
+fastNLODiffDIS.MuFFuncForm             0                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
 fastNLODiffDIS.DPDF                    DPDF                             # PDF function
 fastNLODiffDIS.Alpha_s                 ApfelxxAlphas                   # Alpha_s function
 fastNLODiffDIS.PDFUncertainties        0                               # Calculate PDF uncertainties: 0=false, 1=true

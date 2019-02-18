@@ -13,3 +13,7 @@ alpos/test/H1diff.str
 *.wgt
 *.swp
 alpos/macros/*.pdf
+
+alpos/farm/test*/
+alpos/farm/check*/
+**AutoDict_*
