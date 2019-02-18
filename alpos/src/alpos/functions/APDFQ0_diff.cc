@@ -145,7 +145,7 @@ bool APDFQ0_diff::Update() {
       fValue = def;
       fError.resize(fValue.size());
    }
-   else if ( ipdf == -3 ) {
+   else if ( ipdf == -3 || ipdf == -1) {
       // return QCDNUM vector 'def'
       vector<double> def = {
 	 //tb  bb  cb  sb  ub  db   g   d   u   s   c   b   t 

@@ -66,7 +66,7 @@ void externalsetapfel_(double* x, double* q, double* xf) {
       InvLiCo = AlposTools::InvertLU(LiCo);
 
       // ---- test LiCo
-      vector<double> test13 = {1,2,3,4,5,6,7,8,9,10,11,12,13};
+      const vector<double> test13 = {1,2,3,4,5,6,7,8,9,10,11,12,13};
       vector<double> test6(13);
       AlposTools::CalcLicoFrom13partons(test6,def,test13);
       vector<double> testxf(13);
@@ -78,7 +78,9 @@ void externalsetapfel_(double* x, double* q, double* xf) {
       }
       cout<<endl;
       for ( int ip = 0 ; ip<13 ; ip++ ) {
-	 if ( testxf[ip] && testxf[ip]!=test13[ip] ) {
+         // cout<<ip<<" \t testxf[ip]="<< testxf[ip]<<"\ttest13[ip]="<<test13[ip]<<"\ttestxf[ip]!=test13[ip]="<<(testxf[ip]!=test13[ip])<<"\ttestxf[ip]==test13[ip]="<<(testxf[ip]==test13[ip])<<"\tratio==1:"<<(testxf[ip]/test13[ip]==1)<<"\tfabs="<<fabs(testxf[ip]/test13[ip]-1)<<endl;
+         // printf("%14.12e  %14.12e  %d\n",testxf[ip]/test13[ip],test13[ip]/testxf[ip], (testxf[ip]!=test13[ip]) );
+	 if ( testxf[ip] && fabs(testxf[ip]/test13[ip]-1) > 1e-14 ) {
 	    say::error["externalsetapfel_"]<<"PDF linear combination seems to be unreasonable."<<endl;
 	    exit(3001);
 	 }

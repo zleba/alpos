@@ -2,18 +2,29 @@
 #include "APFEL/APFEL.h"
 #include "alpos/functions/AApfelDDISCS.h"
 #include "alpos/functions/AApfel.h"
-#include "alpos/functions/AApfelInit.h"
+//#include "alpos/functions/AApfelInit.h"
 #include <iostream>
 #include "fastnlotk/read_steer.h"
 #include <set>
 
 using namespace std;
 
+extern "C" {
+   void qcd_2006_(double *z,double *q2, int *ifit, double *xPq, double *f2, double *fl, double *c2, double *cl);
+   void h12006flux_(double *xpom, double *t, int *Int, int *ifit, int *ipom, double *flux);
+}
+double rfluxInt(double a0, double ap, double b0, double x_pom, double tAbsMin, double tAbsMax);
+double rflux(double a0, double ap, double b0, double x_pom, double tAbs);
+
+
 // __________________________________________________________________________________________ //
 const std::vector<std::string> AApfelDDISCS::fRequirements = {
    "ApfelInit",
    "e-charge",
    "e-polarity",
+   "a0_IP", "ap_IP", "b0_IP",     //Pomeron flux       
+   "a0_IR", "ap_IR", "b0_IR",     //Reggeon flux       
+   "n_IR",                        //Reggeon suppression
 }; //!< List of all AParm's which this function depends on
 const std::vector<std::string> AApfelDDISCS::fStopFurtherNotification = {}; //!< List of Parm's which have changed, but this function does not notify further dependencies
 const std::string AApfelDDISCS::fFunctionName = "ApfelDDISCS"; //!< The function's name
@@ -76,6 +87,29 @@ bool AApfelDDISCS::Init() { //alpos
 bool AApfelDDISCS::Update() {  //alpos
    debug["Update"]<<"AlposName: "<<GetAlposName()<<endl;
 
+   // diff stuff from steering.
+   const double sqrts = DOUBLE_NS(sqrt-s,GetAlposName());
+   const double s = sqrts*sqrts;
+   const double mp2 = pow(0.92, 2);
+   const bool Is4D = EXIST_NS(Is4D,GetAlposName()) && BOOL_NS(Is4D,GetAlposName());
+   vector<double> tAbsVal;
+   if ( Is4D ) {
+      tAbsVal = DOUBLE_COL_NS(Data,tAbs,GetAlposName());
+   }
+
+   //flux coefficients
+   const double a0_IP = PAR(a0_IP);
+   const double ap_IP = PAR(ap_IP);
+   const double b0_IP = PAR(b0_IP);
+   const double a0_IR = PAR(a0_IR);
+   const double ap_IR = PAR(ap_IR);
+   const double b0_IR = PAR(b0_IR);
+   const double n_IR  = PAR(n_IR);
+   const double tAbsMin = 0;//PAR(tAbsMin); TODO 
+   const double tAbsMax = 1;//PAR(tAbsMax); TODO
+
+
+
    // 'Update' PDF and Alpha_s values to ensure that 'Quick'-access are correct.
    UPDATE(ApfelInit); 
    polty  = PAR(e-polarity);
@@ -95,19 +129,17 @@ bool AApfelDDISCS::Update() {  //alpos
    if ( charge == 1) APFEL::SetProjectileDIS("positron");
    else if ( charge == -1) APFEL::SetProjectileDIS("electron");
    else { error["Update"]<<"Could not get charge of lepton. ch="<<charge<<endl; exit(1);}
-   // APFEL::SetTargetDIS("proton");
+   APFEL::SetTargetDIS("proton");
    //APFEL::SelectCharge(string selch)://selects one particular charge in the NC structure functions ('selch' = 'down', 'up', 'strange', 'charm', 'bottom', 'top', 'all', default 'selch' = 'all')
 
 
-   cout<<" Daniel hier. Todo."<<endl;
-   /*
    // ------ calc structure functions
    set<double> q2val;
    for ( unsigned int i =0 ; i<q2.size() ; i++ ) q2val.insert(q2[i]);
    double qin = q0;
    double qfi;
    APFEL::SetPDFSet("external");
-   for ( auto qq : q2val ) {
+   for ( auto qq : q2val ) { // order all data points in Q2
       qfi = sqrt(qq);
       APFEL::ComputeStructureFunctionsAPFEL(qin,qfi);
       if( qfi > qin ) {
@@ -120,42 +152,79 @@ bool AApfelDDISCS::Update() {  //alpos
       }
       for ( unsigned int i =0 ; i<q2.size() ; i++ ) {
 	 if ( q2[i] != qq ) continue;
-	 double F2  = APFEL::F2total(x[i]);
-	 double FL  = APFEL::FLtotal(x[i]);
-	 double xF3 = APFEL::F3total(x[i]);
+	 double F2  = APFEL::F2total(beta[i]);
+	 double FL  = APFEL::FLtotal(beta[i]);
+	 //double xF3 = APFEL::F3total(beta[i]);
 	 //cout<<"F2: "<<F2<<"\t charge: "<<charge<<endl;
 	 double yplus  = 1+(1-y[i])*(1-y[i]);
 	 double yminus = 1-(1-y[i])*(1-y[i]);
+         double x = beta[i]*xpom[i];
+         double y = q2[i]/(s-mp2)/x;
 
+         // NC
 	 if ( IsNC ) {
-	    xF3 *= -1.*charge;
-	    fValue[i] = F2 + yminus/yplus*xF3 - y[i]*y[i]/yplus*FL;
+
+            // --- Reduced x-section for pomeron 
+            double flxIP = Is4D ?
+               rflux   (a0_IP, ap_IP, b0_IP, xpom[i], tAbsVal[i]):
+               rfluxInt(a0_IP, ap_IP, b0_IP, xpom[i], tAbsMin, tAbsMax);
+            double xpSigRed_IP =  flxIP*xpom[i] * (F2  - y*y/yplus*FL);
+
+
+            //--- Get the Reggeon structure function from the H12006
+            static bool isFirst = true; //hack for faster calculation
+            int ifit = 0;
+            if(isFirst) { ifit = 1; isFirst = false; } //Reggeon should be the same for both FitA and FitB
+            double xPq[13];
+            double f2FitA[2], flFitA[2]; //0 = pomeron, 1 = reggeon
+            double c2FitA[2], clFitA[2];
+            qcd_2006_(&beta[i], &q2[i],  &ifit, xPq, f2FitA, flFitA, c2FitA, clFitA);
+            double F2r = f2FitA[1];
+            double FLr = flFitA[1];
+
+            double flxIR = Is4D ?
+               rflux   (a0_IR, ap_IR, b0_IR, xpom[i], tAbsVal[i]):
+               rfluxInt(a0_IR, ap_IR, b0_IR, xpom[i], tAbsMin, tAbsMax);
+
+
+            //Reduced x-section for reggeon
+            double xpSigRed_IR =  flxIR*xpom[i] * (F2r  - y*y/yplus*FLr);
+
+
+            // --- reduced cross section
+            fValue[i] = xpSigRed_IP + n_IR*xpSigRed_IR;
+
+            // non-diff. DIS
+	    //xF3 *= -1.*charge;
+	    //fValue[i] = F2 + yminus/yplus*xF3 - y[i]*y[i]/yplus*FL;
 	 }
 	 else if ( !IsNC ) {  // CC
-	    F2 *= 0.5;
-	    FL *= 0.5;
-	    xF3 *= 0.5;
-	    if ( charge == 1 ) {
-	       fValue[i] = 0.5*(yplus*F2 - yminus*xF3 - y[i]*y[i]*FL);
-	       fValue[i] *= (1+polty);
-	    }
-	    else if ( charge==-1 ) {
-	       fValue[i] = 0.5*(yplus*F2 + yminus*xF3 - y[i]*y[i]*FL);
-	       fValue[i] *=(1-polty);
-	    }
-	    else { cout<<"Error. Wrong charge."<<endl;exit(1); }
+            error["Update"]<<"CC not implemented."<<endl;
+            exit(1);
+	    // F2 *= 0.5;
+	    // FL *= 0.5;
+	    // xF3 *= 0.5;
+	    // if ( charge == 1 ) {
+	    //    fValue[i] = 0.5*(yplus*F2 - yminus*xF3 - y[i]*y[i]*FL);
+	    //    fValue[i] *= (1+polty);
+	    // }
+	    // else if ( charge==-1 ) {
+	    //    fValue[i] = 0.5*(yplus*F2 + yminus*xF3 - y[i]*y[i]*FL);
+	    //    fValue[i] *=(1-polty);
+	    // }
+	    // else { cout<<"Error. Wrong charge."<<endl;exit(1); }
 	 }
 
-	 // ------ calc non-reduced CS if needed
-	 if ( !IsRedCS ) {
-	    if ( IsNC ) {
-	       double aem = 7.29735e-3; // 1/137.035999074 // 7.29927d-3;//
-	       fValue[i] *= 2*M_PI*yplus/(x[i]*q2[i]*q2[i])*convfac*aem*aem;
-	    }
-	    else { //CC
-	       fValue[i] *= pow(Mw,4)/pow(Mw*Mw+q2[i],2)*Gf*Gf/(2*M_PI*x[i])*convfac;
-	    }
-	 }
+	 // // ------ calc non-reduced CS if needed
+	 // if ( !IsRedCS ) {
+	 //    if ( IsNC ) {
+	 //       double aem = 7.29735e-3; // 1/137.035999074 // 7.29927d-3;//
+	 //       fValue[i] *= 2*M_PI*yplus/(beta[i]*q2[i]*q2[i])*convfac*aem*aem;
+	 //    }
+	 //    else { //CC
+	 //       fValue[i] *= pow(Mw,4)/pow(Mw*Mw+q2[i],2)*Gf*Gf/(2*M_PI*beta[i])*convfac;
+	 //    }
+	 // }
       }
    }
    APFEL::SetPDFSet("external");
@@ -171,7 +240,7 @@ bool AApfelDDISCS::Update() {  //alpos
       //exit(1);
    }
    return true;
-*/
+
 }
 
 //______________________________________________________________________________
