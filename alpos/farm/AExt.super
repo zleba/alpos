@@ -78,6 +78,7 @@ MatrixInversionTolerance        1.e-6                           # Tolerance of m
 #    Put all parameters in a namespace with the task's name
 # --------------------------------------------------------------#
 
+
 MyFit {{{
    Minimizer                    TMinuit
    PrintLevel                   3
@@ -110,7 +111,7 @@ MyFit {{{
 
 Stat {{{
    Chisq                        LogNormal
-   Chisq2                       LogNormalNuisance
+#   Chisq2                       LogNormalNuisance
    DoChisq                      true
    DoPValue                     true
 }}}
@@ -146,9 +147,9 @@ InitFunctions {{
    ApfelPDF              ApfelPDF
    ApfelInit             ApfelInit
    ApfelAs               ApfelAs
-#   ApfelxxPDF               ApfelxxPDF
+   ApfelxxPDF               ApfelxxPDF
    STROWP1                   STROWP1
-#   GRVPION                    LHAPDF6
+   GRVPION                    LHAPDF6
    DPDF                      DPDF
    H1DPDF2006                H1DPDF2006
    h12006_IP                 H1DPDF2006
@@ -247,7 +248,7 @@ IR_n                                     0.0017
 DPDF.xpom                                 0.002
 DPDF.zpom                                 0.5
 DPDF.muf                                  5
-DPDF.pom1                                 ApfelPDF # ApfelxxPDF # QcdnumPDF # ApfelxxPDF # use any pomeron PDF
+DPDF.pom1                                 ApfelxxPDF # ApfelxxPDF # QcdnumPDF # ApfelxxPDF # use any pomeron PDF
 DPDF.pom2                                 0
 DPDF.reg1                                 STROWP1 # use GRVPION or STROWP1
 DPDF.xPomFluxNorm                         0.003
@@ -360,27 +361,27 @@ PDFQ0_diff.v4               0
 
 # --------------------------------------------------------------#
 #  Apfel++PDF
-ApfelxxPDF.xp                   0.1
-ApfelxxPDF.muf                  100
-ApfelxxPDF.Alpha_s              ApfelxxAlphas
+ApfelxxPDF.xp                   0.3
+ApfelxxPDF.muf                  10
+ApfelxxPDF.Alpha_s              ApfelAs
 ApfelxxPDF.PDFmu0               PDFQ0_diff # PDFQ0_HERA_10pts #not-yet-implemented #ApfelxxAlphas
-ApfelxxPDF.mu0                  1.323 # 1.4
+ApfelxxPDF.mu0                  mu0 # 1.4
 ApfelxxPDF.iOrd                 iOrd
-ApfelxxPDF.mc                   991.4
-ApfelxxPDF.mb                   994.5
-ApfelxxPDF.mt                   99175
-ApfelxxPDF.nx1                  100
+ApfelxxPDF.mc                   mc
+ApfelxxPDF.mb                   mb
+ApfelxxPDF.mt                   mt
+ApfelxxPDF.nx1                  6
 ApfelxxPDF.xmin1                1e-5
 ApfelxxPDF.intdegree1           3
-ApfelxxPDF.nx2                  60
-ApfelxxPDF.xmin2                1e-1
+ApfelxxPDF.nx2                  150
+ApfelxxPDF.xmin2                1e-3
 ApfelxxPDF.intdegree2           3
-ApfelxxPDF.nx3                  50
-ApfelxxPDF.xmin3                6e-1
-ApfelxxPDF.intdegree3           3
-ApfelxxPDF.nx4                  50
+ApfelxxPDF.nx3                  100
+ApfelxxPDF.xmin3                1e-1
+ApfelxxPDF.intdegree3           5
+ApfelxxPDF.nx4                  60
 ApfelxxPDF.xmin4                8e-1
-ApfelxxPDF.intdegree4           3
+ApfelxxPDF.intdegree4           5
 
 # --------------------------------------------------------------#
 #  Apfel++Alphas
@@ -399,8 +400,8 @@ ApfelAs.mur                  100
 
 # Apfel PDF
 ApfelPDF.ApfelInit            ApfelInit
-ApfelPDF.muf                  100
-ApfelPDF.xp                   0.01
+ApfelPDF.muf                  10
+ApfelPDF.xp                   0.3
 
 
 # --- APFEL (fortran)
@@ -440,14 +441,14 @@ ApfelInit.mbMSbar                  mb
 ApfelInit.mtMSbar                  mt
 ApfelInit.mtau                     1.777
 ApfelInit.EnableMassRunning        1 # dis/en-ables the running of the MSbar masses
-ApfelInit.MaxFlavourAlpha          6 # maximum number of active flavours in the couplings evolution (including the masses)
-ApfelInit.MaxFlavourPDFs           6 # maximum number of active flavours in the PDF evolution (default 'nf' = 6)
+ApfelInit.MaxFlavourAlpha          5 # maximum number of active flavours in the couplings evolution (including the masses)
+ApfelInit.MaxFlavourPDFs           5 # maximum number of active flavours in the PDF evolution (default 'nf' = 6)
 ApfelInit.RenFacRatio              1
 ApfelInit.SmallxResummation        0 # 'LL', 'NLL' or 0 to disable Small x resummation
 ApfelInit.AlphaEvolution           "exact" # solution of the beta function equations for the running couplings ('evol' = 'exact','expanded','lambda')
 ApfelInit.PDFEvolution             "exactalpha" #sets the solution of the DGLAP equations for PDFs ('evolp' = 'exactmu', 'expandalpha', 'expandalpha')
 ApfelInit.QLimitMin                0.5 #range where it is possible to perform the evolution
-ApfelInit.QLimitMax                1000 #
+ApfelInit.QLimitMax                300 #
 ApfelInit.FastEvolution            1 # fast PDF evolution (default 1)
 ApfelInit.EnableLeptonEvolution    0 # enables the evolution of the lepton PDFs when the fast QUniD is used (default false).
 ApfelInit.mZ                       mZ  # mass of Z boson
@@ -478,7 +479,7 @@ fastNLODiffDIS.logxpom                 0
 fastNLODiffDIS.MuRFuncForm             2                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
 fastNLODiffDIS.MuFFuncForm             2                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
 fastNLODiffDIS.DPDF                    DPDF                             # PDF function
-fastNLODiffDIS.Alpha_s                 ApfelxxAlphas                   # Alpha_s function
+fastNLODiffDIS.Alpha_s                 ApfelAs                   # Alpha_s function
 fastNLODiffDIS.PDFUncertainties        0                               # Calculate PDF uncertainties: 0=false, 1=true
 
 

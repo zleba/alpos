@@ -237,11 +237,11 @@ bool AApfelInit::Init() {
    else APFEL::SetFFNS(nf);
 
    /// hard coded limits
-   APFEL::SetQLimits(0.1,1e6); // 0.4Gev to 100TeV
+   APFEL::SetQLimits(0.1,300*300); // 0.4Gev to 100TeV
    /// set grids with mostly hard-coded parameters
    if ( PAR(nGridPts2) > 0 )  APFEL::SetNumberOfGrids(3);
    else APFEL::SetNumberOfGrids(2);
-   APFEL::SetGridParameters(1,PAR(nGridPts0),3,5.e-7);
+   APFEL::SetGridParameters(1,PAR(nGridPts0),3,1.e-3);
    APFEL::SetGridParameters(2,PAR(nGridPts1),5,1.e-1);
    if ( PAR(nGridPts2) > 0 )  APFEL::SetGridParameters(3,PAR(nGridPts2),5,8.e-1);
 
