@@ -145,7 +145,7 @@ bool APDFQ0_diff::Update() {
       fValue = def;
       fError.resize(fValue.size());
    }
-   else if ( ipdf == -3 || ipdf == -1) {
+   else if ( ipdf == -3) {
       // return QCDNUM vector 'def'
       vector<double> def = {
 	 //tb  bb  cb  sb  ub  db   g   d   u   s   c   b   t 
@@ -172,6 +172,22 @@ bool APDFQ0_diff::Update() {
          // 0, 4,-1,-1,-1,-1, 0, 1, 1, 1, 1,-4, 0, // V24 = u^- + d^- + s^- + c^- - 4 b^-
          // 5, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,-5, // T35 = u^+ + d^+ + s^+ + c^+ + b^+ - 5 t^+
          // 5,-1,-1,-1,-1,-1, 0, 1, 1, 1, 1, 1,-5, // V35 = u^- + d^- + s^- + c^- + b^- - 5 t^-
+      };
+      fValue = def;
+      fValue.resize(13*12,0);
+      fError.resize(fValue.size());
+   }
+   else if ( ipdf == -1) {
+      // return Apfel
+      vector<double> def = {
+	 //tb  bb  cb  sb  ub  db   g   d   u   s   c   b   t 
+	 //-6  -5  -4  -3  -2  -1   0   1   2   3   4   5   6 
+	 0., 0., 0., 1., 1., 1., 0., 1., 1., 1., 0., 0., 0., // light singlet
+	 0., 0., 0., -1., -1., -1., 0., 1., 1., 1., 0., 0., 0., // valence
+         0, 0, 0, 0, 1,-1, 0,-1, 1, 0, 0, 0, 0, // T3  = u^+ - d^+
+         0, 0, 0, 0,-1, 1, 0,-1, 1, 0, 0, 0, 0, // V3  = u^- - d^-
+         0, 0, 0,-2, 1, 1, 0, 1, 1,-2, 0, 0, 0, // T8  = u^+ + d^+ - 2 s^+
+         0, 0, 0, 2,-1,-1, 0, 1, 1,-2, 0, 0, 0, // V8  = u^- + d^- - 2 s^-
       };
       fValue = def;
       fValue.resize(13*12,0);

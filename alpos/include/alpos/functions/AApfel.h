@@ -62,6 +62,8 @@ private:
 
 protected:
    
+   double fq0;
+   double flastmuf;
 
 };
 

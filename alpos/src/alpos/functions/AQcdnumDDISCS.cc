@@ -158,10 +158,11 @@ bool AQcdnumDDISCS::Update() {
        double y = q2[i]/(s-mp2)/x;
 
        double yplus  = 1+pow(1-y,2);
-       //cout<<"QCDNUM  Q2="<<q2[i]<<"\tf2="<<F2[i]<<"\tfl="<<FL[i]<<"\tf3="<<xF3[i]<<"\tq="<<charge<<"\tpol="<<polty<<endl;
 
        double F2 = F2l[i] + F2c[i] + F2b[i];
        double FL = FLl[i] + FLc[i] + FLb[i];
+
+       //cout<<"QCDNUM  Q2="<<q2[i]<<"\tf2="<<F2<<"\tfl="<<FL<<"\txpom="<<xpom[i]<<"\tbeta="<<beta[i]<<"\tF2l="<<F2l[i]<<endl;
 
        double flxIP;
        //Pomeron flux

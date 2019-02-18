@@ -154,12 +154,14 @@ bool AApfelDDISCS::Update() {  //alpos
 	 if ( q2[i] != qq ) continue;
 	 double F2  = APFEL::F2total(beta[i]);
 	 double FL  = APFEL::FLtotal(beta[i]);
-	 //double xF3 = APFEL::F3total(beta[i]);
+	 double xF3 = APFEL::F3total(beta[i]);
 	 //cout<<"F2: "<<F2<<"\t charge: "<<charge<<endl;
 	 double yplus  = 1+(1-y[i])*(1-y[i]);
 	 double yminus = 1-(1-y[i])*(1-y[i]);
          double x = beta[i]*xpom[i];
          double y = q2[i]/(s-mp2)/x;
+
+         //cout<<"Apfel   Q2="<<q2[i]<<"\tf2="<<F2<<"\tfl="<<FL<<"\txpom="<<xpom[i]<<"\tbeta="<<beta[i]<<endl;
 
          // NC
 	 if ( IsNC ) {
