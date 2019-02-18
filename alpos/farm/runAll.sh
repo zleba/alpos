@@ -1,7 +1,9 @@
+tag=AExt*
+
 pwd=$PWD
 cd $pwd/variants
 
-for f in *.str
+for f in ${tag}.str
 do
     $pwd/run.py $f
     sleep 0
@@ -12,7 +14,7 @@ done
 
 cd $pwd
 
-for f in variants/*_dir
+for f in variants/${tag}_dir
 do
     condor_submit  -batch-name `basename $f` dirName=$f  alpos.submit
 done

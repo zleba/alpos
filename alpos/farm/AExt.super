@@ -34,16 +34,16 @@ DataTheorySets {{
 #  H1incDDIS                   datafiles/h1/0606004/ddis.dat                   QcdnumDDISCS   # q2>=8.4   beta<=0.81
 #  H1incDDIS-HERA-I-Q            datafiles/h1/0606004/h1_ddis_heraI.dat          QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
 
-$heraI  H1incDDIS-HERA-I-LAr            datafiles/h1/0606004/h1_ddis_heraI-LAr.dat         QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
-$heraI  H1incDDIS-HERA-I-SpacMB         datafiles/h1/0606004/h1_ddis_heraI-SpaC-97MB.dat   QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
-$heraI  H1incDDIS-HERA-I-SpacTrg        datafiles/h1/0606004/h1_ddis_heraI-SpaC-97all.dat  QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
+$heraI  H1incDDIS-HERA-I-LAr            datafiles/h1/0606004/h1_ddis_heraI-LAr.dat         ApfelDDISCS    Q2>=8.4   beta<=0.81   mx>=2
+$heraI  H1incDDIS-HERA-I-SpacMB         datafiles/h1/0606004/h1_ddis_heraI-SpaC-97MB.dat   ApfelDDISCS    Q2>=8.4   beta<=0.81   mx>=2
+$heraI  H1incDDIS-HERA-I-SpacTrg        datafiles/h1/0606004/h1_ddis_heraI-SpaC-97all.dat  ApfelDDISCS    Q2>=8.4   beta<=0.81   mx>=2
 
 $jets  H1-LRG-DiffDijets           datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets.dat         fastNLODiffDIS              # ptmin>=11 
 
 #  H1incDDIS-HERA-I-A            datafiles/h1/0606004/h1_ddis_heraI.dat          ApfelxxDDISCS   # Q2>=8.4   beta<=0.81   mx>=2
-$heraC H1incDDIS-Comb                 datafiles/h1/1203.4495/h1_ddis_Comb.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
-$heraC H1incDDIS-LowE225              datafiles/h1/1107.3420/h1_ddis_lowE_225.dat     QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
-$heraC H1incDDIS-LowE252              datafiles/h1/1107.3420/h1_ddis_lowE_252.dat     QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
+$heraC H1incDDIS-Comb                 datafiles/h1/1203.4495/h1_ddis_Comb.dat         ApfelDDISCS   Q2>=8.4   beta<=0.81   mx>=2
+$heraC H1incDDIS-LowE225              datafiles/h1/1107.3420/h1_ddis_lowE_225.dat     ApfelDDISCS   Q2>=8.4   beta<=0.81   mx>=2
+$heraC H1incDDIS-LowE252              datafiles/h1/1107.3420/h1_ddis_lowE_252.dat     ApfelDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 }}
 
 
@@ -142,7 +142,10 @@ InitFunctions {{
    PDFQ0_diff            PDFQ0_diff
    QcdnumInit            QcdnumInit
    QcdnumPDF             QcdnumPDF
-   ApfelxxAlphas         ApfelxxAlphas
+#   ApfelxxAlphas         ApfelxxAlphas
+   ApfelPDF              ApfelPDF
+   ApfelInit             ApfelInit
+   ApfelAs               ApfelAs
 #   ApfelxxPDF               ApfelxxPDF
    STROWP1                   STROWP1
 #   GRVPION                    LHAPDF6
@@ -159,6 +162,13 @@ InitFunctions {{
 iOrd                        $iOrd
 AlphasMz                    @alphaS
 mZ                          91.1876
+
+mc    @mCharm
+mb    @mBottom
+mt    174
+mu0   @Q0
+
+
 
 # --------------------------------------------------------------#
 # QcdnumInit defaults
@@ -289,14 +299,19 @@ QcdnumDDISCS.n_IR             IR_n
 
 
 # -----------------------------------------------------
-ApfelxxDDISCS.DPDF            h12006_IP # H1DPDF2006 # DPDF    # H1DPDF2006 # DPDF   
+ApfelxxDDISCS.DPDF            DPDF #h12006_IP # H1DPDF2006 # DPDF    # H1DPDF2006 # DPDF   
 ApfelxxDDISCS.Alpha_s	      ApfelxxAlphas
 ApfelxxDDISCS.e-charge	      1
 ApfelxxDDISCS.e-polarity      0
 ApfelxxDDISCS.iOrd	      iOrd
-ApfelxxDDISCS.mc	      91.6
-ApfelxxDDISCS.mb	      94.5
-ApfelxxDDISCS.mt              9175
+ApfelxxDDISCS.mc	           mc
+ApfelxxDDISCS.mb	           mb
+ApfelxxDDISCS.mt              mt
+ApfelxxDDISCS.nGridFac        4
+
+
+
+
 
 # -----------------------------------------------------
 # PDFQ0_diff
@@ -376,6 +391,77 @@ ApfelxxAlphas.iOrd              iOrd
 ApfelxxAlphas.mc                91.4
 ApfelxxAlphas.mb                94.5
 ApfelxxAlphas.mt                9175
+
+
+# Apfel alpha_s
+ApfelAs.ApfelInit            ApfelInit
+ApfelAs.mur                  100
+
+# Apfel PDF
+ApfelPDF.ApfelInit            ApfelInit
+ApfelPDF.muf                  100
+ApfelPDF.xp                   0.01
+
+
+# --- APFEL (fortran)
+ApfelDDISCS.ApfelInit         ApfelInit
+
+ApfelDDISCS.e-charge          1
+ApfelDDISCS.e-polarity        0
+
+# Pomeron flux
+ApfelDDISCS.a0_IP            IP_a0
+ApfelDDISCS.ap_IP            IP_ap
+ApfelDDISCS.b0_IP            IP_b0
+# Reggeon flux
+ApfelDDISCS.a0_IR            IR_a0
+ApfelDDISCS.ap_IR            IR_ap
+ApfelDDISCS.b0_IR            IR_b0
+ApfelDDISCS.n_IR             IR_n 
+
+
+# --- APFEL
+ApfelInit.iOrd                     iOrd
+ApfelInit.Q0                       mu0 #1.37840 #1.41421
+ApfelInit.nf                       0  #the FiDPDFxed-Flavour Number Scheme with 'nf' active flavours. 0 denotes VFNS
+ApfelInit.PDFQ0                    PDFQ0_diff # PDFQ0_HERA #PDFQ0_HERA #PDFQ0_LHAPDF
+ApfelInit.theory                   "QCD"  # the theory to be used in the evolution: (theory = 'QCD','QED','QUniD', default 'QCD')
+ApfelInit.QCDRefAs                 AlphasMz #0.35 # reference values of alphas at the scale 'QCDRefQRef' [GeV] to alpharef
+ApfelInit.QCDRefQRef               mZ #1.41421356
+ApfelInit.QEDRefAem                7.496252e-3 # reference values of alpha (em) at the scale 'QEDRefQRef' [GeV] to alpharef
+ApfelInit.QEDRefQRef               1.777
+ApfelInit.LambdaQCDRef             0.220 # value of LambdaQCD [GeV] with 'nref'flavours to 'lambdaref' (default '0.220')
+ApfelInit.LambdaQCDnref            5     # value of LambdaQCD [GeV] with 'nref'flavours to 'lambdaref' (default '5')
+ApfelInit.mc                       mc   # pole mass
+ApfelInit.mb                       mb   # pole mass
+ApfelInit.mt                       mt   # pole mass
+ApfelInit.mcMSbar                  mc
+ApfelInit.mbMSbar                  mb
+ApfelInit.mtMSbar                  mt
+ApfelInit.mtau                     1.777
+ApfelInit.EnableMassRunning        1 # dis/en-ables the running of the MSbar masses
+ApfelInit.MaxFlavourAlpha          6 # maximum number of active flavours in the couplings evolution (including the masses)
+ApfelInit.MaxFlavourPDFs           6 # maximum number of active flavours in the PDF evolution (default 'nf' = 6)
+ApfelInit.RenFacRatio              1
+ApfelInit.SmallxResummation        0 # 'LL', 'NLL' or 0 to disable Small x resummation
+ApfelInit.AlphaEvolution           "exact" # solution of the beta function equations for the running couplings ('evol' = 'exact','expanded','lambda')
+ApfelInit.PDFEvolution             "exactalpha" #sets the solution of the DGLAP equations for PDFs ('evolp' = 'exactmu', 'expandalpha', 'expandalpha')
+ApfelInit.QLimitMin                0.5 #range where it is possible to perform the evolution
+ApfelInit.QLimitMax                1000 #
+ApfelInit.FastEvolution            1 # fast PDF evolution (default 1)
+ApfelInit.EnableLeptonEvolution    0 # enables the evolution of the lepton PDFs when the fast QUniD is used (default false).
+ApfelInit.mZ                       mZ  # mass of Z boson
+ApfelInit.mW                       mW   # mass of W boson
+ApfelInit.Gf                       1.16638e-5   # g Fermi
+ApfelInit.MassScheme               ZM-VFNS # mass scheme for structure functions ('ZM-VFNS', 'FFNS', 'FONLL-A', 'FONLL-B', 'FONLL-C')
+ApfelInit.nGridPts0                80 # number of grid points for grid 0 (x>5.e-6)
+ApfelInit.nGridPts1                40 # number of grid points for grid 1 (x>1.e-1)
+ApfelInit.nGridPts2                20 # number of grid points for grid 2 (x>8.e-1)
+
+ApfelInit.SinThetaW                0.23126 # weinberg angle
+ApfelInit.TargetMassCorrections    0
+
+
 
 # --------------------------------------------------------------#
 # fastNLODiffDIS
