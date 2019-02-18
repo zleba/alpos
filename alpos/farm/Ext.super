@@ -12,7 +12,7 @@
 #pars['ap_IP']   =  valErr(0.06, 0.19, -0.06)
 #pars['b0_IP']   =  valErr(5.5,   0.7, -2.0)
 #pars['mu']      =  [1, 2, 0.5]
-#pars['Q0']      =  [sqrt(1.75), sqrt(1.95), sqrt(1.15)]
+#pars['Q0']      =  [sqrt(1.75), sqrt(1.94), sqrt(1.15)]
 ##pars['Q0']      =  [sqrt(2.5), sqrt(2.5), sqrt(2.5)] 
 #
 #shifts = [['alphaS'], ['mCharm'], ['mBottom'], ['a0_IR'], ['ap_IR'],['b0_IR'],['ap_IP', 'b0_IP'],['mu'],['Q0']]
@@ -83,7 +83,7 @@ MyFit {{{
    PrintLevel                   3
    Tolerance                    1
    Strategy                     1
-   Chisq                        NuisanceMult
+   Chisq                        LogNormal
    
    FitParameters { 
        #IP_ap
@@ -109,8 +109,8 @@ MyFit {{{
 
 
 Stat {{{
-   Chisq                        NuisanceMult
-#   Chisq2                       LogNormalNuisance
+   Chisq                        LogNormal
+   Chisq2                       LogNormalNuisance
    DoChisq                      true
    DoPValue                     true
 }}}

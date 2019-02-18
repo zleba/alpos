@@ -197,6 +197,10 @@ int AQcdnumInit::SetQGrid(vector<double> qarr, vector<double> wgt, int nNodes){
    //! return number of Q nodes
    int nq = int(qarr.size());
    int nxout = -1;
+   info["SetQGrid"]<<"nq="<<nq<<endl;
+   for(int i = 0; i < nq; ++i)
+      info["SetQGrid"]<<"i="<< i<<" "<<qarr[i]<<endl;
+
    gqmake_(&qarr[0],&wgt[0],&nq,&nNodes,&nxout);//  muf grid
    info["SetQGrid"]<<"Made muf grid with "<<nxout<<" grid points."<<endl;
    return nxout;

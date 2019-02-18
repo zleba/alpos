@@ -2,6 +2,7 @@
 #include "APFEL/APFEL.h"
 #include "alpos/functions/AApfelDDISCS.h"
 #include "alpos/functions/AApfel.h"
+#include "alpos/functions/AApfelInit.h"
 #include <iostream>
 #include "fastnlotk/read_steer.h"
 #include <set>

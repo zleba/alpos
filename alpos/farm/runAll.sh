@@ -8,8 +8,8 @@ do
 done
 
 #exit
-
 #Submit them all
+
 cd $pwd
 
 for f in variants/*_dir

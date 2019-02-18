@@ -107,57 +107,60 @@ bool ASaveDataTheory::Execute(){
 
    cout << "dataSize theorSize " << dataChildren.size() << " "<< theoChildren.size() << endl;
 
-   int iChild = 1;
+   for(int iChild = 0; iChild < 0; ++iChild) {
 
-   const std::vector<double>* dataPts = &dataChildren[iChild]->GetValues();
-   const std::vector<double>* theoPts = &theoChildren[iChild]->GetValues();
+      const std::vector<double>* dataPts = &dataChildren[iChild]->GetValues();
+      const std::vector<double>* theoPts = &theoChildren[iChild]->GetValues();
 
-   auto dataTable = dataChildren[iChild]->GetDataTable();
+      auto dataTable = dataChildren[iChild]->GetDataTable();
 
-   vector<double> q2      = dataTable.at("Q2");
-   vector<double> xpom    = dataTable.at("xp");
-   vector<double> beta    = dataTable.at("beta");
-   vector<double> dataUnc = dataTable.at("tot");
+      vector<double> q2      = dataTable.at("Q2");
+      vector<double> xpom    = dataTable.at("xp");
+      vector<double> beta    = dataTable.at("beta");
+      vector<double> dataUnc = dataTable.at("tot");
 
-   TTree *ThDataTab = new TTree("ThDataTab","table with data and theory");
+      TTree *ThDataTab = new TTree("ThDataTab","table with data and theory");
 
-   double xp_, q2_, beta_, xpSigData_, xpSigDataErr_, xpSigTh_, xpSigThErr_;
-   double xpSigThOrgA_, xpSigThOrgB_;
+      double xp_, q2_, beta_, xpSigData_, xpSigDataErr_, xpSigTh_, xpSigThErr_;
+      double xpSigThOrgA_, xpSigThOrgB_;
 
-   ThDataTab->Branch("xp",&xp_,"xp/D");
-   ThDataTab->Branch("Q2",&q2_,"Q2/D");
-   ThDataTab->Branch("beta",&beta_,"beta/D");
-   ThDataTab->Branch("xpSigData",&xpSigData_,"xpSigData/D");
-   ThDataTab->Branch("xpSigDataErr",&xpSigDataErr_,"xpSigDataErr/D");
-   ThDataTab->Branch("xpSigTh",&xpSigTh_,"xpSigTh/D");
-   ThDataTab->Branch("xpSigThErr",&xpSigThErr_,"xpSigThErr/D");
+      ThDataTab->Branch("xp",&xp_,"xp/D");
+      ThDataTab->Branch("Q2",&q2_,"Q2/D");
+      ThDataTab->Branch("beta",&beta_,"beta/D");
+      ThDataTab->Branch("xpSigData",&xpSigData_,"xpSigData/D");
+      ThDataTab->Branch("xpSigDataErr",&xpSigDataErr_,"xpSigDataErr/D");
+      ThDataTab->Branch("xpSigTh",&xpSigTh_,"xpSigTh/D");
+      ThDataTab->Branch("xpSigThErr",&xpSigThErr_,"xpSigThErr/D");
 
-   ThDataTab->Branch("xpSigThOrgA",&xpSigThOrgA_,"xpSigThOrgA/D");
-   ThDataTab->Branch("xpSigThOrgB",&xpSigThOrgB_,"xpSigThOrgB/D");
+      ThDataTab->Branch("xpSigThOrgA",&xpSigThOrgA_,"xpSigThOrgA/D");
+      ThDataTab->Branch("xpSigThOrgB",&xpSigThOrgB_,"xpSigThOrgB/D");
 
 
 
-   for(int i = 0; i < dataPts->size(); ++i) {
-       //cout << " "<<beta[i] <<" "<< q2[i] <<" "<<  xpom[i] <<" : "<< dataPts->at(i) << endl;
-       xp_ = xpom[i];
-       q2_ = q2[i];
-       beta_ = beta[i];
-       xpSigData_ = dataPts->at(i);
-       xpSigDataErr_ = dataUnc[i] * 0.01; //from % to relErr
-       xpSigTh_ = theoPts->at(i);
-       xpSigThErr_ = 0;
+      for(int i = 0; i < dataPts->size(); ++i) {
+         //cout << " "<<beta[i] <<" "<< q2[i] <<" "<<  xpom[i] <<" : "<< dataPts->at(i) << endl;
+         xp_ = xpom[i];
+         q2_ = q2[i];
+         beta_ = beta[i];
+         xpSigData_ = dataPts->at(i);
+         xpSigDataErr_ = dataUnc[i] * 0.01; //from % to relErr
+         xpSigTh_ = theoPts->at(i);
+         xpSigThErr_ = 0;
 
-       cout << "RADEK " << endl;
-       xpSigThOrgA_ = getSigRed2006(1, xp_, q2_, beta_);
-       xpSigThOrgB_ = getSigRed2006(2, xp_, q2_, beta_);
+         cout << "RADEK " << endl;
+         xpSigThOrgA_ = getSigRed2006(1, xp_, q2_, beta_);
+         xpSigThOrgB_ = getSigRed2006(2, xp_, q2_, beta_);
 
-       ThDataTab->Fill();
+         ThDataTab->Fill();
+      }
+
    }
+
    //cout << "Helenka " << endl;
    //exit(0);
 
-   const std::vector<double>* errsData = &dataChildren[iChild]->GetSumError("AA", "AbsAvTot");
-   const std::vector<double>* errsTheo = &theoChildren[iChild]->GetSumError("AA", "AbsAvTot");
+   //const std::vector<double>* errsData = &dataChildren[iChild]->GetSumError("AA", "AbsAvTot");
+   //const std::vector<double>* errsTheo = &theoChildren[iChild]->GetSumError("AA", "AbsAvTot");
 
    //string asfunc = STRING_NS(Alphas,NS());
    //cout << asfunc << endl;

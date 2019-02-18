@@ -10,11 +10,11 @@
 #include <string>
 #include <algorithm>
 /** 
- APrintErrorSummary
+  APrintErrorSummary
 
- Print information on uncertainties for all datasets.
+  Print information on uncertainties for all datasets.
 
- */
+*/
 
 using namespace std;
 
@@ -66,45 +66,45 @@ bool APrintErrorSummary::Execute() {
    fdatsets.push_back(supdat->GetAlposName());
    for ( int iThDt = 0 ; iThDt<2 ; iThDt++ ) {
       const std::map<std::string, AError>& errset = iThDt ? 
-	 suptheo->GetAllErrors() :
-	 supdat->GetAllErrors();
+         suptheo->GetAllErrors() :
+         supdat->GetAllErrors();
       for ( const auto& ierr : errset ) {
-	 for ( int iThDt = 0 ; iThDt<2 ; iThDt++ ) {
-	    cout<<"error name: "<<ierr.first<<endl;
-	    fsummary[ierr.first];//second.GetErrorName()]; // add error
-	    char buf[10];
-	    double cf = ierr.second.GetCorrelatedFraction();
-	    if ( int(cf) - cf == 0 ) 
-	       sprintf(buf,"%1d",int(cf));
-	    else sprintf(buf,"%3.1f",cf);
-	    string txt = buf;
-	    txt+=",";
-	    //txt+=ierr.second.GetNature();
-	    txt+=ierr.second.GetType();
-	    fsummary[ierr.first][supdat->GetAlposName()] = txt; // add dataset
-	 }
+         for ( int iThDt = 0 ; iThDt<2 ; iThDt++ ) {
+            cout<<"error name: "<<ierr.first<<endl;
+            fsummary[ierr.first];//second.GetErrorName()]; // add error
+            char buf[10];
+            double cf = ierr.second.GetCorrelatedFraction();
+            if ( int(cf) - cf == 0 ) 
+               sprintf(buf,"%1d",int(cf));
+            else sprintf(buf,"%3.1f",cf);
+            string txt = buf;
+            txt+=",";
+            //txt+=ierr.second.GetNature();
+            txt+=ierr.second.GetType();
+            fsummary[ierr.first][supdat->GetAlposName()] = txt; // add dataset
+         }
       }
    }
 
    for ( const auto& id : TheoryHandler::Handler()->GetDataTheoryPairs() )  {
       for ( int iThDt = 0 ; iThDt<2 ; iThDt++ ) {
-	 const std::map<std::string, AError>& errset = iThDt ? 
-	    id.second.first->GetAllErrors() :
-	    id.second.second->GetAllErrors();
-	 fdatsets.push_back(id.second.first->GetAlposName());
-	 for ( const auto& ierr : errset ) {
-	    fsummary[ierr.first]; // add error
-	    char buf[10];
-	    double cf = ierr.second.GetCorrelatedFraction();
-	    if ( int(cf) - cf == 0 ) 
-	       sprintf(buf,"%1d",int(cf));
-	    else sprintf(buf,"%3.1f",cf);
-	    string txt = buf;
-	    txt+=",";
-	    //txt+=ierr.second.GetNature();
-	    txt+=ierr.second.GetType();
-	    fsummary[ierr.first][id.second.first->GetAlposName()] = txt; // add dataset
-	 }
+         const std::map<std::string, AError>& errset = iThDt ? 
+                                               id.second.first->GetAllErrors() :
+                                               id.second.second->GetAllErrors();
+         fdatsets.push_back(id.second.first->GetAlposName());
+         for ( const auto& ierr : errset ) {
+            fsummary[ierr.first]; // add error
+            char buf[10];
+            double cf = ierr.second.GetCorrelatedFraction();
+            if ( int(cf) - cf == 0 ) 
+               sprintf(buf,"%1d",int(cf));
+            else sprintf(buf,"%3.1f",cf);
+            string txt = buf;
+            txt+=",";
+            //txt+=ierr.second.GetNature();
+            txt+=ierr.second.GetType();
+            fsummary[ierr.first][id.second.first->GetAlposName()] = txt; // add dataset
+         }
       }
    }
 
@@ -126,7 +126,7 @@ bool APrintErrorSummary::Execute() {
    for ( int i = 0 ; i< nmax ; i++ ) {
       printf(forme.c_str(),"");
       for ( auto id : slds ) {
-	 printf(formt2.c_str(),id.substr(i,1).c_str());
+         printf(formt2.c_str(),id.substr(i,1).c_str());
       }
       cout<<endl;
    }
@@ -139,7 +139,7 @@ bool APrintErrorSummary::Execute() {
    for ( auto is : fsummary) {
       printf(forme.c_str(),is.first.c_str());
       for ( auto id : fdatsets ) {
-	 printf(formt2.c_str(),is.second[id].c_str());
+         printf(formt2.c_str(),is.second[id].c_str());
       }
       cout<<endl;
    }
@@ -150,7 +150,7 @@ bool APrintErrorSummary::Execute() {
 
    // --- job done successfully
    return true;
-   
+
 }
 
 

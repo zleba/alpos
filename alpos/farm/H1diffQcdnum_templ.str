@@ -1,5 +1,22 @@
 #! -*-sh-*- (colors for emacs)
 
+##Model systematics {{
+#pars['alphaS']  =  valErr(0.118, 0.002)
+#pars['alphaS'] =  valErr(0.106, 0.002)
+#pars['mCharm']  =  valErr(1.4, 0.2)
+#pars['mBottom'] =  valErr(4.5, 0.5)
+#pars['a0_IR']   =  valErr(0.5,   0.1)
+#pars['ap_IR']   =  valErr(0.3,   0.6, -0.3)
+#pars['b0_IR']   =  valErr(1.6,   0.4, -1.6)
+#pars['ap_IP']   =  valErr(0.06, 0.19, -0.06)
+#pars['b0_IP']   =  valErr(5.5,   0.7, -2.0)
+#pars['mu']      =  [1, 2, 0.5]
+#pars['Q0']      =  [sqrt(1.75), sqrt(2.05), sqrt(1.15)]
+##pars['Q0']      =  [sqrt(2.5), sqrt(2.5), sqrt(2.5)] 
+#
+#shifts = [['alphaS'], ['mCharm'], ['mBottom'], ['a0_IR'], ['ap_IR'],['b0_IR'],['ap_IP', 'b0_IP'],['mu'],['Q0']]
+##Model systematics }}
+
 ################################################################
 #
 #  An example steering file for Alpos
@@ -20,6 +37,7 @@ DataTheorySets {{
   H1incDDIS-HERA-I-SpacMB         datafiles/h1/0606004/h1_ddis_heraI-SpaC-97MB.dat   QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
   H1incDDIS-HERA-I-SpacTrg        datafiles/h1/0606004/h1_ddis_heraI-SpaC-97all.dat  QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
 
+  H1-LRG-DiffDijets           datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets.dat         fastNLODiffDIS              # ptmin>=11 
 #  H1incDDIS-HERA-I-A            datafiles/h1/0606004/h1_ddis_heraI.dat          ApfelxxDDISCS   # Q2>=8.4   beta<=0.81   mx>=2
 # H1incDDIS                   datafiles/h1/1203.4495/h1_ddis_Comb.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 # H1incDDIS                   datafiles/h1/1107.3420/h1_ddis_lowE.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
@@ -47,7 +65,7 @@ ErrorSymmetrization             SignImprovedQuadratic
 Output                          @outFile             # commonoutput file for outputs of all tasks
 GlobalVerbosity                 Info # Debug, Warning, Error
 InitSubsets                     false  # Init subsets of datasets
-IgnoreTheoryErrors              true                            # Ignore all theory errors when calculating chi2 value
+IgnoreTheoryErrors              false                            # Ignore all theory errors when calculating chi2 value
 MatrixInversionTolerance        1.e-6                           # Tolerance of matrix inversion algorithm
 # ALPOS_DIR                       <specify your directory>      # use env-variable ALPOS_DIR or specify it herewith
 
@@ -73,7 +91,8 @@ MyFit {{{
        IP_a0
        IR_n 
        PDFQ0_diff.g0  
-#       PDFQ0_diff.g2
+       PDFQ0_diff.g1  
+       PDFQ0_diff.g2
        PDFQ0_diff.s0  
        PDFQ0_diff.s1  
        PDFQ0_diff.s2  
@@ -99,7 +118,7 @@ SaveDPDFTGraph {{{
    nzpom                330
    zmin                 0.001
    xpomValues           {  0.003 }
-   Q2Values             { 2.5, 8.5, 20, 90, 800 }
+   Q2Values             { 1.75, 8.5, 20, 90, 800 }
    AsciiOutput          false
    Alphas               todo
 }}}
@@ -121,12 +140,12 @@ InitFunctions {{
    QcdnumInit            QcdnumInit
    QcdnumPDF             QcdnumPDF
    ApfelxxAlphas            ApfelxxAlphas
-   ApfelxxPDF               ApfelxxPDF
+#   ApfelxxPDF               ApfelxxPDF
    STROWP1                   STROWP1
 #   GRVPION                    LHAPDF6
    DPDF                      DPDF
    H1DPDF2006                H1DPDF2006
-   h12006_IP                H1DPDF2006
+   h12006_IP                 H1DPDF2006
 #   h12006_IR                H1DPDF2006
 #   h12006_IP_0              H1DPDF2006
 }}
@@ -305,8 +324,8 @@ PDFQ0_diff.vTF1               "x*0"
 #   6   a0pom        1.1110       0.73433E-02   
 PDFQ0_diff.g0                 0.14591
 PDFQ0_diff.g1                 0
-#PDFQ0_diff.g2                 -0.94705
-PDFQ0_diff.g2                 0
+PDFQ0_diff.g2                 -0.94705
+#PDFQ0_diff.g2                 0
 PDFQ0_diff.g3                 0
 PDFQ0_diff.g4                 0
 			      
@@ -355,6 +374,24 @@ ApfelxxAlphas.iOrd              iOrd
 ApfelxxAlphas.mc                91.4
 ApfelxxAlphas.mb                94.5
 ApfelxxAlphas.mt                9175
+
+# --------------------------------------------------------------#
+# fastNLODiffDIS
+fastNLODiffDIS.Filename                table.tab                       # default value! Always overwritten by data steering
+fastNLODiffDIS.ScaleFacMuR             1                               # default value! Often overwritten by data steering
+fastNLODiffDIS.ScaleFacMuF             1                               #
+fastNLODiffDIS.Units                   1                               # 0: absoluteUnits, 1: PublicationUnits
+fastNLODiffDIS.iOrd                    2 #iOrd                            #
+fastNLODiffDIS.xpom_min                0
+fastNLODiffDIS.xpom_max                0
+fastNLODiffDIS.nxpom                   18
+fastNLODiffDIS.logxpom                 0
+# flexiDiffDISble-scale options
+fastNLODiffDIS.MuRFuncForm             2                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
+fastNLODiffDIS.MuFFuncForm             2                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
+fastNLODiffDIS.DPDF                    DPDF                             # PDF function
+fastNLODiffDIS.Alpha_s                 ApfelxxAlphas                   # Alpha_s function
+fastNLODiffDIS.PDFUncertainties        0                               # Calculate PDF uncertainties: 0=false, 1=true
 
 
 

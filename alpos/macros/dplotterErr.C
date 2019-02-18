@@ -171,11 +171,11 @@ pair<TGraphAsymmErrors*, TGraphAsymmErrors*> getGluonSinglet2006Err(TGraph *grRe
 
 
 
-void dplotterErr(TString inDir = "../farm/checkFitAjetsext")
+void dplotterErr(TString inDir = "../farm/variants/Ext_nloF_heraCjets.str_dir")
 {
     dPlotter dplt;
 
-    dplt.readData(inDir, 14);
+    dplt.readData(inDir, 18);
 
 
     /*
@@ -183,9 +183,10 @@ void dplotterErr(TString inDir = "../farm/checkFitAjetsext")
     dplt.plotPDFsErrors(false, true);
     return 0;
     */
-    /*
+
     dplt.plotShiftsChi2();
-    */
+
+    return;
 
 
     dplt.plotPDFs(false, true);
@@ -242,8 +243,8 @@ void sysShift::readData(TString inFile)
         gluonQ2[q2].resize(nShifts, nullptr);
 
         for(int i = 0; i < nShifts; ++i) {
-            cout << Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_gluon", q2, i ) << endl;
-            cout << Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_SIGMA", q2, i ) << endl;
+            //cout << Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_gluon", q2, i ) << endl;
+            //cout << Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_SIGMA", q2, i ) << endl;
             gluonQ2[q2][i]   = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_gluon", q2, i )));
             singletQ2[q2][i] = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_SIGMA", q2, i )));
             if(!gluonQ2[q2][i] || !singletQ2[q2][i]) {
@@ -583,6 +584,7 @@ void dPlotter::plotParametersShifts(int sh)
 void dPlotter::plotShiftsChi2()
 {
     map<TString,TGraphAsymmErrors*> grTab, grFit;
+    map<TString,double> dChi2Min;
     for(int i = 0; i < (shifts.size()-1)/2; ++i) {
         //Find the change in fixedPars
         double lowVal, highVal, cntVal;
@@ -622,6 +624,7 @@ void dPlotter::plotShiftsChi2()
             double minChi2  = coef(0) - coef(1)*coef(1) / (4*coef(2));
             double w = 1./sqrt(coef(2));
 
+            dChi2Min[vName] = minChi2 - cntChi2;
             cout << vName <<" : " << cnt <<" +- " << w << " | " << cnt-w <<" "<< cnt+w << endl;
             grTab[vName] = new TGraphAsymmErrors(1);
             grFit[vName] = new TGraphAsymmErrors(1);
@@ -665,6 +668,8 @@ void dPlotter::plotShiftsChi2()
         hFrame->Draw("axis");
 
         grTab[n]->SetFillColor(kYellow);
+        grTab[n]->SetLineColor(kRed);
+        grTab[n]->SetLineWidth(2);
         grTab[n]->SetFillStyle(1001);
         grTab[n]->DrawClone("pe2 same");
 
@@ -686,6 +691,8 @@ void dPlotter::plotShiftsChi2()
         UpdateFrame();
 
         DrawLatexLeft(1, n, -1, "r");
+        DrawLatexRight(1, Form("%.1f", dChi2Min.at(n)), -1, "l");
+
         ++i;
     }
     can->SaveAs(outDir + "/ShiftsRew.pdf");
