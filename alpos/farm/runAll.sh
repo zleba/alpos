@@ -9,7 +9,7 @@ do
     sleep 0
 done
 
-#exit
+exit
 #Submit them all
 
 cd $pwd

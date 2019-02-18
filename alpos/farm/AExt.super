@@ -140,8 +140,8 @@ AlposTheory {{{
 InitFunctions {{
    FunctionName          FunctionType         # one line here! (header of 'table')
    PDFQ0_diff            PDFQ0_diff
-   QcdnumInit            QcdnumInit
-   QcdnumPDF             QcdnumPDF
+#   QcdnumInit            QcdnumInit
+#   QcdnumPDF             QcdnumPDF
 #   ApfelxxAlphas         ApfelxxAlphas
    ApfelPDF              ApfelPDF
    ApfelInit             ApfelInit
@@ -247,7 +247,7 @@ IR_n                                     0.0017
 DPDF.xpom                                 0.002
 DPDF.zpom                                 0.5
 DPDF.muf                                  5
-DPDF.pom1                                 QcdnumPDF # ApfelxxPDF # QcdnumPDF # ApfelxxPDF # use any pomeron PDF
+DPDF.pom1                                 ApfelPDF # ApfelxxPDF # QcdnumPDF # ApfelxxPDF # use any pomeron PDF
 DPDF.pom2                                 0
 DPDF.reg1                                 STROWP1 # use GRVPION or STROWP1
 DPDF.xPomFluxNorm                         0.003
@@ -453,10 +453,10 @@ ApfelInit.EnableLeptonEvolution    0 # enables the evolution of the lepton PDFs 
 ApfelInit.mZ                       mZ  # mass of Z boson
 ApfelInit.mW                       mW   # mass of W boson
 ApfelInit.Gf                       1.16638e-5   # g Fermi
-ApfelInit.MassScheme               ZM-VFNS # mass scheme for structure functions ('ZM-VFNS', 'FFNS', 'FONLL-A', 'FONLL-B', 'FONLL-C')
-ApfelInit.nGridPts0                80 # number of grid points for grid 0 (x>5.e-6)
-ApfelInit.nGridPts1                40 # number of grid points for grid 1 (x>1.e-1)
-ApfelInit.nGridPts2                20 # number of grid points for grid 2 (x>8.e-1)
+ApfelInit.MassScheme               $scheme # mass scheme for structure functions ('ZM-VFNS', 'FFNS', 'FONLL-A', 'FONLL-B', 'FONLL-C')
+ApfelInit.nGridPts0                150 # number of grid points for grid 0 (x>5.e-6)
+ApfelInit.nGridPts1                100 # number of grid points for grid 1 (x>1.e-1)
+ApfelInit.nGridPts2                60 # number of grid points for grid 2 (x>8.e-1)
 
 ApfelInit.SinThetaW                0.23126 # weinberg angle
 ApfelInit.TargetMassCorrections    0

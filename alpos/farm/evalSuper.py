@@ -6,9 +6,15 @@ parser = argparse.ArgumentParser()
 parser.add_argument("super_steering", help="input super-steering file")
 args = parser.parse_args()
 
+#orders   = ['nloF', 'nlo', 'nnlo']
+dataSets = ['heraI', 'heraIjets', 'heraC', 'heraCjets']
 
-for Ord in ['nloF', 'nlo', 'nnlo']:
-    for data in ['heraI', 'heraIjets', 'heraC', 'heraCjets']:
+orders   = ['nlo', 'nnlo']
+#dataSets = ['heraI', 'heraC']
+
+
+for Ord in orders:
+    for data in dataSets:
         fName = args.super_steering[:-6] +'_'+ Ord +'_'+ data +'.str'
         with open(args.super_steering, "rt") as fin:
             with open('variants/'+fName, "wt") as fout:
@@ -29,8 +35,10 @@ for Ord in ['nloF', 'nlo', 'nnlo']:
                     #Order replacement
                     if 'nnlo' == Ord:
                         line = line.replace('$iOrd', '2')
+                        line = line.replace('$scheme', 'FONLL-C')
                     else:
                         line = line.replace('$iOrd', '1')
+                        line = line.replace('$scheme', 'FONLL-B')
 
                     if 'nloF' == Ord:
                         line = line.replace('$nf', '3')

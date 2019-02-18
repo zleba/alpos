@@ -472,6 +472,7 @@ void comparePdf()
     //canvas();
 
     vector<vector<TString>> compNames = {
+       /*
         //Theor comp.
         {"Ext_nloF_heraI", "Ext_nlo_heraI" }, 
         {"Ext_nlo_heraI", "Ext_nnlo_heraI" },
@@ -487,8 +488,17 @@ void comparePdf()
         {"Ext_nnlo_heraI", "Ext_nnlo_heraC" },
         {"Ext_nnlo_heraC", "Ext_nnlo_heraCjets" },
         {"Ext_nnlo_heraI", "Ext_nnlo_heraIjets" }
+        */
+
+        //Apfel vs QCDNUM comp.
+        {"Ext_nlo_heraI", "AExt_nlo_heraI" }, 
+        {"Ext_nnlo_heraI", "AExt_nnlo_heraI" },
+        {"Ext_nlo_heraC", "AExt_nlo_heraC" },
+        {"Ext_nnlo_heraC", "AExt_nnlo_heraC" },
+
 
     };
+
     TString pathIn = "../farm/variants/";
 
     for(auto comp: compNames) {
