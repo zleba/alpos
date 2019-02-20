@@ -90,14 +90,13 @@ bool ASaveDataTheory::Init(){
 
 //____________________________________________________________________________________ //
 bool ASaveDataTheory::Execute(){
-   debug["Execute"]<<"Now getting 'WelcomeString' from steering and printing it:"<<endl;
-   cout<<endl;
-   cout<<"  "<<STRING_NS(WelcomeString,NS())<<endl;
-   cout<<endl;
 
    TDirectory* file = Alpos::Current()->Settings()->rootoutput;
+   if ( !file ) {
+      info[""]<<"No output file specified in steering. skipping task."<<endl;
+      return true;
+   }
    file->mkdir(GetTaskName().c_str())->cd();
-
 
    const auto& supdata = TheoryHandler::Handler()->GetSuperPair().first;
    const auto& suptheo = TheoryHandler::Handler()->GetSuperPair().second;
@@ -153,7 +152,6 @@ bool ASaveDataTheory::Execute(){
 
          ThDataTab->Fill();
       }
-
    }
 
    //cout << "Helenka " << endl;
