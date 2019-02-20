@@ -119,9 +119,8 @@ bool APrintDataTheory::Execute() {
       const std::vector<double>* errsTheoUnc = &theoChildren[iChild]->GetSumError("AA", "AbsAvUnc");
 
       // list of total errors (AData and theory object errors added in quadrature)
-      std::vector<double> errsTotal;
-      std::vector<double> errsUncor;
-      errsTotal.resize(errsData->size());
+      std::vector<double> errsTotal(errsData->size());
+      std::vector<double> errsUncor(errsData->size());
       // add errors in quadrature
       for (unsigned int iRow = 0; iRow < errsTotal.size(); iRow++) {
          errsTotal[iRow] = std::sqrt(errsData->at(iRow)*errsData->at(iRow) + errsTheo->at(iRow)*errsTheo->at(iRow));
