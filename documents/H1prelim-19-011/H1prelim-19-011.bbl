@@ -1,0 +1,38 @@
+\providecommand{\href}[2]{#2}\begingroup\raggedright\begin{thebibliography}{1}
+
+\bibitem{Adloff:2000tq}
+{ H1} Collaboration, C.~Adloff {\em et~al.},
+  \href{http://dx.doi.org/10.1007/s100520100621}{{\em Eur. Phys. J.} {C19}
+  (2001) 289},
+\href{http://arxiv.org/abs/hep-ex/0010054}{{\ttfamily arXiv:hep-ex/0010054}}.
+%%CITATION = HEP-EX/0010054;%%.
+
+\bibitem{Aaron:2010ac}
+{ H1} Collaboration, F.~D. Aaron {\em et~al.},
+  \href{http://dx.doi.org/10.1140/epjc/s10052-010-1282-x}{{\em Eur. Phys. J.}
+  {C67} (2010) 1},
+\href{http://arxiv.org/abs/0911.5678}{{\ttfamily arXiv:0911.5678}}.
+%%CITATION = ARXIV:0911.5678;%%.
+
+\bibitem{Aktas:2007aa}
+{ H1} Collaboration, A.~Aktas {\em et~al.},
+  \href{http://dx.doi.org/10.1016/j.physletb.2007.07.050}{{\em Phys. Lett.}
+  {B653} (2007) 134},
+\href{http://arxiv.org/abs/0706.3722}{{\ttfamily arXiv:0706.3722}}.
+%%CITATION = ARXIV:0706.3722;%%.
+
+\bibitem{Andreev:2016tgi}
+{ H1} Collaboration, V.~Andreev {\em et~al.},
+  \href{http://dx.doi.org/10.1140/epjc/s10052-017-4717-9}{{\em Eur. Phys. J.}
+  {C77} (2017) 215},
+\href{http://arxiv.org/abs/1611.03421}{{\ttfamily arXiv:1611.03421}}.
+%%CITATION = ARXIV:1611.03421;%%.
+
+\bibitem{Andreev:2014wwa}
+{ H1} Collaboration, V.~Andreev {\em et~al.},
+  \href{http://dx.doi.org/10.1140/epjc/s10052-014-3223-6}{{\em Eur. Phys. J.}
+  {C75} (2015) 65},
+\href{http://arxiv.org/abs/1406.4709}{{\ttfamily arXiv:1406.4709}}.
+%%CITATION = ARXIV:1406.4709;%%.
+
+\end{thebibliography}\endgroup
