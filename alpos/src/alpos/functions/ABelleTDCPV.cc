@@ -28,7 +28,6 @@ bool ABelleTDCPV::Init() {
    //! return true if initialization was successful.
    // 'real' QCDNUM init is called in constructor
 
-
    info["Init"]<<"This is ABelleTDCPV::Init(). Please implement the Likelihood calculation here"<<endl;
    fValue.resize(1);
    fError.resize(1);
@@ -43,7 +42,8 @@ bool ABelleTDCPV::Update() {
 
    info["Update"]<<"This is ABelleTDCPV::Init(). Please implement the Likelihood calculation here"<<endl;
 
-
+   // ---- parameters, which are input to the
+   //      calculation and can be fitted
    double tau = PAR(tau);
    double dm  = PAR(dm);
    double A   = PAR(A);
@@ -51,8 +51,27 @@ bool ABelleTDCPV::Update() {
    double W   = PAR(W);
    double fsig= PAR(fsig);
 
-   fValue[0] += 1;
+   // --- get info from 'data file'
+   vector<string> datafiles = STRING_COL_NS(Data,datafile,GetAlposName());
+   vector<double> sigmaData = DOUBLE_COL_NS(Data,Sigma,GetAlposName());
+   string datadir = STRING_NS(DataDir,GetAlposName());
 
+   // --- read data
+   if ( sigmaData.size() && sigmaData[0]==0 ) {
+      // read file from colum datafiles
+      for ( const string& datafile : datafiles ) {
+         cout<<"Opening data file: "<<datafile<<endl;
+         // --- open data file
+         TFile* f = NULL;
+
+         // --- calculate likelihood for every event
+         double L = 0;
+      }
+   }
+
+   // fValue must contain a number of probabilites,
+   // which are then input to the -2log(L) function.
+   fValue[0] = exp(-0.5*pow((A-S)/dm,2)) / (sqrt(2*M_PI)*dm);
    fError[0] = 0;
 
    return true;

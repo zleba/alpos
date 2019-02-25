@@ -1,0 +1,133 @@
+#! -*-sh-*- (colors for emacs)
+
+################################################################
+#
+#  An example steering file for Alpos
+#
+#################################################################
+
+# --------------------------------------------------------------#
+#  Specify 'DataTheorySets', i.e. data-files containing
+#  data sets and their corresponding theory class
+# --------------------------------------------------------------#
+DataTheorySets {{
+  AlposName                     SteerFile                                   TheoryFunction            
+  Belle-TDCPV                   datafiles/belle/Belle_TDCPV_test.dat        BelleTDCPV
+}}
+
+
+# --------------------------------------------------------------#
+#  Specify tasks which should be executed by Alpos
+# --------------------------------------------------------------#
+Tasks {{
+  TaskType                TaskName
+#  PrintSteering           PrintSteering
+   PrintTheorySet         PrintTheorySet
+   AFitter                MyFit
+#   StatAnalysis           Stat
+#   ASaveDataTheory        ASaveDataTheory
+#   PrintDataTheory    PrintDataTheory
+}}
+
+
+# --------------------------------------------------------------#
+#  Alpos global settings
+# --------------------------------------------------------------#
+ErrorSymmetrization                 SignImprovedQuadratic
+Output                              #out_test5_LogNormal_jets             # commonoutput file for outputs of all tasks
+GlobalVerbosity                     Info # Debug, Warning, Error
+InitSubsets                         false  # Init subsets of datasets
+IgnoreTheoryErrors                  false                            # Ignore all theory errors when calculating chi2 value
+MatrixInversionTolerance            1.e-6                           # Tolerance of matrix inversion algorithm
+# ALPOS_DIR                         <specify your directory>      # use env-variable ALPOS_DIR or specify it herewith
+
+
+
+# --------------------------------------------------------------#
+#  Task parameters
+#    Put all parameters in a namespace with the task's name
+# --------------------------------------------------------------#
+
+MyFit {{{
+   Minimizer                    TMinuit
+   PrintLevel                   3
+   Tolerance                    1
+   Strategy                     1
+   Chisq                        LogLikelihood
+   
+   FitParameters { 
+#       BelleTDCPV.tau       
+#       BelleTDCPV.dm        
+#       BelleTDCPV.A         
+       BelleTDCPV.S         
+#       BelleTDCPV.W         
+#       BelleTDCPV.fsig      
+   }
+        
+   PrintResults                 true
+   PrintCovariance              true
+   CalculateMinosErrors         false
+}}}
+
+
+Stat {{{
+   Chisq                        LogNormal # NuisanceMult #LogNormal
+   Chisq2                       # LogNormalNuisance
+   DoChisq                      true
+   DoPValue                     true
+}}}
+
+
+SaveDPDFTGraph {{{
+   DPDF                 DPDF 
+   nzpom                100
+   zmin                 0.001
+   xpomValues           {  0.003 }
+   Q2Values             { 1.75, 8.5, 20, 90, 800 }
+   AsciiOutput          false
+   Alphas               todo
+}}}
+
+ASaveDataTheory {{{
+}}}
+#################################################################
+#  Specify Alpos theory (in 'AlposTheory' namespace)
+#################################################################
+AlposTheory {{{
+
+# --------------------------------------------------------------#
+#   Specify used functions.
+#   Give them a 'name' and specify the class
+# --------------------------------------------------------------#
+InitFunctions {{
+   FunctionName          FunctionType         # one line here! (header of 'table')
+}}
+
+# --------------------------------------------------------------#
+# Useful parameter shorthand notations
+# --------------------------------------------------------------#
+iOrd                        1
+AlphasMz                    0.118
+mZ                          91.1876
+mu0                         1.32287565553
+mc                          1.4
+mb                          4.5
+mt                          175
+
+# --------------------------------------------------------------#
+#  Parameters for Belle TDCPC
+# --------------------------------------------------------------#
+BelleTDCPV.tau               0.5
+BelleTDCPV.dm                0.1
+BelleTDCPV.A                 3.2
+BelleTDCPV.S                 1
+BelleTDCPV.W                 1
+BelleTDCPV.fsig              3
+
+
+}}} # end of 'AlposTheory' namespace
+# --------------------------------------------------------------#
+
+
+
+

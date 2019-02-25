@@ -25,6 +25,7 @@
 #include "alpos/functions/AStrowp1.h"
 #include "alpos/functions/AH1DPDF2006.h"
 //#include "alpos/AAlphasDependentPDF.h"
+#include "alpos/functions/ABelleTDCPV.h"
 #include "alpos/functions/AfastNLO.h"
 #include "alpos/functions/AfastNLOalt.h"
 #include "alpos/functions/AfastNLODiffDIS.h"
@@ -136,6 +137,7 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
    else if ( functype == AStrowp1::fFunctionName )          ptr = new AStrowp1(funcname);
    else if ( functype == AH1DPDF2006::fFunctionName )       ptr = new AH1DPDF2006(funcname);
    //else if ( functype == AAlphasDependentPDF::fFunctionName)ptr = new AAlphasDependentPDF(funcname);
+   else if ( functype == ABelleTDCPV::fFunctionName )          ptr = new ABelleTDCPV(funcname);
    else if ( functype == AfastNLO::fFunctionName )          ptr = new AfastNLO(funcname);
    else if ( functype == AfastNLOalt::fFunctionName )       ptr = new AfastNLOalt(funcname);
    else if ( functype == AfastNLODiffDIS::fFunctionName )   ptr = new AfastNLODiffDIS(funcname);
@@ -269,6 +271,7 @@ AChisqBase* AFactory::ChisqFactory(const std::string& chisq, const std::vector<s
    else if ( chisq == AChisqHERAFitterFullImproved::GetChisqName() ) return new AChisqHERAFitterFullImproved(par,data,theo);
    else if ( chisq == AChisqD0Fit::GetChisqName() ) return new AChisqD0Fit(par,data,theo);
    else if ( chisq == AChisqD0StatCorrFit::GetChisqName() ) return new AChisqD0StatCorrFit(par,data,theo);
+   else if ( chisq == ALogLikelihood::GetChisqName() ) return new ALogLikelihood(par,data,theo);
    else if ( chisq == APull::GetChisqName() ) return new APull(data,theo);
    else  {
       say::error["AFactory::ChisqFactory"]<<"Failed to identify chisq class '"<<chisq<<"'. Exiting."<<endl;

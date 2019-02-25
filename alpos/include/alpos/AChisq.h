@@ -535,6 +535,27 @@ protected:
 };
 
 
+//____________________________________________________________________________________ //
+/** 
+ * Log likelihood
+ * Assumes that 'theory' prediction is a vector of  probabilites
+ * 
+ *  chisq  = -2 * ln * Prod_i( theo_i )
+ *
+ */
+class ALogLikelihood : public AChisqBase { 
+public:
+   static const std::string& GetChisqName() { static const std::string name = "LogLikelihood"; return name;}
+   ALogLikelihood(const std::vector<std::string>& FitPar, AData* data, AFuncD* theo) : AChisqBase(FitPar,data,theo) { };
+   virtual ~ALogLikelihood() {};
+   virtual unsigned int NDim() const { return fFitPar.size(); }; //!< Return number of fit parameters
+   virtual ROOT::Math::IMultiGenFunction* Clone() const { return new ALogLikelihood(*this);}//}fFitPar,fData,fTheo); };//!< You must implement a 'Clone' method
+   virtual double DoEval(const double *p) const; //!< return chisq for a given set of fit-parameters p
+
+protected:
+
+};
+
 
 //____________________________________________________________________________________ //
 /** 
