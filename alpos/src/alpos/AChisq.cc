@@ -2487,14 +2487,20 @@ double ALogLikelihood::DoEval(const double *p) const {
 
    // --- get 'superdata' and 'supertheory' arrays
    const vector<double>& th = Theo()->GetValues();// VALUES_ANY("SuperTheory");
-   const vector<double>& da = Data()->GetValues();// VALUES_ANY("SuperData");
 
    // --- loop over all super-vector data points and calculate chisq
-   double prob = 1;
+   // double prob = 1;
+   // for (unsigned int i = 0; i<th.size(); i++) {
+   //    prob *= th[i];
+   // }
+   // return -2*log(prob);
+
+   double prob = 0;
    for (unsigned int i = 0; i<th.size(); i++) {
-      prob *= th[i];
+      prob += th[i];
    }
-   return -2*log(prob);
+   return prob;
+
 }
 
 

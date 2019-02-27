@@ -7,6 +7,7 @@
 
 #include "alpos/ATheory.h"
 #include <TFile.h>
+#include <TH2D.h>
 
 class ABelleTDCPV : public AParmFuncBase<double> {
 
@@ -31,8 +32,14 @@ private:
 
 protected:
    std::vector<TFile*> fMcFiles;
-   std::vector<TFile*> fDataFiles;
+   //std::vector<TFile*> fDataFiles;
    double Pdt(double dt, double q, double tau, double dm, double A, double S);
+   TH2D   MakedtddtTH2D(std::string name);
+   int    GetClassId(double dtpar, int rqi, int ftag, int PDGtag);
+   
+   std::map<int,TH2D> fH2Dt_dtddt;
+   std::map<int,TH2D> fH2MC_dtddt_p;
+   std::map<int,TH2D> fH2MC_dtddt_m;
    
 
 };

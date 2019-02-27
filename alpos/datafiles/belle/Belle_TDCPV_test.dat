@@ -28,6 +28,24 @@ Inspire
 DataDir          /ptmp/mpp/dnb/belle/mpiSimPdf
 TTreename        Bd_mfpifitr
 
+# data binning
+# INFO.    [ABelleTDCPV::Update]       min(dt)=4.0108max(dt)=11790.2min(ddt)=0.468426max(ddt)=555228
+ddt_nBins        20
+ddt_min          0.4
+ddt_max          3
+dt_nBins         80
+dt_min           -50
+dt_max           +50
+
+ddt_binning {  0, 0.1, 0.2, 0.5, 0.9, 1, 2, 4, 10 }
+dt_binning { 
+    -50 -40 -30 -25 -20 -15 -12 -10 -8 -6 -5 -4 -3 -2.5 -2. -1.5 -1 -0.8 -0.6 -0.4 -0.25 -0.15 -0.05 
+    0.05 0.15 0.25 0.4 0.6 0.8 1 1.5 2 2.5 3 4 5 6 8 10 12 15 20 25 30 40 50
+}
+#dt_binning { 
+#>>/ptmp/mpp/dnb/binning_dt_1.txt
+#}
+
 
 ##########################################################
 #  Data table 
@@ -44,7 +62,7 @@ TTreename        Bd_mfpifitr
 ##########################################################
 
 Data {{
-   Sigma         datafile       stat
+   Sigma         datafile                                                                          stat
      0           JPsiKS_pxd-02.ntuple.SimRecBGOverlayGatedMode-master20180509.100.link.root        0
 }}
 
