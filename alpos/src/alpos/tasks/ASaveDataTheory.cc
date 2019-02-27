@@ -21,7 +21,7 @@ extern "C" {
 }
 
 //Multiplied by xPom
-double getSigRed2006(int ifit, double xpom, double q2, double z) //1==FitA, 2==FitB
+double getSigRed2006(int ifit, double xpom, double q2, double z, double sSqrt = 319) //1==FitA, 2==FitB
 {
     double xPq[13], f2[2], fl[2], c2[2], cl[2];
     qcd_2006_(&z,&q2, &ifit, xPq, f2, fl, c2, cl);
@@ -37,9 +37,9 @@ double getSigRed2006(int ifit, double xpom, double q2, double z) //1==FitA, 2==F
     h12006flux_(&xpom, &t, &Int, &ifit, &ipom, &fluxIR);
 
 
-    double Ep = (q2 < 120) ? 820 : 920;
+    //double Ep = (q2 < 120) ? 820 : 920;
     double Ee = 27.5;
-    const double s = 4*Ep * Ee;
+    const double s = sSqrt;//  4*Ep * Ee;
 
     const double mp2 = pow(0.92, 2);
     double x = z*xpom;
@@ -102,56 +102,120 @@ bool ASaveDataTheory::Execute(){
    const auto& supdata = TheoryHandler::Handler()->GetSuperPair().first;
    const auto& suptheo = TheoryHandler::Handler()->GetSuperPair().second;
 
-   std::vector<AData*> dataChildren = supdata->GetChildren();           //TODO: handle subsets correctly
-   std::vector<AParmFuncBase<double>*> theoChildren = suptheo->GetChildren();   //TODO: handle subsets correctly
+   std::vector<AData*> dataChildren = supdata->GetChildren();           
+   std::vector<AParmFuncBase<double>*> theoChildren = suptheo->GetChildren();   
 
    cout << "dataSize theorSize " << dataChildren.size() << " "<< theoChildren.size() << endl;
 
-   for(int iChild = 0; iChild < 0; ++iChild) {
+
+   for(int iChild = 0; iChild < dataChildren.size(); ++iChild) {
+
+      TString name = "sample_";
+      name +=  theoChildren[iChild]->GetAlposName();
+      if(name.Contains(':'))
+         name = name(0, name.First(':'));
+      name = name.ReplaceAll('-','_');
 
       const std::vector<double>* dataPts = &dataChildren[iChild]->GetValues();
       const std::vector<double>* theoPts = &theoChildren[iChild]->GetValues();
 
       auto dataTable = dataChildren[iChild]->GetDataTable();
 
-      vector<double> q2      = dataTable.at("Q2");
-      vector<double> xpom    = dataTable.at("xp");
-      vector<double> beta    = dataTable.at("beta");
-      vector<double> dataUnc = dataTable.at("tot");
+      if(!name.Contains("jets")) {
 
-      TTree *ThDataTab = new TTree("ThDataTab","table with data and theory");
+         vector<double> q2      = dataTable.at("Q2");
+         vector<double> xpom    = dataTable.at("xp");
+         vector<double> beta    = dataTable.at("beta");
+         vector<double> dataUnc = dataTable.at("tot");
 
-      double xp_, q2_, beta_, xpSigData_, xpSigDataErr_, xpSigTh_, xpSigThErr_;
-      double xpSigThOrgA_, xpSigThOrgB_;
-
-      ThDataTab->Branch("xp",&xp_,"xp/D");
-      ThDataTab->Branch("Q2",&q2_,"Q2/D");
-      ThDataTab->Branch("beta",&beta_,"beta/D");
-      ThDataTab->Branch("xpSigData",&xpSigData_,"xpSigData/D");
-      ThDataTab->Branch("xpSigDataErr",&xpSigDataErr_,"xpSigDataErr/D");
-      ThDataTab->Branch("xpSigTh",&xpSigTh_,"xpSigTh/D");
-      ThDataTab->Branch("xpSigThErr",&xpSigThErr_,"xpSigThErr/D");
-
-      ThDataTab->Branch("xpSigThOrgA",&xpSigThOrgA_,"xpSigThOrgA/D");
-      ThDataTab->Branch("xpSigThOrgB",&xpSigThOrgB_,"xpSigThOrgB/D");
+         assert(q2.size() == dataPts->size());
 
 
+         TTree *ThDataTab = new TTree(name,"table with data and theory");
 
-      for(int i = 0; i < dataPts->size(); ++i) {
-         //cout << " "<<beta[i] <<" "<< q2[i] <<" "<<  xpom[i] <<" : "<< dataPts->at(i) << endl;
-         xp_ = xpom[i];
-         q2_ = q2[i];
-         beta_ = beta[i];
-         xpSigData_ = dataPts->at(i);
-         xpSigDataErr_ = dataUnc[i] * 0.01; //from % to relErr
-         xpSigTh_ = theoPts->at(i);
-         xpSigThErr_ = 0;
+         double xp_, q2_, beta_, xpSigData_, xpSigDataErr_, xpSigTh_, xpSigThErr_;
+         double xpSigThOrgA_, xpSigThOrgB_;
 
-         cout << "RADEK " << endl;
-         xpSigThOrgA_ = getSigRed2006(1, xp_, q2_, beta_);
-         xpSigThOrgB_ = getSigRed2006(2, xp_, q2_, beta_);
+         ThDataTab->Branch("xp",&xp_,"xp/D");
+         ThDataTab->Branch("Q2",&q2_,"Q2/D");
+         ThDataTab->Branch("beta",&beta_,"beta/D");
+         ThDataTab->Branch("xpSigData",&xpSigData_,"xpSigData/D");
+         ThDataTab->Branch("xpSigDataErr",&xpSigDataErr_,"xpSigDataErr/D");
+         ThDataTab->Branch("xpSigTh",&xpSigTh_,"xpSigTh/D");
+         ThDataTab->Branch("xpSigThErr",&xpSigThErr_,"xpSigThErr/D");
 
-         ThDataTab->Fill();
+         ThDataTab->Branch("xpSigThOrgA",&xpSigThOrgA_,"xpSigThOrgA/D");
+         ThDataTab->Branch("xpSigThOrgB",&xpSigThOrgB_,"xpSigThOrgB/D");
+
+         double sSqrt = 319;
+         if(name.Contains("225"))
+            sSqrt = 225;
+         else if(name.Contains("252"))
+            sSqrt = 252;
+         else if(name.Contains("H1incDDIS-HERA-I-SpacMB") || name.Contains("H1incDDIS-HERA-I-SpacTrg"))
+            sSqrt = 301;
+
+
+         for(int i = 0; i < dataPts->size(); ++i) {
+            //cout << " "<<beta[i] <<" "<< q2[i] <<" "<<  xpom[i] <<" : "<< dataPts->at(i) << endl;
+            xp_ = xpom[i];
+            q2_ = q2[i];
+            beta_ = beta[i];
+            xpSigData_ = dataPts->at(i);
+            xpSigDataErr_ = dataUnc[i] * 0.01; //from % to relErr
+            xpSigTh_ = theoPts->at(i);
+            xpSigThErr_ = 0;
+
+            xpSigThOrgA_ = getSigRed2006(1, xp_, q2_, beta_, sSqrt);
+            xpSigThOrgB_ = getSigRed2006(2, xp_, q2_, beta_, sSqrt);
+
+            ThDataTab->Fill();
+         }
+      }
+      else { //for jets
+         vector<double> q2_min      = dataTable.at("Q2_min");
+         vector<double> q2_max      = dataTable.at("Q2_max");
+         vector<double> pt_min      = dataTable.at("Pt_min");
+         vector<double> pt_max      = dataTable.at("Pt_max");
+
+         vector<double> dataUnc = dataTable.at("tot.(%)");
+         assert(q2_min.size() == dataPts->size());
+
+         TTree *ThDataTab = new TTree(name,"table with data and theory");
+
+
+         double xp_, q2_, beta_, SigData_, SigDataErr_, SigTh_, SigThErr_;
+
+
+         double q2_min_, q2_max_, pt_min_, pt_max_; 
+
+         ThDataTab->Branch("q2_min",&q2_min_,"q2_min/D");
+         ThDataTab->Branch("q2_max",&q2_max_,"q2_max/D");
+
+         ThDataTab->Branch("pt_min",&pt_min_,"pt_min/D");
+         ThDataTab->Branch("pt_max",&pt_max_,"pt_max/D");
+
+
+         ThDataTab->Branch("SigData",&SigData_,"SigData/D");
+         ThDataTab->Branch("SigDataErr",&SigDataErr_,"SigDataErr/D");
+         ThDataTab->Branch("SigTh",&SigTh_,"SigTh/D");
+         ThDataTab->Branch("SigThErr",&SigThErr_,"SigThErr/D");
+
+
+         for(int i = 0; i < dataPts->size(); ++i) {
+            //cout << " "<<beta[i] <<" "<< q2[i] <<" "<<  xpom[i] <<" : "<< dataPts->at(i) << endl;
+            q2_min_ = q2_min[i];
+            q2_max_ = q2_max[i];
+            pt_min_ = pt_min[i];
+            pt_max_ = pt_max[i];
+
+            SigData_ = dataPts->at(i);
+            SigDataErr_ = dataUnc[i] * 0.01; //from % to relErr
+            SigTh_ = theoPts->at(i);
+            SigThErr_ = 0;
+
+            ThDataTab->Fill();
+         }
       }
 
    }
