@@ -198,7 +198,8 @@ bool ABelleTDCPV::Update() {
 
    // fValue must contain a number of probabilites,
    // which are then input to the -2log(L) function.
-   fValue[0] = exp(-0.5*pow((A0-S0)/dm,2)) / (sqrt(2*M_PI)*dm);
+   double dS=0.01;
+   fValue[0] = exp(-0.5*pow((A-A0)/dm,2)) / (sqrt(2*M_PI)*dm) * exp(-0.5*pow((S-S0)/dS,2)) / (sqrt(2*M_PI)*dS);
    fError[0] = 0;
 
    return true;

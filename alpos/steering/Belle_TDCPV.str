@@ -58,7 +58,7 @@ MyFit {{{
    FitParameters { 
 #       BelleTDCPV.tau       
 #       BelleTDCPV.dm        
-#       BelleTDCPV.A         
+       BelleTDCPV.A         
        BelleTDCPV.S         
 #       BelleTDCPV.W         
 #       BelleTDCPV.fsig      
@@ -124,7 +124,7 @@ BelleTDCPV.S                0.698  # 1
 
 BelleTDCPV.tau0             1.4  
 BelleTDCPV.dm0              0.5  
-BelleTDCPV.A0               3.14159
+BelleTDCPV.A0               3.
 BelleTDCPV.S0               0.698  
 
 BelleTDCPV.W                1  # 1
