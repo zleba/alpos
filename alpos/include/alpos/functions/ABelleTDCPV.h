@@ -6,6 +6,7 @@
  */
 
 #include "alpos/ATheory.h"
+#include <TFile.h>
 
 class ABelleTDCPV : public AParmFuncBase<double> {
 
@@ -29,6 +30,9 @@ private:
    virtual std::vector<double> GetQuick(int n,...) { std::cout<<"Notimplemented.8139"<<std::endl;exit(3);return std::vector<double>(1);}; //< The possibilty to implement a quick access without changing of any parameters
 
 protected:
+   std::vector<TFile*> fMcFiles;
+   std::vector<TFile*> fDataFiles;
+   double Pdt(double dt, double q, double tau, double dm, double A, double S);
    
 
 };

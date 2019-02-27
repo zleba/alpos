@@ -37,19 +37,27 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 set(ROOT_LIBRARY_DIRS ${ROOT_LIBRARY_DIR})
 
-set(rootlibs Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
-set(ROOT_LIBRARIES)
-foreach(_cpt ${rootlibs} ${ROOT_FIND_COMPONENTS})
-  find_library(ROOT_${_cpt}_LIBRARY ${_cpt} HINTS ${ROOT_LIBRARY_DIR})
-  if(ROOT_${_cpt}_LIBRARY)
-    mark_as_advanced(ROOT_${_cpt}_LIBRARY)
-    list(APPEND ROOT_LIBRARIES ${ROOT_${_cpt}_LIBRARY})
-    list(REMOVE_ITEM ROOT_FIND_COMPONENTS ${_cpt})
-  endif()
-endforeach()
-if(ROOT_LIBRARIES)
-  list(REMOVE_DUPLICATES ROOT_LIBRARIES)
-endif()
+#set(rootlibs Core Cint RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread)
+#set(ROOT_LIBRARIES)
+#foreach(_cpt ${rootlibs} ${ROOT_FIND_COMPONENTS})
+#  find_library(ROOT_${_cpt}_LIBRARY ${_cpt} HINTS ${ROOT_LIBRARY_DIR})
+#  if(ROOT_${_cpt}_LIBRARY)
+#    mark_as_advanced(ROOT_${_cpt}_LIBRARY)
+#    list(APPEND ROOT_LIBRARIES ${ROOT_${_cpt}_LIBRARY})
+#    list(REMOVE_ITEM ROOT_FIND_COMPONENTS ${_cpt})
+#  endif()
+#endforeach()
+#if(ROOT_LIBRARIES)
+#  list(REMOVE_DUPLICATES ROOT_LIBRARIES)
+#endif()
+
+execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --libs
+    OUTPUT_VARIABLE ROOT_LIBRARIES
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+set(ROOT_LIBRARIES ${ROOT_LIBRARIES})
+
+
 
 execute_process(
   COMMAND ${ROOT_CONFIG_EXECUTABLE} --features
