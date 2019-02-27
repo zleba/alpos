@@ -423,6 +423,8 @@ ApfelDDISCS.n_IR             IR_n
 
 # --- APFEL
 ApfelInit.iOrd                     iOrd
+ApfelInit.ScaleFacMuR              @mu
+ApfelInit.ScaleFacMuF              @mu
 ApfelInit.Q0                       mu0 #1.37840 #1.41421
 ApfelInit.nf                       0  #the FiDPDFxed-Flavour Number Scheme with 'nf' active flavours. 0 denotes VFNS
 ApfelInit.PDFQ0                    PDFQ0_diff # PDFQ0_HERA #PDFQ0_HERA #PDFQ0_LHAPDF

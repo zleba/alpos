@@ -154,9 +154,10 @@ void AlposTools::CorrToCov(TMatrixDSym& mat, const std::vector<double>& error){
 TMatrixD AlposTools::InvertLU(const TMatrixD& mat){
    using namespace std;
    // --- invert matrix
-   TVectorD eigVec;
-   mat.EigenVectors(eigVec);
-   cout << "RADEK condition "  << eigVec.Min() <<" "<< eigVec.Max() << endl;
+   //TVectorD eigVec;
+   //mat.EigenVectors(eigVec);
+   //cout << "RADEK condition "  << eigVec.Min() <<" "<< eigVec.Max() << endl;
+
    TDecompLU lu(mat);
    TMatrixD Inv(mat);
    lu.Invert(Inv);

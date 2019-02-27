@@ -143,28 +143,28 @@ bool AApfelDDISCS::Update() {  //alpos
       qfi = sqrt(qq);
       APFEL::ComputeStructureFunctionsAPFEL(qin,qfi);
       if( qfi > qin ) {
-	 qin = qfi;
-	 APFEL::SetPDFSet("apfel");
+         qin = qfi;
+         APFEL::SetPDFSet("apfel");
       }
       else {
-	 qin = q0;
-	 APFEL::SetPDFSet("external");
+         qin = q0;
+         APFEL::SetPDFSet("external");
       }
       for ( unsigned int i =0 ; i<q2.size() ; i++ ) {
-	 if ( q2[i] != qq ) continue;
-	 double F2  = APFEL::F2total(beta[i]);
-	 double FL  = APFEL::FLtotal(beta[i]);
-	 double xF3 = APFEL::F3total(beta[i]);
-	 //cout<<"F2: "<<F2<<"\t charge: "<<charge<<endl;
-	 double yplus  = 1+(1-y[i])*(1-y[i]);
-	 double yminus = 1-(1-y[i])*(1-y[i]);
+         if ( q2[i] != qq ) continue;
+         double F2  = APFEL::F2total(beta[i]);
+         double FL  = APFEL::FLtotal(beta[i]);
+         double xF3 = APFEL::F3total(beta[i]);
+         //cout<<"F2: "<<F2<<"\t charge: "<<charge<<endl;
+         double yplus  = 1+(1-y[i])*(1-y[i]);
+         double yminus = 1-(1-y[i])*(1-y[i]);
          double x = beta[i]*xpom[i];
          double y = q2[i]/(s-mp2)/x;
 
          //cout<<"Apfel   Q2="<<q2[i]<<"\tf2="<<F2<<"\tfl="<<FL<<"\txpom="<<xpom[i]<<"\tbeta="<<beta[i]<<endl;
 
          // NC
-	 if ( IsNC ) {
+         if ( IsNC ) {
 
             // --- Reduced x-section for pomeron 
             double flxIP = Is4D ?

@@ -16,5 +16,6 @@ cd $pwd
 
 for f in variants/${tag}_dir
 do
-    condor_submit  -batch-name `basename $f` dirName=$f  alpos.submit
+   echo $f
+   condor_submit  -batch-name `basename $f` dirName=$f  alpos.submit
 done

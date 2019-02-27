@@ -195,6 +195,8 @@ const std::vector<std::string> AApfelInit::fRequirements = {
    "MaxFlavourPDFs", // maximum number of active flavours in the PDF evolution (default 'nf' = 6)
    //   "TimeLikeEvolution", // time-like evolution (frag. functions) 
    "RenFacRatio", //         1
+   "ScaleFacMuR", // renormalization scale factor
+   "ScaleFacMuF", // factorization scale factor
    "SmallxResummation", //  'LL', 'NLL' or 0 to disable Small x resummation
    "AlphaEvolution", //solution of the beta function equations for the running couplings ('evol' = 'exact','expanded','lambda')
    "PDFEvolution", // sets the solution of the DGLAP equations for PDFs ('evolp' = 'exactmu', 'expandalpha', 'expandalpha') 
@@ -296,11 +298,15 @@ bool AApfelInit::Update() {
    //fValue.resize(GetRequirements().size());
    //fError.resize(GetRequirements().size());
 
-   if ( CHECK(RenFacRatio) || CHECK(mc) || CHECK(mb) || CHECK(mt)
+   if ( CHECK(RenFacRatio) || CHECK(ScaleFacMuR) || CHECK(ScaleFacMuF) || CHECK(mc) || CHECK(mb) || CHECK(mt)
    	|| CHECK(mcMSbar) || CHECK(mbMSbar) || CHECK(mtMSbar)   ){ // called always at least once
       APFEL::SetPoleMasses(PAR(mc),PAR(mb),PAR(mt));
       //APFEL::SetMSbarMasses(PAR(mcMSbar),PAR(mbMSbar),PAR(mtMSbar));
       APFEL::SetRenFacRatio(PAR(RenFacRatio));
+   
+      APFEL::SetRenQRatio(PAR(ScaleFacMuR));
+      APFEL::SetFacQRatio(PAR(ScaleFacMuF));
+
       APFEL::InitializeAPFEL_DIS();
       APFEL::EnableWelcomeMessage(false);
       APFEL::SetPerturbativeOrder(PAR(iOrd));
