@@ -1,0 +1,431 @@
+%================================================================
+% H1 paper
+%================================================================
+\RequirePackage{lineno}
+\documentclass[12pt]{article}
+
+
+\usepackage{epsfig}
+\usepackage{hhline}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{xspace}
+%\usepackage{xfrac}
+\usepackage{paralist} % compactitem
+\usepackage{caption}
+%\captionsetup[figure]{font=footnotesize,labelfont=footnotesize}
+\captionsetup{font=small,labelfont=small}
+
+\usepackage{bm} % 'bold' math symbols (better use \usepackage{newtxtext,newtxmath}, if available on latex distribution)
+\usepackage{acronym}
+
+%%%%%%%%%%%%% Comment the next two lines to remove the line numbering
+\usepackage[]{lineno}
+\linenumbers
+%%%%%%%%%%%%%%
+
+\usepackage{hyperref} % has to be last package loaded
+\hypersetup{colorlinks=true, urlcolor=blue}
+\usepackage{cite} % DB: enable also clickable references (must be loaded after hyperref)
+\hypersetup{
+%  colorlinks,
+%  citecolor=blue,
+%  linkcolor=red,
+%  urlcolor=blue
+  citecolor=[rgb]{0.,0.,0.5},
+  linkcolor=[rgb]{0.6,0.,0.0},
+  urlcolor=[rgb]{0.,0.,0.5}
+  }
+
+
+%%%%%%%%%%%%%% H1 preliminary
+%\renewcommand{\topfraction}{1.0}
+%\renewcommand{\bottomfraction}{1.0}
+%\renewcommand{\textfraction}{0.0}
+%\renewcommand{\arraystretch}{1.3} % make lines a bit larger for tables 
+%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%% H1 paper layout %%%%%%%%%%%%%%
+\renewcommand{\topfraction}{1.0}
+\renewcommand{\bottomfraction}{1.0}
+\renewcommand{\textfraction}{0.0}
+\renewcommand{\arraystretch}{1.25} % make lines a bit larger for tables
+%\newlength{\dinwidth}
+%\newlength{\dinmargin}
+%\setlength{\dinwidth}{21.0cm}
+%\textheight23.5cm \textwidth16.0cm
+%\setlength{\dinmargin}{\dinwidth}
+%\setlength{\unitlength}{1mm}
+%\addtolength{\dinmargin}{-\textwidth}
+%\setlength{\dinmargin}{0.5\dinmargin}
+%\oddsidemargin -1.0in
+%\addtolength{\oddsidemargin}{\dinmargin}
+%\setlength{\evensidemargin}{\oddsidemargin}
+%\setlength{\marginparwidth}{0.9\dinmargin}
+\marginparsep 8pt \marginparpush 5pt
+\topmargin -42pt
+\headheight 12pt
+\headsep 30pt \footskip 24pt
+\parskip 3mm plus 2mm minus 2mm
+
+% do not indent first line of paragraph!
+%\setlength{\parindent}{0pt}
+\usepackage{parskip}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%% contains utf-8, see: http://inspirehep.net/info/faq/general#utf8
+%%% add \usepackage[utf8]{inputenc} to your latex preamble
+\usepackage[utf8]{inputenc}
+%\bibliographystyle{plain}%Choose a bibliograhpic style          
+\bibliographystyle{utphys}%Choose a bibliograhpic style          
+
+\newlength{\dinwidth}
+\newlength{\dinmargin}
+\setlength{\dinwidth}{21.0cm}
+\textheight23.5cm \textwidth16.0cm
+\setlength{\dinmargin}{\dinwidth}
+\setlength{\unitlength}{1mm}
+\addtolength{\dinmargin}{-\textwidth}
+\setlength{\dinmargin}{0.5\dinmargin}
+\oddsidemargin -1.0in
+\addtolength{\oddsidemargin}{\dinmargin}
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\marginparwidth}{0.9\dinmargin}
+\marginparsep 8pt \marginparpush 5pt
+\topmargin -42pt
+\headheight 12pt
+\headsep 30pt \footskip 24pt
+\parskip 3mm plus 2mm minus 2mm
+\setlength{\parindent}{0.0cm} 
+\newcommand{\picob}{\mbox{{\rm ~pb}}}
+\newcommand{\QQ}  {\mbox{${Q^2}$}}
+
+\newcommand{\NNLOJET}{NNLO\protect\scalebox{0.8}{JET}\xspace}
+
+%===============================title page=============================
+
+% Some useful tex commands
+%
+%\def\GeV{\hbox{$\;\hbox{\rm GeV}$}}
+%\def\MeV{\hbox{$\;\hbox{\rm MeV}$}}
+%\def\TeV{\hbox{$\;\hbox{\rm TeV}$}}
+
+\newcommand{\pb}{\rm pb}
+\newcommand{\cm}{\rm cm}
+\newcommand{\hdick}{\noalign{\hrule height1.4pt}}
+
+\begin{document}
+\pagestyle{empty}
+
+\newcommand{\GeVsq}{\ensuremath{\mathrm{GeV}^2} }
+\newcommand{\GeV}{\ensuremath{\mathrm{GeV}} }
+\newcommand{\pt}{\ensuremath{P_{T}}}
+\newcommand{\PP}{\ensuremath{\mathcal{P}}}
+%\newcommand{\ptAvg}{\ensuremath{\langle P_T^{jet}\rangle}}
+\newcommand{\Qsq}{\ensuremath{Q^{2}}}
+%% unfolding
+\newcommand{\chisq}{\ensuremath{\chi^{2}}}
+\newcommand{\chisqA}{\ensuremath{\chi_{\rm A}^{2}}}
+\newcommand{\chisqL}{\ensuremath{\chi_{\rm L}^{2}}}
+\newcommand{\ndf}{\ensuremath{n_{\rm dof}}}
+\newcommand{\A}{\ensuremath{\bm{A}}}
+\newcommand{\V}{\ensuremath{\bm{V}}}
+\newcommand{\B}{\ensuremath{\bm{B}}}
+\newcommand{\J}{\ensuremath{\bm{J}}}
+\newcommand{\N}{\ensuremath{\bm{N}}}
+\newcommand{\LL}{\ensuremath{\bm{L}}}
+
+\newcommand{\etajet}{\ensuremath{\eta_{\rm lab}^{\rm jet}}}
+\newcommand{\ptjet}{\ensuremath{P_{\rm T}^{\rm jet}}}
+\newcommand{\meanpt}{\ensuremath{\langle P_{\rm T} \rangle}}
+\newcommand{\etalab}{\ensuremath{\eta_{\rm lab}^{\rm jet}}}
+\newcommand{\Mjj}{\ensuremath{m_{12}}}
+\newcommand{\meanptdi}{\ensuremath{\langle P_{\mathrm{T}} \rangle_{2}}\xspace}
+\newcommand{\meanpttri}{\ensuremath{\langle P_{\mathrm{T}} \rangle_{3}}\xspace}
+\newcommand{\mz}{\ensuremath{m_{\rm Z}}\xspace}
+\newcommand{\as}{\ensuremath{\alpha_{\rm s}}\xspace}
+\newcommand{\asmz}{\ensuremath{\as(\mz)}\xspace}
+\newcommand{\asmzPDF}{\ensuremath{\as^{\rm PDF}(\mz)}\xspace}
+\newcommand{\asmzf}{\ensuremath{\as^{\Gamma}(\mz)}\xspace}
+\newcommand{\tilmu}{\ensuremath{\tilde{\mu}}\xspace}
+\newcommand{\etal}{{\it{et al.}}}
+\newcommand{\mur}{\ensuremath{\mu_{\rm R}}\xspace}
+\newcommand{\muf}{\ensuremath{\mu_{\rm F}}\xspace}
+\newcommand{\mup}{\ensuremath{\mu_{0}}\xspace}
+\newcommand{\murf}{\ensuremath{\mu_{\rm R/F}}\xspace}
+\newcommand{\asmur}{\ensuremath{\alpha_{\rm s}(\mur)}\xspace}
+\newcommand{\chad}{\ensuremath{c_{\rm had}}\xspace}
+\newcommand{\ord}{\ensuremath{\mathcal{O}}\xspace}
+\newcommand{\PDFasResult}{0.1142}
+
+\renewcommand{\contentsname}{Content \footnotesize (only for editorial purposes)}
+
+
+% % % Journal macro
+% % \def\Journal#1#2#3#4{{#1}~{\bf #2} (#3) #4}
+% % %\def\NCA{\em Nuovo Cimento}
+% % %\def\NIM{\em Nucl. Instrum. Methods}
+% % %\def\NIMA{{\em Nucl. Instrum. Methods} {\bf A}}
+% % %\def\NPB{{\em Nucl. Phys.}   {\bf B}}
+% % %\def\PLB{{\em Phys. Lett.}   {\bf B}}
+% % %\def\PRL{\em Phys. Rev. Lett.}
+% % %\def\PRD{{\em Phys. Rev.}    {\bf D}}
+% % %\def\ZPC{{\em Z. Phys.}      {\bf C}}
+% % %\def\EJC{{\em Eur. Phys. J.} {\bf C}}
+% % %\def\CPC{\em Comp. Phys. Commun.}
+% % %
+% % \def\NPB{Nucl. Phys.~}
+% % \def\PRL{Phys. Rev. Lett.~}
+% % \def\EPJC{Eur. Phys. J.~}
+% % \def\PLB{Phys. Lett.~}
+% % \def\NIM{Nucl. Instrum. Meth.~}
+% % \def\PRD{Phys. Rev.~}
+% % \def\JHEP{JHEP~}
+% % \def\PROC{Conf. Proc.~}
+% % \def\CPC{Comp. Phys. Commun.~}
+% % 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% title page %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+\noindent
+\begin{flushleft}
+{\tt H1prelim-19-011 DRAFT ! \hfill    ISSN abcd-abcd} \\
+{\tt March 2019}                  \\
+\end{flushleft}
+
+\noindent
+Date:   ~   \ \ March 2019 %31.\,08.\,2017      \\
+Version:~   0.0 \\
+Editors:~   D.~Britzger, R.~\v{Z}leb\v{c}\'{i}k (daniel.britzger@desy.de, zlebcr@mail.desy.de) \\
+Referees:  A.~B, B.~C \\
+%Final reading scheduled for ....         \\
+\noindent
+
+\vspace{1cm}
+\begin{center}
+\begin{Large}
+
+{\bf
+  New Diffractive PDF with H1 data in NNLO
+}
+
+\vspace{1.5cm}
+
+H1 Collaboration%\footnote{}
+
+\end{Large}
+\end{center}
+
+\vspace{1.5cm}
+
+
+\begin{abstract}
+\noindent
+Abstract
+\noindent
+\end{abstract}
+
+
+\begin{center} Submitted to DIS19 conference, Torino \end{center}
+
+\end{titlepage}
+%% ------------------------------------------------------------------------------ %%
+
+
+
+
+
+%% ------------------------------------------------------------------------------ %%
+\clearpage
+%\tableofcontents
+%\clearpage
+%% ------------------------------------------------------------------------------ %%
+
+\pagestyle{plain} %% page numbers
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                    Introduction
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+Intro
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                    Data
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\clearpage
+\section{Data selection}
+For the present analysis measurements of jet cross sections and inclusive DIS cross sections in
+lepton-proton collisions performed by the H1 experiment at HERA are exploited.
+
+\paragraph{Inclusive diffractive DIS data}
+incl. DDIS data
+
+\paragraph{Dijet data in dffractive DIS}
+Dijet data
+
+\begin{table}[tbhp]
+  \footnotesize
+  %\scriptsize
+  \begin{center}
+    \begin{tabular}{cccccc}
+%      \multicolumn{6}{c}{\bf Kinematic range of H1 jet data} \\
+      \hline
+      \multicolumn{1}{c}{Data set} & $\sqrt{s}$ & int. $\mathcal{L}$ & DIS kinematic &  Inclusive jets &  Dijets   \\  
+      \multicolumn{1}{c}{[ref.]}  & $[\GeV]$   & $[{\rm pb}^{-1}]$  &  range        &                 &   $n_{\rm jets}\ge2 $  \\   
+      \hline
+      $300\,\GeV$ & 300 & 33& $150<\Qsq<5000\,\GeVsq$  & $7<\ptjet<50\,\GeV$ & $\ptjet>7\,\GeV$  \\
+      \cite{Adloff:2000tq} &          & & $0.2<y<0.6$             &            & $8.5<\meanpt<35\,\GeV$    \\
+      \hline
+      HERA-I    & 319  &43.5 & $5<\Qsq<100\,\GeVsq$   &   $5<\ptjet<80\,\GeV$ & $5<\ptjet<50\,\GeV$  \\
+\cite{Aaron:2010ac}  &      &     & $0.2<y<0.7$                &                      & $5<\meanpt<80\,\GeV$  \\
+                &           &     &                            &                      & $\Mjj>18\,\GeV$  \\
+                &           &     &                            &                      & $(\meanpt>7\,\GeV)^*$ \\
+      \hline
+      HERA-I    & 319  &65.4 & $150<\Qsq<15000\,\GeVsq$   &   $5<\ptjet<50\,\GeV$ & $-$  \\
+\cite{Aktas:2007aa} &  &     & $0.2<y<0.7$             &                      &  \\
+      \hline
+      HERA-II   & 319  & 290& $5.5<\Qsq<80\,\GeVsq$        & $4.5<\ptjet<50\,\GeV$ & $\ptjet>4\,\GeV$  \\
+\cite{Andreev:2016tgi}&& & $0.2<y<0.6$                &                      & $5<\meanpt<50\,\GeV$  \\
+      \hline
+      HERA-II   & 319  & 351& $150<\Qsq<15000\,\GeVsq$     &   $5<\ptjet<50\,\GeV$ & $5<\ptjet<50\,\GeV$  \\
+ \cite{Andreev:2014wwa,Andreev:2016tgi}               &           & & $0.2<y<0.7$                &                      & $7<\meanpt<50\,\GeV$  \\
+                &           & &                            &                      & $\Mjj>16\,\GeV$  \\
+      \hline
+    \end{tabular}
+    \caption{
+      An old table to be used as template.
+    }
+    \label{tab:datasets}
+    \end{center}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                    Theory
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\clearpage
+\begin{boldmath}
+\section{Theory}
+\end{boldmath}
+\label{sec:theory}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                    Methodology
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Methodology}
+\label{sec:method}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                      Results
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\clearpage
+\subsection{Results: H1DPDF2019}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   main results
+\paragraph{Fit to inclusive DDIS data}
+\label{sec:resultsIncl}
+
+
+%%%%%%%% Fig.:   %%%%%%%%%%%%%%%%%%%%
+\begin{figure}[ht]
+\begin{center}
+%  \includegraphics[width=0.8\textwidth]{plots/ratio.pdf}
+\end{center}
+\caption{
+  test
+}
+\label{fig:DPDFratio}
+\end{figure}
+
+
+
+
+
+
+\paragraph{Fit to inclusive DDIS and dijet data}
+\label{sec:resultsJets}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                    Summary
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\clearpage
+\section{Summary}
+The new next-to-next-to-leading order pQCD calculations (NNLO) for dijet
+production cross sections in diffractive neutral current DIS are exploited for a
+determination of diffractive parton distribution functions (DPDFs) inclusive
+dijet and inclusive NC DDIS cross section measurements published by the H1 Collaboration. 
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         Acknowledgements
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\clearpage
+%\section*{Acknowledgements}
+%We are grateful to the HERA machine group whose outstanding
+%efforts have made this experiment possible.
+%We thank the engineers and technicians for their work in constructing
+%and maintaining the H1 detector, our funding agencies for
+%financial support, the DESY technical staff for continual assistance
+%and the DESY directorate for support and for the
+%hospitality which they extend to the non--DESY
+%members of the collaboration.
+%
+%We would like to give credit to all partners contributing to the EGI
+%computing infrastructure for their support for the H1 Collaboration. 
+%
+%We express our thanks to all those involved in securing not only the
+%H1 data but also the software and working environment for long term
+%use allowing the unique H1 data set to continue to be explored in the
+%coming years. The transfer from experiment specific to central
+%resources with long term support, including both storage and batch
+%systems has also been crucial to this enterprise. We therefore also
+%acknowledge the role played by DESY-IT and all people involved during
+%this transition and their future role in the years to come. 
+%
+%{\color{red} Mark Sutton: Here you will need to add an acknowledgement
+%  to the IPPP for the Associateship.}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                    bib
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\bibliography{H1prelim-19-011}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                    tables
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+%\section*{Table of results}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                    figures
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+%\section*{Figures}
+
+\end{document}

@@ -115,18 +115,22 @@ bool APrintDataTheory::Execute() {
       //        This is a little confusing -> change column nomenclature to e.g. 'ErrExp' and 'ErrTheo'?
       const std::vector<double>* errsData = &dataChildren[iChild]->GetSumError("AA", "AbsAvTot");
       const std::vector<double>* errsTheo = &theoChildren[iChild]->GetSumError("AA", "AbsAvTot");
+      const std::vector<double>* errsDataUnc = &dataChildren[iChild]->GetSumError("AA", "AbsAvUnc");
+      const std::vector<double>* errsTheoUnc = &theoChildren[iChild]->GetSumError("AA", "AbsAvUnc");
 
       // list of total errors (AData and theory object errors added in quadrature)
-      std::vector<double> errsTotal;
-      errsTotal.resize(errsData->size());
+      std::vector<double> errsTotal(errsData->size());
+      std::vector<double> errsUncor(errsData->size());
       // add errors in quadrature
       for (unsigned int iRow = 0; iRow < errsTotal.size(); iRow++) {
          errsTotal[iRow] = std::sqrt(errsData->at(iRow)*errsData->at(iRow) + errsTheo->at(iRow)*errsTheo->at(iRow));
+         errsUncor[iRow] = std::sqrt(errsDataUnc->at(iRow)*errsDataUnc->at(iRow) + errsTheoUnc->at(iRow)*errsTheoUnc->at(iRow));
       }
 
       // containers for 'derived' columns (populate later, if requested)
       std::vector<double> dataTheoryRatios;
       std::vector<double> dataTheoryPulls;
+      std::vector<double> dataTheoryPullsUnc;
 
       // store column headers, printf formats and pointers to column contents
       std::vector<std::string> columnHeads;
@@ -253,6 +257,20 @@ bool APrintDataTheory::Execute() {
                   dataTheoryPulls[iRow] = (dataPts->at(iRow) - theoPts->at(iRow)) / errsTotal[iRow];
                }
                columns.push_back(&dataTheoryPulls);
+            }
+            else if (fColumnNames[iCol] == "PullUnc") {
+               // add a 'Ratio' colum, meaning Data/Theory
+               columnHeads.push_back(fColumnNames[iCol]);
+               columnHeadFormats.push_back("%" + std::to_string(max(fColumnWidth, (int)fColumnNames[iCol].size())) + "s ");
+               columnFormats.push_back("%" + std::to_string(max(fColumnWidth, (int)fColumnNames[iCol].size())) + "g ");
+               const std::vector<double>* dataPts = &dataChildren[iChild]->GetValues();
+               const std::vector<double>* theoPts = &theoChildren[iChild]->GetValues();
+               dataTheoryPullsUnc.resize(dataPts->size());
+               // calculate pulls: pull = (data-theory)/error
+               for (unsigned int iRow = 0; iRow < dataTheoryRatios.size(); iRow++) {
+                  dataTheoryPullsUnc[iRow] = (dataPts->at(iRow) - theoPts->at(iRow)) / errsUncor[iRow];
+               }
+               columns.push_back(&dataTheoryPullsUnc);
             }
             else {
                debug["Execute"] << "Column '" << fColumnNames[iCol] << "' NOT found among derived columns. Ignoring" <<

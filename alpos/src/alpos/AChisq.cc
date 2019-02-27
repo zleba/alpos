@@ -2469,6 +2469,35 @@ double AChisqApc::DoEval(const double *p) const {
 }
 
 
+//____________________________________________________________________________________ //
+/**
+ *
+ * ALogLikelihood
+ *
+ */
+//ALogLikelihood::ALogLikelihood(const std::vector<std::string>& FitPar ,AData* data, AFuncD* theo ) : AChisqBase(FitPar,data,theo) {
+//   fTheoPar = FitPar;
+//}
+double ALogLikelihood::DoEval(const double *p) const {
+   //! Calculate Log likelihood
+   // --- set new theory parameters
+   for ( unsigned int ipar = 0 ; ipar < fFitPar.size() ; ipar++ ) {
+      SET_ANY(fFitPar[ipar], p[ipar], 0);
+   }
+
+   // --- get 'superdata' and 'supertheory' arrays
+   const vector<double>& th = Theo()->GetValues();// VALUES_ANY("SuperTheory");
+   const vector<double>& da = Data()->GetValues();// VALUES_ANY("SuperData");
+
+   // --- loop over all super-vector data points and calculate chisq
+   double prob = 1;
+   for (unsigned int i = 0; i<th.size(); i++) {
+      prob *= th[i];
+   }
+   return -2*log(prob);
+}
+
+
 
 
 
