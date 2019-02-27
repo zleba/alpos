@@ -25,7 +25,8 @@ Inspire
 #  specified in the global steering file
 ##########################################################
 #
-DataDir        /ptmp/mpp/dnb/belle/TDCPV/alpos/alpos/datafiles/belle
+DataDir          /ptmp/mpp/dnb/belle/mpiSimPdf
+TTreename        Bd_mfpifitr
 
 
 ##########################################################
@@ -44,7 +45,7 @@ DataDir        /ptmp/mpp/dnb/belle/TDCPV/alpos/alpos/datafiles/belle
 
 Data {{
    Sigma         datafile       stat
-     0           test.root        0
+     0           JPsiKS_pxd-02.ntuple.SimRecBGOverlayGatedMode-master20180509.100.link.root        0
 }}
 
 
