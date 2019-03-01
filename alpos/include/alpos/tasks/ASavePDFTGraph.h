@@ -15,6 +15,7 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <fstream>
 
 #include "alpos/AlposObject.h"
 #include "fastnlotk/read_steer.h"
@@ -51,6 +52,9 @@ public:
 
 protected:
 
+   std::vector<double> GetLogNodes(double min, double max, int npts) const;
+   void WritePDFGrid(std::ostream& strm, const std::vector<int>& PDFid, const std::vector<double>& xpt, const std::vector<double>& qpt, std::vector<double>* Grid0=NULL);
+   void WriteAlphasGrid(std::ostream& strm, const std::vector<double>& qpt, std::vector<double>* Grid0=NULL);
    //std::string fTaskType;
    std::map<std::string,std::vector<double> > GetPDFdef() const ;
    ASavePDFTGraphResult* fResult;
