@@ -648,6 +648,8 @@ map<string,vector<double> > ASaveDPDFTGraph::GetDPDFdef() const {
 
    pdfdef["gluon"] =   {  0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,}; // gluon
    pdfdef["SIGMA"] =   {  1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1,}; // SIGMA = \sum_q q^+     
+   pdfdef["c"] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,1, 0 ,0 };
+   pdfdef["b"] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 1 ,0 };
 
    /*
    pdfdef["VALENCE"]=  { -1,-1,-1,-1,-1,-1, 0, 1, 1, 1, 1, 1, 1,}; // VALENCE = \sum_q q^-   
