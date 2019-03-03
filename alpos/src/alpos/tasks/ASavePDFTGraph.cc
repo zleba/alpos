@@ -53,7 +53,7 @@ bool ASavePDFTGraph::Init(){
 //____________________________________________________________________________________ //
 bool ASavePDFTGraph::Execute(){
    debug["Execute"]<<endl;
-   
+
    // init output
    //TFile* file = TFile::Open(CHAR_NS(RootFilename,NS()),"RECREATE");
    TDirectory* file = Alpos::Current()->Settings()->rootoutput;
@@ -76,7 +76,7 @@ bool ASavePDFTGraph::Execute(){
    else {
       PAR_ANY(asfunc); // update
       info["Execute"]<<"Evaluating Alphas evolution from theory parameter: "<<asfunc<<" which is of type '"<<
-	 TheoryHandler::Handler()->GetFuncD(asfunc)->GetFunctionName()<<"'."<<endl;
+         TheoryHandler::Handler()->GetFuncD(asfunc)->GetFunctionName()<<"'."<<endl;
    }
    string WriteLHAPDF = STRING_NS(LHAPDFoutput,NS());
    if ( WriteLHAPDF!="" && asfunc=="" ) {
@@ -85,7 +85,7 @@ bool ASavePDFTGraph::Execute(){
    }
    else if ( WriteLHAPDF!="" ) info["Execute"]<<"LHAPDF compatible files will be written into directory: "<<WriteLHAPDF<<endl;
 
-   
+
    // x and q2 spacing
    vector<double> q2val = DOUBLE_ARR_NS(Q2Values,NS());
    int nx = INT_NS(nx,NS());
@@ -124,22 +124,22 @@ bool ASavePDFTGraph::Execute(){
    // later: use these weights for tgraphs
    if ( WeightNNPDF ) {
       LHAPDF::PDFSet* lhapdfset = LHAType ?
-	 ((ALhapdf6*)TheoryHandler::Handler()->GetFuncD(pdffunc))->GetPDFSet() : 
-	 NULL;
+         ((ALhapdf6*)TheoryHandler::Handler()->GetFuncD(pdffunc))->GetPDFSet() : 
+         NULL;
       if ( !lhapdfset ) {
-	 error["execute"]<<"This is not a LHAPDF PDF set. Ignoring 'WeigthNNPDF' flag."<<endl;
-	 WeightNNPDF=false;
+         error["execute"]<<"This is not a LHAPDF PDF set. Ignoring 'WeigthNNPDF' flag."<<endl;
+         WeightNNPDF=false;
       }
       if ( lhapdfset->errorType() == "replicas" ) 
-	 info["execute"]<<"This is a (NNPDF) PDF replica set. Alright."<<endl;
+         info["execute"]<<"This is a (NNPDF) PDF replica set. Alright."<<endl;
       else {
-	 warn["execute"]<<"This is not a replica PDF!"<<endl;
-	 //error["execute"]<<"This is not a replica PDF! Ignoring 'WeigthNNPDF' flag."<<endl;
-	 //WeightNNPDF=false;
+         warn["execute"]<<"This is not a replica PDF!"<<endl;
+         //error["execute"]<<"This is not a replica PDF! Ignoring 'WeigthNNPDF' flag."<<endl;
+         //WeightNNPDF=false;
       }
       WeightNNPDF &= nPDF>1 && LHAError;
       if ( !WeightNNPDF ) 
-	 error["execute"]<<"Incompatible settings (nPDF<=0, or !LHAError). Ignoring 'WeigthNNPDF' flag."<<endl;
+         error["execute"]<<"Incompatible settings (nPDF<=0, or !LHAError). Ignoring 'WeigthNNPDF' flag."<<endl;
    }
 
 
@@ -151,7 +151,7 @@ bool ASavePDFTGraph::Execute(){
    TMatrixD Vm1,VTm1;//EVmat;
    TMatrixDSym covm1;
    TVectorD eigVm1,V1;
-   
+
    TFitResult* fitresult = (TFitResult*)file->Get("fitresult");
    vector<double> initialparams;
    vector<string> fitparamnames;
@@ -182,26 +182,26 @@ bool ASavePDFTGraph::Execute(){
       // VT = VT.Transpose(VT);
 
       if ( DoAlphasSingleShift ) { // a dedicated 'shift' for first parameter
-	 // vector with alpha_s shift
-	 V1.ResizeTo(nxn);
-	 for ( int ix = 0 ; ix<nxn ; ix++ ) 
-	    V1[ix]=cov[0][ix]/sqrt(cov[0][0]);
+         // vector with alpha_s shift
+         V1.ResizeTo(nxn);
+         for ( int ix = 0 ; ix<nxn ; ix++ ) 
+            V1[ix]=cov[0][ix]/sqrt(cov[0][0]);
 
-	 // covariance matrix minus cov of alpha_s shift
-	 covm1.ResizeTo(nxn-1,nxn-1);
-	 for ( int ix = 0 ; ix<nxn-1 ; ix++ ) {
-	    for ( int iy = 0 ; iy<nxn-1 ; iy++ ) {
-	       covm1[ix][iy] = cov[ix+1][iy+1] - V1[ix+1]*V1[iy+1];
-	    }
-	 }
-	 TMatrixDSymEigen eigenm1(covm1);
-	 eigVm1.ResizeTo(nxn-1);
-	 eigVm1 = eigenm1.GetEigenValues();
-	 info["execute"]<<"Printing Eigenvalues (n-1): "<<endl;
-	 eigVm1.Print();
-	 
-	 Vm1.ResizeTo(nxn-1,nxn-1);
-	 Vm1 = eigenm1.GetEigenVectors();
+         // covariance matrix minus cov of alpha_s shift
+         covm1.ResizeTo(nxn-1,nxn-1);
+         for ( int ix = 0 ; ix<nxn-1 ; ix++ ) {
+            for ( int iy = 0 ; iy<nxn-1 ; iy++ ) {
+               covm1[ix][iy] = cov[ix+1][iy+1] - V1[ix+1]*V1[iy+1];
+            }
+         }
+         TMatrixDSymEigen eigenm1(covm1);
+         eigVm1.ResizeTo(nxn-1);
+         eigVm1 = eigenm1.GetEigenValues();
+         info["execute"]<<"Printing Eigenvalues (n-1): "<<endl;
+         eigVm1.Print();
+
+         Vm1.ResizeTo(nxn-1,nxn-1);
+         Vm1 = eigenm1.GetEigenVectors();
       }
 
       // --- debug
@@ -227,19 +227,19 @@ bool ASavePDFTGraph::Execute(){
       // ---
 
       for ( int i = 0 ; i<(nPDF-1)/2 ; i++ ) {
-	 fitparamnames.push_back(fitresult->ParName(i));
-	 initialparams.push_back(fitresult->GetParams()[i]);
-	 if ( PAR_ANY(fitparamnames.back()) != initialparams.back() ) {
-	    error["execute"]<<"It is assumed, that the Alpos::TheorySet as input to this task is unchanged w.r.t. the fit results of the previous fit."<<endl;
-	    error["execute"]<<"ParName: "<<fitparamnames.back()<<"\tAlposPar="<<PAR_ANY(fitparamnames.back())<<"\tFitResult="<<initialparams.back()<<endl;
-	    exit(3);
-	 }
+         fitparamnames.push_back(fitresult->ParName(i));
+         initialparams.push_back(fitresult->GetParams()[i]);
+         if ( PAR_ANY(fitparamnames.back()) != initialparams.back() ) {
+            error["execute"]<<"It is assumed, that the Alpos::TheorySet as input to this task is unchanged w.r.t. the fit results of the previous fit."<<endl;
+            error["execute"]<<"ParName: "<<fitparamnames.back()<<"\tAlposPar="<<PAR_ANY(fitparamnames.back())<<"\tFitResult="<<initialparams.back()<<endl;
+            exit(3);
+         }
       }
    }
 
    // -------------------------------------------------------
    // ---  write LHAPDF info file
-   double XMin = 1.e-6;
+   double XMin = 1.e-3;
    double XMax = 1;
    double QMin = 1.3;//4.472140;
    double QMax = 14142.1;
@@ -289,6 +289,8 @@ bool ASavePDFTGraph::Execute(){
       infofile<<"QMin: "<<QMin<<endl;
       infofile<<"QMax: "<<QMax<<endl;
       infofile<<"MZ: "<<MZ<<endl;
+      infofile<<"PomeronPrameters: Gluon:   " << DOUBLE_NS(PDFQ0_diff.g0,NS()) <<" "<< DOUBLE_NS(PDFQ0_diff.g1,NS()) <<" "<< DOUBLE_NS(PDFQ0_diff.g2,NS()) << endl;
+      infofile<<"PomeronPrameters: Singlet: " << DOUBLE_NS(PDFQ0_diff.s0,NS()) <<" "<< DOUBLE_NS(PDFQ0_diff.s1,NS()) <<" "<< DOUBLE_NS(PDFQ0_diff.s2,NS()) << endl;
       infofile.close();
    }
 
@@ -306,241 +308,241 @@ bool ASavePDFTGraph::Execute(){
    for ( int iMem = 0 ;iMem<nPDF ; iMem++ ) { // iMem-loop is slowest!
       info["execute"]<<"Evaluating PDFset "<<iMem<<"/"<<nPDF-1<<endl;
       if ( LHAType ) { 
-	 SET_ANY(pdffunc+".PDFSet",iMem,0); 
+         SET_ANY(pdffunc+".PDFSet",iMem,0); 
       }
       else if ( FitType ) {
-	 int nEig = iMem!=0 ? (iMem-1)/2 : -1;
-	 if ( nEig >= 0 ) {
-	    //SET_ANY(pdffunc+".PDFSet",iMem,0); 
-	    int nxn = (nPDF-1)/2;
-	    bool IsUp = (iMem%2 == 1);
-	    /*
-	    TMatrixD CovEV(nxn,nxn);
-	    CovEV(nEig,nEig) = eigV[nEig];
-	    // cout<<"Matrix 'CovEV': "<<endl;
-	    // CovEV.Print();
-	    CovEV = V*CovEV*VT;
-	    cout<<"Matrix 'CovEV' in FitParam space: "<<endl;
-	    CovEV.Print();
-	    //cout<<"Up/Dn; IsUp="<<IsUp<<endl;
-	    for ( int i = 0 ; i <nxn ;i++ ) {
-	       double ishift = sqrt(CovEV(i,i));
-	       if ( !IsUp ) ishift*=-1;
-	       cout<<"Parameter:  "<<fitparamnames[i]<<"\tshift="<<ishift<<endl;
-	       SET_ANY(fitparamnames[i],initialparams[i]+ishift,0); 
-	    }
-	    */
-	    //TVectorD shiftV1(nxn);
-	    gFitParams.  push_back(new TGraph());
-	    gShiftParams.push_back(new TGraph());
-	    gFitParams.  back()->SetName("GraphFitParametersShifted");
-	    gShiftParams.back()->SetName("GraphFitParametersShift");
-	    //hFitParams.push_back(new TH1D(Form("HistFitParametersShifted_%d",iMem),";parameter",nxn,-0.5,nxn-0.5));
-	    hFitParams.  push_back(new TH1D("HistFitParametersShifted",";parameter",nxn,-0.5,nxn-0.5));
-	    hShiftParams.push_back(new TH1D("HistFitParametersShift",";parameter",nxn,-0.5,nxn-0.5));
-	    for ( int i = 0 ; i <nxn ;i++ ) {
-	       //shiftV1[i] = sqrt(eigV[nEig])*V(i,nEig);
-	       //double ishift = sqrt(eigV[nEig])*V(i,nEig); // scale eigenvector matrix with shifts
-	       //ishift*=0.1;// scale by factor of 10. Undo this when plotting results!
+         int nEig = iMem!=0 ? (iMem-1)/2 : -1;
+         if ( nEig >= 0 ) {
+            //SET_ANY(pdffunc+".PDFSet",iMem,0); 
+            int nxn = (nPDF-1)/2;
+            bool IsUp = (iMem%2 == 1);
+            /*
+               TMatrixD CovEV(nxn,nxn);
+               CovEV(nEig,nEig) = eigV[nEig];
+            // cout<<"Matrix 'CovEV': "<<endl;
+            // CovEV.Print();
+            CovEV = V*CovEV*VT;
+            cout<<"Matrix 'CovEV' in FitParam space: "<<endl;
+            CovEV.Print();
+            //cout<<"Up/Dn; IsUp="<<IsUp<<endl;
+            for ( int i = 0 ; i <nxn ;i++ ) {
+            double ishift = sqrt(CovEV(i,i));
+            if ( !IsUp ) ishift*=-1;
+            cout<<"Parameter:  "<<fitparamnames[i]<<"\tshift="<<ishift<<endl;
+            SET_ANY(fitparamnames[i],initialparams[i]+ishift,0); 
+            }
+            */
+            //TVectorD shiftV1(nxn);
+            gFitParams.  push_back(new TGraph());
+            gShiftParams.push_back(new TGraph());
+            gFitParams.  back()->SetName("GraphFitParametersShifted");
+            gShiftParams.back()->SetName("GraphFitParametersShift");
+            //hFitParams.push_back(new TH1D(Form("HistFitParametersShifted_%d",iMem),";parameter",nxn,-0.5,nxn-0.5));
+            hFitParams.  push_back(new TH1D("HistFitParametersShifted",";parameter",nxn,-0.5,nxn-0.5));
+            hShiftParams.push_back(new TH1D("HistFitParametersShift",";parameter",nxn,-0.5,nxn-0.5));
+            for ( int i = 0 ; i <nxn ;i++ ) {
+               //shiftV1[i] = sqrt(eigV[nEig])*V(i,nEig);
+               //double ishift = sqrt(eigV[nEig])*V(i,nEig); // scale eigenvector matrix with shifts
+               //ishift*=0.1;// scale by factor of 10. Undo this when plotting results!
 
-	       double ishift= 0;
-	       if ( DoAlphasSingleShift ) {
-		  if ( nEig==0 ) ishift = V1[i]; // scale eigenvector matrix with shifts
-		  else if ( i==0 ) ishift = 0;
-	       	  else ishift = sqrt(eigVm1[nEig-1])*Vm1(i-1,nEig-1);
-	       }
-	       else {
-		  ishift = sqrt(eigV[nEig])*V(i,nEig); // scale eigenvector matrix with shifts
-	       }
+               double ishift= 0;
+               if ( DoAlphasSingleShift ) {
+                  if ( nEig==0 ) ishift = V1[i]; // scale eigenvector matrix with shifts
+                  else if ( i==0 ) ishift = 0;
+                  else ishift = sqrt(eigVm1[nEig-1])*Vm1(i-1,nEig-1);
+               }
+               else {
+                  ishift = sqrt(eigV[nEig])*V(i,nEig); // scale eigenvector matrix with shifts
+               }
 
-	       if ( !IsUp ) ishift*=-1;
-	       //cout<<"Parameter:  "<<fitparamnames[i]<<"\tshift="<<ishift<<endl;
-	       SET_ANY(fitparamnames[i],initialparams[i]+ishift,0); 
-	       gFitParams.  back()->SetPoint(i,i,initialparams[i]+ishift);
-	       gShiftParams.back()->SetPoint(i,i,ishift);
-	       hFitParams.  back()->SetBinContent(i+1,initialparams[i]+ishift);
-	       hShiftParams.back()->SetBinContent(i+1,ishift);
-	       hFitParams.  back()->GetXaxis()->SetBinLabel(i+1,fitparamnames[i].c_str());
-	       hShiftParams.back()->GetXaxis()->SetBinLabel(i+1,fitparamnames[i].c_str());
-	       //cout<<"vShift1: "<<Vshifts1(i,nEig)<<", "<<Vshifts1(nEig,i)<<"\tVShifts2="<<Vshifts2(i,nEig)<<", "<<Vshifts2(nEig,i)<<endl;
-	    }	    
-	    // cout<<"shiftV1"<<endl;
-	    // shiftV1.Print();
-	 }
+               if ( !IsUp ) ishift*=-1;
+               //cout<<"Parameter:  "<<fitparamnames[i]<<"\tshift="<<ishift<<endl;
+               SET_ANY(fitparamnames[i],initialparams[i]+ishift,0); 
+               gFitParams.  back()->SetPoint(i,i,initialparams[i]+ishift);
+               gShiftParams.back()->SetPoint(i,i,ishift);
+               hFitParams.  back()->SetBinContent(i+1,initialparams[i]+ishift);
+               hShiftParams.back()->SetBinContent(i+1,ishift);
+               hFitParams.  back()->GetXaxis()->SetBinLabel(i+1,fitparamnames[i].c_str());
+               hShiftParams.back()->GetXaxis()->SetBinLabel(i+1,fitparamnames[i].c_str());
+               //cout<<"vShift1: "<<Vshifts1(i,nEig)<<", "<<Vshifts1(nEig,i)<<"\tVShifts2="<<Vshifts2(i,nEig)<<", "<<Vshifts2(nEig,i)<<endl;
+            }	    
+            // cout<<"shiftV1"<<endl;
+            // shiftV1.Print();
+         }
       }
       PAR_ANY(pdffunc); // update PDF
       if ( asfunc != "" ) PAR_ANY(asfunc); // update Alphas
 
       // --- Q2/mu_f loop
       for ( auto q2 : q2val ) {
-	 TString dirname = Form("Q2_%.1f",q2);
-	 if ( !taskdir->GetDirectory(dirname) ) taskdir->mkdir(dirname);
-	 TDirectory* q2dir = taskdir->GetDirectory(dirname);
-	 //taskdir->GetDirectory(dirname)->mkdir(Form("PDF_%d",iMem))->cd();
-	 if ( !q2dir->GetDirectory(Form("PDF_%d",iMem))) q2dir->mkdir(Form("PDF_%d",iMem));
-	 q2dir->cd(Form("PDF_%d",iMem));
+         TString dirname = Form("Q2_%.1f",q2);
+         if ( !taskdir->GetDirectory(dirname) ) taskdir->mkdir(dirname);
+         TDirectory* q2dir = taskdir->GetDirectory(dirname);
+         //taskdir->GetDirectory(dirname)->mkdir(Form("PDF_%d",iMem))->cd();
+         if ( !q2dir->GetDirectory(Form("PDF_%d",iMem))) q2dir->mkdir(Form("PDF_%d",iMem));
+         q2dir->cd(Form("PDF_%d",iMem));
 
-	 // --- store shift of parameters in each directory
-	 if ( gFitParams.size() ) {
-	    gFitParams.  back()->Write();
-	    gShiftParams.back()->Write();
-	    hFitParams.  back()->Write();
-	    hShiftParams.back()->Write();
-	 }
+         // --- store shift of parameters in each directory
+         if ( gFitParams.size() ) {
+            gFitParams.  back()->Write();
+            gShiftParams.back()->Write();
+            hFitParams.  back()->Write();
+            hShiftParams.back()->Write();
+         }
 
-	 // --- store all PDFs
-	 for ( auto ipdf : pdfdef ) {
-	    TGraph gPDF;
-	    gPDF.SetName(ipdf.first.c_str());
-	    for ( auto xp : xval ) {
-	       //SET_ANY("LHAPDF.xp",xp,0);
-	       //vector<double> xfx = VALUES_ANY("LHAPDF");
-	       vector<double> xp_muf={xp,sqrt(q2)};
-	       vector<double> xfx = QUICK_ANY(pdffunc,xp_muf);
-	       double xf = 0;
-	       for ( unsigned int jf=0 ; jf< ipdf.second.size() ; jf++ ) {
-		  xf += ipdf.second[jf]*xfx[jf];
-	       }
-	       gPDF.SetPoint(gPDF.GetN(),xp,xf);
-	       AllValues[ipdf.first][q2][xp].push_back(xf);
-	    }
-	    gPDF.Write();
-	 }
+         // --- store all PDFs
+         for ( auto ipdf : pdfdef ) {
+            TGraph gPDF;
+            gPDF.SetName(ipdf.first.c_str());
+            for ( auto xp : xval ) {
+               //SET_ANY("LHAPDF.xp",xp,0);
+               //vector<double> xfx = VALUES_ANY("LHAPDF");
+               vector<double> xp_muf={xp,sqrt(q2)};
+               vector<double> xfx = QUICK_ANY(pdffunc,xp_muf);
+               double xf = 0;
+               for ( unsigned int jf=0 ; jf< ipdf.second.size() ; jf++ ) {
+                  xf += ipdf.second[jf]*xfx[jf];
+               }
+               gPDF.SetPoint(gPDF.GetN(),xp,xf);
+               AllValues[ipdf.first][q2][xp].push_back(xf);
+            }
+            gPDF.Write();
+         }
 
-	 // --- store alpha_s(mZ) and alpha_s(mu)
-	 if ( asfunc!= "" ) {
-	    TGraph gAsMz,gAsMu;
-	    gAsMz.SetName("Alpha_s(Mz)");
-	    gAsMu.SetName("Alpha_s(Q)");
-	    double asmu = QUICK_ANY(asfunc,vector<double>{sqrt(q2)})[0];
-	    double asmz = QUICK_ANY(asfunc,vector<double>{91.1876})[0];
-	    gAsMz.SetPoint(0,1,asmz);
-	    gAsMu.SetPoint(0,1,asmu);
-	    gAsMz.Write();
-	    gAsMu.Write();
-	 }
-	 gDirectory->Write();
+         // --- store alpha_s(mZ) and alpha_s(mu)
+         if ( asfunc!= "" ) {
+            TGraph gAsMz,gAsMu;
+            gAsMz.SetName("Alpha_s(Mz)");
+            gAsMu.SetName("Alpha_s(Q)");
+            double asmu = QUICK_ANY(asfunc,vector<double>{sqrt(q2)})[0];
+            double asmz = QUICK_ANY(asfunc,vector<double>{91.1876})[0];
+            gAsMz.SetPoint(0,1,asmz);
+            gAsMu.SetPoint(0,1,asmu);
+            gAsMz.Write();
+            gAsMu.Write();
+         }
+         gDirectory->Write();
       }
 
       // ---WeightNNPDF loop
       if (WeightNNPDF) {
-	 info["Execute"]<<"Calculate chi2 for PDF set "<<iMem<<"/"<<nPDF-1<<endl;
-	 if ( !EXIST_NS(Chisq,NS()) ) { 
-	       error["exexute"]<<"Chisq definition needed. Please specify (e.g. 'chisq LogNormal')"<<endl;
-	       exit(1);
-	    }
-	 vector<string> parnames;
-	 string chisqdef = STRING_NS(Chisq,NS());
-	 AChisqBase* chi = AFactory::ChisqFactory(chisqdef,parnames,
-						  (AData*)TheoryHandler::Handler()->GetFuncD("SuperData"),
-						  TheoryHandler::Handler()->GetFuncD("SuperTheory"));
-	 double chisq = chi->DoEval(NULL);
-	 //std::map<std::string, double> nui = chi->GetNuisanceParameters();
+         info["Execute"]<<"Calculate chi2 for PDF set "<<iMem<<"/"<<nPDF-1<<endl;
+         if ( !EXIST_NS(Chisq,NS()) ) { 
+            error["exexute"]<<"Chisq definition needed. Please specify (e.g. 'chisq LogNormal')"<<endl;
+            exit(1);
+         }
+         vector<string> parnames;
+         string chisqdef = STRING_NS(Chisq,NS());
+         AChisqBase* chi = AFactory::ChisqFactory(chisqdef,parnames,
+               (AData*)TheoryHandler::Handler()->GetFuncD("SuperData"),
+               TheoryHandler::Handler()->GetFuncD("SuperTheory"));
+         double chisq = chi->DoEval(NULL);
+         //std::map<std::string, double> nui = chi->GetNuisanceParameters();
 
-	 // --- calculate weight
-	 // https://en.wikipedia.org/wiki/Estimation_of_covariance_matrices#Maximum-likelihood_estimation_for_the_multivariate_normal_distribution
-	 // http://nnpdf.mi.infn.it/research/reweighting/
-	 // arxiv.org/abs/1108.1758
-	 //
-	 // https://indico.desy.de/indico/event/9388/session/2/contribution/33/material/slides/0.pdf 
-	 // Bayesian Reweighting
-	 // First implementation suggested by Giele and Keller, who thought of it as 
-	 // method for producing new PDF fits
-	 // 			[W. Giele & S. Keller, hep-ph/9803393]
- 	 //
-	 // Reformulated in the context of the NNPDF fits
-	 // (based on Monte Carlo methodology for uncertainties estimation) and applied for the first time to 
-	 // include data in a global PDF fit (NNPDF2.2)
-	 // 			[R.D. Ball et al., arXiv:1012.0836]
-	 // 		        [R.D. Ball et al., arXiv:1108.1758]
-	 // !
-	 // Recently extended by G. Watt and R. Thorne to PDF based on the Hessian method
-	 //  for estimation of uncertainties
-	 // 		   [G. Watt & R.S. Thorne, arXiv:1205.4024]
-	 // 		   [LHCb, De Lorenzi et. al, arXiv:1011.4260]
- 	 // 
-	 double constfactor = 1.;// constant factor (2pi)^{-np/2} PROD{sqrt(1/det(V))}
-	 //double wgt = exp(-0.5*chisq) * constfactor;
-	 double N = nPDF;
-	 double n = TheoryHandler::Handler()->GetFuncD("SuperTheory")->GetValues().size();
-	 //double wgt = pow(chisq,0.5*(n-1)) * exp(-0.5*chisq); // the first totally 'explodes', while the second one vanishes!
-	 double wgt = exp ( (n-1)/2. * log(chisq) - chisq/2.);
-	 double lwgt = (n-1)/2. * log(chisq) - chisq/2.;
-	 info["execute"]<<"Calculating WeightNNPDF. iMem: "<<iMem<<"\t\tchi2="<<chisq<<"\texp(-0.5chi2)="<<exp(-0.5*chisq)<<"\tPS="<<pow(chisq,0.5*(n-1))<<"\twgt="<<wgt<<"\tlog(wgt)="<<lwgt<<endl;
-	 vWgtNNPDF.push_back(wgt);
-	 vlWgtNNPDF.push_back(lwgt);
-	 vChi2NNPDF.push_back(chisq);
+         // --- calculate weight
+         // https://en.wikipedia.org/wiki/Estimation_of_covariance_matrices#Maximum-likelihood_estimation_for_the_multivariate_normal_distribution
+         // http://nnpdf.mi.infn.it/research/reweighting/
+         // arxiv.org/abs/1108.1758
+         //
+         // https://indico.desy.de/indico/event/9388/session/2/contribution/33/material/slides/0.pdf 
+         // Bayesian Reweighting
+         // First implementation suggested by Giele and Keller, who thought of it as 
+         // method for producing new PDF fits
+         // 			[W. Giele & S. Keller, hep-ph/9803393]
+         //
+         // Reformulated in the context of the NNPDF fits
+         // (based on Monte Carlo methodology for uncertainties estimation) and applied for the first time to 
+         // include data in a global PDF fit (NNPDF2.2)
+         // 			[R.D. Ball et al., arXiv:1012.0836]
+         // 		        [R.D. Ball et al., arXiv:1108.1758]
+         // !
+         // Recently extended by G. Watt and R. Thorne to PDF based on the Hessian method
+         //  for estimation of uncertainties
+         // 		   [G. Watt & R.S. Thorne, arXiv:1205.4024]
+         // 		   [LHCb, De Lorenzi et. al, arXiv:1011.4260]
+         // 
+         double constfactor = 1.;// constant factor (2pi)^{-np/2} PROD{sqrt(1/det(V))}
+      //double wgt = exp(-0.5*chisq) * constfactor;
+      double N = nPDF;
+      double n = TheoryHandler::Handler()->GetFuncD("SuperTheory")->GetValues().size();
+      //double wgt = pow(chisq,0.5*(n-1)) * exp(-0.5*chisq); // the first totally 'explodes', while the second one vanishes!
+      double wgt = exp ( (n-1)/2. * log(chisq) - chisq/2.);
+      double lwgt = (n-1)/2. * log(chisq) - chisq/2.;
+      info["execute"]<<"Calculating WeightNNPDF. iMem: "<<iMem<<"\t\tchi2="<<chisq<<"\texp(-0.5chi2)="<<exp(-0.5*chisq)<<"\tPS="<<pow(chisq,0.5*(n-1))<<"\twgt="<<wgt<<"\tlog(wgt)="<<lwgt<<endl;
+      vWgtNNPDF.push_back(wgt);
+      vlWgtNNPDF.push_back(lwgt);
+      vChi2NNPDF.push_back(chisq);
       }
 
       // LHAPDF output file
       if ( WriteLHAPDF!="" ) {
-	 string outputdir = Alpos::Current()->Settings()->outputdir;
-	 ofstream gridfile((outputdir+"/"+WriteLHAPDF+"/"+WriteLHAPDF+"_"+Form("%04d",iMem)+".dat").c_str(),std::ofstream::out);
-	 //gridfile
+         string outputdir = Alpos::Current()->Settings()->outputdir;
+         ofstream gridfile((outputdir+"/"+WriteLHAPDF+"/"+WriteLHAPDF+"_"+Form("%04d",iMem)+".dat").c_str(),std::ofstream::out);
+         //gridfile
 
-	 if ( iMem==0 ) gridfile<<"PdfType: central"<<endl;
-	 else           gridfile<<"PdfType: error"<<endl;
-	 gridfile<<"Format: lhagrid1"<<endl;
-	 gridfile<<"XMin: "<<XMin<<endl;
-	 gridfile<<"XMax: "<<XMax<<endl;
-	 gridfile<<"QMin: "<<QMin<<endl;
-	 gridfile<<"QMax: "<<QMax<<endl;
-	 gridfile<<"MZ: "<<MZ<<endl;
-	 //
-	 gridfile<<"MUp: 0"<<endl;
-	 gridfile<<"MDown: 0"<<endl;
-	 gridfile<<"MStrange: 0"<<endl;
-	 gridfile<<"MCharm: "<<MC<<endl;
-	 gridfile<<"MBottom: "<<MB<<endl;
-	 gridfile<<"MTop: "<<MT<<endl;
-	 double asmz = QUICK_ANY(asfunc,vector<double>{MZ})[0];
-	 double ErrorDef =  EXIST_NS(LHAPDF.ErrorDef,NS()) ?  DOUBLE_NS(LHAPDF.ErrorDef,NS()) : 1.;
-	 if (asmz0 == 0 ) asmz0=asmz;
-	 else if ( ErrorDef!=1 ) {
-	    double ScaleErr = 1./sqrt(ErrorDef);
-	    asmz = asmz0+(asmz-asmz0)*ScaleErr;
-	 }
-	 double asorg=QUICK_ANY(asfunc,vector<double>{MZ})[0];
-	 cout<<"asmz0="<<asmz0
-	     <<"\tasmz="<<asmz
-	     <<"\tasmzorg="<<asorg
-	     <<"\t(as^-as0)="<<asmz-asmz0
-	     <<"\t(asor-as0)="<<asorg-asmz0
-	     <<"\t(as^/as0-1)="<<asmz/asmz0-1
-	     <<"\t(asor/as0-1)="<<asorg/asmz0-1
-	     <<endl;
+         if ( iMem==0 ) gridfile<<"PdfType: central"<<endl;
+         else           gridfile<<"PdfType: error"<<endl;
+         gridfile<<"Format: lhagrid1"<<endl;
+         gridfile<<"XMin: "<<XMin<<endl;
+         gridfile<<"XMax: "<<XMax<<endl;
+         gridfile<<"QMin: "<<QMin<<endl;
+         gridfile<<"QMax: "<<QMax<<endl;
+         gridfile<<"MZ: "<<MZ<<endl;
+         //
+         gridfile<<"MUp: 0"<<endl;
+         gridfile<<"MDown: 0"<<endl;
+         gridfile<<"MStrange: 0"<<endl;
+         gridfile<<"MCharm: "<<MC<<endl;
+         gridfile<<"MBottom: "<<MB<<endl;
+         gridfile<<"MTop: "<<MT<<endl;
+         double asmz = QUICK_ANY(asfunc,vector<double>{MZ})[0];
+         double ErrorDef =  EXIST_NS(LHAPDF.ErrorDef,NS()) ?  DOUBLE_NS(LHAPDF.ErrorDef,NS()) : 1.;
+         if (asmz0 == 0 ) asmz0=asmz;
+         else if ( ErrorDef!=1 ) {
+            double ScaleErr = 1./sqrt(ErrorDef);
+            asmz = asmz0+(asmz-asmz0)*ScaleErr;
+         }
+         double asorg=QUICK_ANY(asfunc,vector<double>{MZ})[0];
+         cout<<"asmz0="<<asmz0
+            <<"\tasmz="<<asmz
+            <<"\tasmzorg="<<asorg
+            <<"\t(as^-as0)="<<asmz-asmz0
+            <<"\t(asor-as0)="<<asorg-asmz0
+            <<"\t(as^/as0-1)="<<asmz/asmz0-1
+            <<"\t(asor/as0-1)="<<asorg/asmz0-1
+            <<endl;
 
-	 gridfile<<"AlphaS_MZ: "<<asmz<<endl;
-	 gridfile<<"AlphaS_OrderQCD: "<<ORD<<endl;
-	 //
-	 gridfile<<"AlphaS_Type: ipol"<<endl;
-	
-	 vector<double> xpt1 =  this->GetLogNodes(XMin,0.1,nX/2);
-	 vector<double> xpt2 =  this->GetLogNodes(0.1,XMax,nX/2);
-	 xpt1.resize(xpt1.size()-1);// remove last node
-	 for ( auto xx : xpt2 ) xpt1.push_back(xx);
-	 vector<double> qpt =  this->GetLogNodes(QMin,QMax,nQ);
-	 vector<int> PDFid{-6,-5, -4, -3, -2, -1,21, 1, 2, 3, 4, 5, 6};
-	 // write alpha_s and PDF grid:
-	 this->WriteAlphasGrid(gridfile,qpt,&TmpLHAPDFAlphaS_Val0);
-	 this->WritePDFGrid(gridfile,PDFid,xpt1,qpt,&TmpLHAPDFset0);
-	 gridfile.close();
+         gridfile<<"AlphaS_MZ: "<<asmz<<endl;
+         gridfile<<"AlphaS_OrderQCD: "<<ORD<<endl;
+         //
+         gridfile<<"AlphaS_Type: ipol"<<endl;
+
+         vector<double> xpt1 =  this->GetLogNodes(XMin,0.1,nX/2);
+         vector<double> xpt2 =  this->GetLogNodes(0.1,XMax,nX/2);
+         xpt1.resize(xpt1.size()-1);// remove last node
+         for ( auto xx : xpt2 ) xpt1.push_back(xx);
+         vector<double> qpt =  this->GetLogNodes(QMin,QMax,nQ);
+         vector<int> PDFid{-6,-5, -4, -3, -2, -1,21, 1, 2, 3, 4, 5, 6};
+         // write alpha_s and PDF grid:
+         this->WriteAlphasGrid(gridfile,qpt,&TmpLHAPDFAlphaS_Val0);
+         this->WritePDFGrid(gridfile,PDFid,xpt1,qpt,&TmpLHAPDFset0);
+         gridfile.close();
       }
 
    }
 
    if (WeightNNPDF) {
       info["Execute"]<<"Calculate weights for all PDF sets."<<endl;
-      
+
       double N = nPDF;
       double n = TheoryHandler::Handler()->GetFuncD("SuperTheory")->GetValues().size();
       double sum = 0;
       for ( const auto& wgt : vWgtNNPDF ) sum+=wgt;
       cout<<"sum="<<sum<<endl;
       for ( auto& wgt : vWgtNNPDF ) {
-       	 wgt = wgt/sum*N;
-       	 cout<<"wgt="<<wgt<<endl;
-       }
+         wgt = wgt/sum*N;
+         cout<<"wgt="<<wgt<<endl;
+      }
 
       // eq 38,39 in 1012.0836
       double ekavg = 1;
@@ -550,28 +552,28 @@ bool ASavePDFTGraph::Execute(){
       double norm = N/sumek;
       cout<<"norm="<<norm<<"\tsum(e_k)="<<sumek<<"\t<e_k>="<<ekavg<<endl;
       for ( auto& lwgt : vlWgtNNPDF ) {
-      	 cout<<"lwgt="<<lwgt<<"\twgt="<<exp(lwgt)<<endl;
-      	 double newwgt = norm*exp(lwgt - ekavg);
-      	 cout<<"wgt="<<newwgt<<endl;
-	 //lwgt=newwgt;
+         cout<<"lwgt="<<lwgt<<"\twgt="<<exp(lwgt)<<endl;
+         double newwgt = norm*exp(lwgt - ekavg);
+         cout<<"wgt="<<newwgt<<endl;
+         //lwgt=newwgt;
       }
 
 
       // eq 38,39 in 1012.0836
       // and exp(norm)...
       for ( const auto lwgt : vlWgtNNPDF )  {
-	 double sumExpA = 0;
-	 for ( const auto ai : vlWgtNNPDF )  {
-	    sumExpA += exp(ai-lwgt);
-	 }
-	 cout<<"wgt = "<<1./sumExpA*N<<endl;
+         double sumExpA = 0;
+         for ( const auto ai : vlWgtNNPDF )  {
+            sumExpA += exp(ai-lwgt);
+         }
+         cout<<"wgt = "<<1./sumExpA*N<<endl;
       }
 
       for ( unsigned int i = 0 ; i<vWgtNNPDF.size() ; i++ ) {
-	 double sumExpA = 0;
-	 for ( const auto ai : vlWgtNNPDF )   sumExpA += exp(ai-vlWgtNNPDF[i]);
-	 //cout<<"wgt = "<<1./sumExpA*N<<endl;
-	 vWgtNNPDF[i]=1./sumExpA*N;
+         double sumExpA = 0;
+         for ( const auto ai : vlWgtNNPDF )   sumExpA += exp(ai-vlWgtNNPDF[i]);
+         //cout<<"wgt = "<<1./sumExpA*N<<endl;
+         vWgtNNPDF[i]=1./sumExpA*N;
       }
 
 
@@ -581,7 +583,7 @@ bool ASavePDFTGraph::Execute(){
       Neff/=N;
       Neff = exp(Neff);
       info["Execute"]<<"Shannon entropy is: "<<Neff<<", for N="<<N<<endl;
-      
+
    }
 
 
@@ -590,69 +592,69 @@ bool ASavePDFTGraph::Execute(){
    // for ( auto h : hFitParams )   delete h;
    // for ( auto h : hShiftParams ) delete h;
 
-   
+
    // TGraphs with error bands
    if ( nPDF>1 && ( LHAError || FitType) ) {
       LHAPDF::PDFSet* lhapdfset = LHAType ?
-	 ((ALhapdf6*)TheoryHandler::Handler()->GetFuncD(pdffunc))->GetPDFSet() : 
-	 NULL;
+         ((ALhapdf6*)TheoryHandler::Handler()->GetFuncD(pdffunc))->GetPDFSet() : 
+         NULL;
       for ( auto q2 : q2val ) {
-	 TString dirname = Form("Q2_%.1f",q2);
-	 TDirectory* q2dir = taskdir->GetDirectory(dirname);
-	 // if ( !q2dir->GetDirectory("PDF_Errors") ) q2dir->mkdir("PDF_Errors")->cd();
-	 // q2dir->cd("PDF_Errors");
-	 q2dir->mkdir("PDF_ErrorsSymm");
-	 q2dir->mkdir("PDF_ErrorsAsym");
+         TString dirname = Form("Q2_%.1f",q2);
+         TDirectory* q2dir = taskdir->GetDirectory(dirname);
+         // if ( !q2dir->GetDirectory("PDF_Errors") ) q2dir->mkdir("PDF_Errors")->cd();
+         // q2dir->cd("PDF_Errors");
+         q2dir->mkdir("PDF_ErrorsSymm");
+         q2dir->mkdir("PDF_ErrorsAsym");
 
-	 for ( auto ipdf : pdfdef ) {
-	    TGraphAsymmErrors gPDFSymm,gPDFAsym;
-	    gPDFSymm.SetName(ipdf.first.c_str());
-	    gPDFAsym.SetName(ipdf.first.c_str());
-	    const map<double,map<double, vector<double> > >& iPdfValues = AllValues.at(ipdf.first);
-	    for ( auto xp : xval ) {
-	       int nP = gPDFSymm.GetN();
-	       //const vector<double>& values = AllValues[ipdf.first][q2][xp]; // this is a bit slow
-	       const vector<double>& values = iPdfValues.at(q2).at(xp);
-	       double errdn=0,errup=0,errsym=0;
-	       if (LHAError) {
-		  //cout<<"ipdf.first="<<ipdf.first<<"\tiMem="<<iMem<<"\tq2="<<q2<<"\txp="<<xp<<"\tsize="<<values.size()<<endl;
-		  LHAPDF::PDFUncertainty PDFUnc = lhapdfset->uncertainty(values);
-		  //cout<<"nP="<<nP<<"\txp="<<xp<<"\tcentral="<<PDFUnc.central<<"\tup="<<PDFUnc.errminus<<"\tdn="<<PDFUnc.errplus<<endl;
-		  //cent = PDFUnc.central;
-		  errdn = PDFUnc.errminus;
-		  errup = PDFUnc.errplus;
-	       }
-	       else { 
-		  // calculate asymmetric 'hessian' uncertainties
-		  // see e.g.:
-		  // hep-ph/0101032
-		  // arXiv:1101.0536
-		  // code adapted from: LHAPDF::src/PDFSet.cc 
-		  int nxn = (nPDF-1)/2;
-		  for (int ieig = 0; ieig < nxn; ieig++) {
-		     errup  += AlposTools::sq(max(max(values[2*ieig+1]-values[0],values[2*ieig+2]-values[0]), 0.));
-		     errdn  += AlposTools::sq(max(max(values[0]-values[2*ieig+1],values[0]-values[2*ieig+2]), 0.));
-		     errsym += AlposTools::sq(values[2*ieig+1]-values[2*ieig+2]);
-		  }
-		  errsym = 0.5*sqrt(errsym);
-		  errup  = sqrt(errup);
-		  errdn  = sqrt(errdn);
-	       }
-	       double cent = values[0];
-	       gPDFSymm.SetPoint(nP,xp,cent);
-	       gPDFAsym.SetPoint(nP,xp,cent);
-	       gPDFSymm.SetPointError(nP,0,0,errsym,errsym);
-	       gPDFAsym.SetPointError(nP,0,0,errdn,errup);
-	    }
-	    // save to file
-	    q2dir->cd("PDF_ErrorsAsym");
-	    gPDFAsym.Write();
-	    if ( FitType ) {
-	       q2dir->cd("PDF_ErrorsSymm");
-	       gPDFSymm.Write();
-	    }
-	 }
-	 taskdir->Write();
+         for ( auto ipdf : pdfdef ) {
+            TGraphAsymmErrors gPDFSymm,gPDFAsym;
+            gPDFSymm.SetName(ipdf.first.c_str());
+            gPDFAsym.SetName(ipdf.first.c_str());
+            const map<double,map<double, vector<double> > >& iPdfValues = AllValues.at(ipdf.first);
+            for ( auto xp : xval ) {
+               int nP = gPDFSymm.GetN();
+               //const vector<double>& values = AllValues[ipdf.first][q2][xp]; // this is a bit slow
+               const vector<double>& values = iPdfValues.at(q2).at(xp);
+               double errdn=0,errup=0,errsym=0;
+               if (LHAError) {
+                  //cout<<"ipdf.first="<<ipdf.first<<"\tiMem="<<iMem<<"\tq2="<<q2<<"\txp="<<xp<<"\tsize="<<values.size()<<endl;
+                  LHAPDF::PDFUncertainty PDFUnc = lhapdfset->uncertainty(values);
+                  //cout<<"nP="<<nP<<"\txp="<<xp<<"\tcentral="<<PDFUnc.central<<"\tup="<<PDFUnc.errminus<<"\tdn="<<PDFUnc.errplus<<endl;
+                  //cent = PDFUnc.central;
+                  errdn = PDFUnc.errminus;
+                  errup = PDFUnc.errplus;
+               }
+               else { 
+                  // calculate asymmetric 'hessian' uncertainties
+                  // see e.g.:
+                  // hep-ph/0101032
+                  // arXiv:1101.0536
+                  // code adapted from: LHAPDF::src/PDFSet.cc 
+                  int nxn = (nPDF-1)/2;
+                  for (int ieig = 0; ieig < nxn; ieig++) {
+                     errup  += AlposTools::sq(max(max(values[2*ieig+1]-values[0],values[2*ieig+2]-values[0]), 0.));
+                     errdn  += AlposTools::sq(max(max(values[0]-values[2*ieig+1],values[0]-values[2*ieig+2]), 0.));
+                     errsym += AlposTools::sq(values[2*ieig+1]-values[2*ieig+2]);
+                  }
+                  errsym = 0.5*sqrt(errsym);
+                  errup  = sqrt(errup);
+                  errdn  = sqrt(errdn);
+               }
+               double cent = values[0];
+               gPDFSymm.SetPoint(nP,xp,cent);
+               gPDFAsym.SetPoint(nP,xp,cent);
+               gPDFSymm.SetPointError(nP,0,0,errsym,errsym);
+               gPDFAsym.SetPointError(nP,0,0,errdn,errup);
+            }
+            // save to file
+            q2dir->cd("PDF_ErrorsAsym");
+            gPDFAsym.Write();
+            if ( FitType ) {
+               q2dir->cd("PDF_ErrorsSymm");
+               gPDFSymm.Write();
+            }
+         }
+         taskdir->Write();
       }
       info["Execute"]<<"TGraphs with errors calculated."<<endl;
    }
@@ -665,7 +667,7 @@ bool ASavePDFTGraph::Execute(){
    if ( FitType ) {
       int nxn = (nPDF-1)/2;
       for ( int i = 0 ; i <nxn ;i++ ) 
-	 SET_ANY(fitparamnames[i],initialparams[i],0); 
+         SET_ANY(fitparamnames[i],initialparams[i],0); 
    }
 
    // close rootfile
@@ -745,6 +747,7 @@ std::vector<double> ASavePDFTGraph::GetLogNodes(double min, double max, int npts
 	
 //____________________________________________________________________________________ //
 void ASavePDFTGraph::WriteAlphasGrid(ostream& strm, const vector<double>& qpt, vector<double>* grid0){
+   //return;
    //! write alpha_s grid to stream
    if ( !EXIST_NS(Alphas,NS()) ) {
       error["WriteAlphasGrid"]<<"Alpha_s function needs to be given to ASavePDFTGraph, when writing LHAPDF file."<<endl;
@@ -807,7 +810,7 @@ void ASavePDFTGraph::WritePDFGrid(ostream& strm, const vector<int>& PDFid, const
    // write PDF ids
    for ( auto ip : PDFid ) strm<<" "<<ip;
    strm<<endl;
-   
+
    string pdffunc = STRING_NS(PDF,NS());
 
    bool StoreGrid0 = grid0!=NULL && grid0->size()==0;
@@ -823,23 +826,23 @@ void ASavePDFTGraph::WritePDFGrid(ostream& strm, const vector<int>& PDFid, const
    grid0->reserve(xpt.size()*qpt.size());
    for ( auto ix : xpt ) {
       for ( auto iq : qpt ) {
-	 vector<double> xp_muf{ix,iq};
-	 vector<double> xfx = QUICK_ANY(pdffunc,xp_muf);
-	 for ( auto ip : PDFid ) {
-	    int ipdf = ip;
-	    if ( ipdf==21 ) ipdf=0; // adjust convention
-	    double pdf = xfx[ipdf+6];
-	    if ( StoreGrid0 ) 
-	       grid0->push_back(pdf);
-	    else if ( DoScaleErr ) {
-	       pdf = grid0->at(cc)+(pdf-grid0->at(cc))*ScaleErr;
-	       cc++;
-	    }
-	    //if ( pdf<0 ) pdf=0; // force positiveness
-	    if ( fabs(pdf) < 1.e-12 ) pdf=0;// drop negligible values
-	    strm<<" "<<pdf;
-	 }
-	 strm<<endl;
+         vector<double> xp_muf{ix,iq};
+         vector<double> xfx = QUICK_ANY(pdffunc,xp_muf);
+         for ( auto ip : PDFid ) {
+            int ipdf = ip;
+            if ( ipdf==21 ) ipdf=0; // adjust convention
+            double pdf = xfx[ipdf+6];
+            if ( StoreGrid0 ) 
+               grid0->push_back(pdf);
+            else if ( DoScaleErr ) {
+               pdf = grid0->at(cc)+(pdf-grid0->at(cc))*ScaleErr;
+               cc++;
+            }
+            //if ( pdf<0 ) pdf=0; // force positiveness
+            if ( fabs(pdf) < 1.e-12 ) pdf=0;// drop negligible values
+            strm<<" "<<pdf;
+         }
+         strm<<endl;
       }
    }
    strm<<"---"<<endl;
