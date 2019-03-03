@@ -1,4 +1,4 @@
-tag=AExt*
+tag=*fps*
 
 pwd=$PWD
 cd $pwd/variants

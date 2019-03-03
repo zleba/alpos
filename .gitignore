@@ -12,6 +12,8 @@ alpos/test/alpos.out.root
 alpos/test/H1diff.str
 *.wgt
 *.swp
+*.swo
+*.log
 alpos/macros/*.pdf
 
 alpos/farm/test*/

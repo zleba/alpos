@@ -109,8 +109,8 @@ MyFit {{{
 
 
 Stat {{{
-   Chisq                        LogNormal
-   Chisq2                       LogNormalNuisance
+   Chisq                        LogNormalNuisance
+#  Chisq2                       LogNormalNuisance
    DoChisq                      true
    DoPValue                     true
 }}}
@@ -142,7 +142,7 @@ InitFunctions {{
    PDFQ0_diff            PDFQ0_diff
    QcdnumInit            QcdnumInit
    QcdnumPDF             QcdnumPDF
-   ApfelxxAlphas            ApfelxxAlphas
+   ApfelxxAlphas         ApfelxxAlphas
 #   ApfelxxPDF               ApfelxxPDF
    STROWP1                   STROWP1
 #   GRVPION                    LHAPDF6
@@ -227,9 +227,9 @@ h12006_IR.ireg                             2
 IP_a0                                    1.1182	 
 IP_ap                                    @ap_IP
 IP_b0                                    @b0_IP
-IR_a0                                    @a0_IR    
-IR_ap                                    @ap_IR    
-IR_b0                                    @b0_IR    
+IR_a0                                    @a0_IR
+IR_ap                                    @ap_IR
+IR_b0                                    @b0_IR
 IR_n                                     0.0017 
 
 # --------------------------------------------------------------#
