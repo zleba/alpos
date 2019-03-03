@@ -20,6 +20,8 @@ DataTheorySets {{
 # H1incDDIS                   datafiles/h1/1203.4495/h1_ddis_Comb.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 # H1incDDIS                   datafiles/h1/1107.3420/h1_ddis_lowE.dat         QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 
+#  H1-LRG-DiffDijets           datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets.dat         fastNLODiffDIS
+
   H1incDDIS-HERA-I-LAr            datafiles/h1/0606004/h1_ddis_heraI-LAr.dat         QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
   H1incDDIS-HERA-I-SpacMB         datafiles/h1/0606004/h1_ddis_heraI-SpaC-97MB.dat   QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
   H1incDDIS-HERA-I-SpacTrg        datafiles/h1/0606004/h1_ddis_heraI-SpaC-97all.dat  QcdnumDDISCS    Q2>=8.4   beta<=0.81   mx>=2
@@ -39,7 +41,7 @@ Tasks {{
    AFitter                MyFit
    StatAnalysis           Stat
    SavePDFTGraph          SavePDFTGraph
-   ASaveDataTheory        ASaveDataTheory
+#   ASaveDataTheory        ASaveDataTheory
 }}
 
 
@@ -47,7 +49,7 @@ Tasks {{
 #  Alpos global settings
 # --------------------------------------------------------------#
 ErrorSymmetrization             SignImprovedQuadratic
-Output                          test/alpos.out.root             # commonoutput file for outputs of all tasks
+Output                          testA/alpos.out.root             # commonoutput file for outputs of all tasks
 GlobalVerbosity                 Warning # , Warning, Error
 InitSubsets                     false  # Init subsets of datasets
 IgnoreTheoryErrors              true                            # Ignore all theory errors when calculating chi2 value
@@ -84,7 +86,7 @@ MyFit {{{
 
 
 Stat {{{
-   Chisq                        NuisanceMult
+   Chisq                        LogNormalNuisance
 #   Chisq2                       NuisanceMult
    DoChisq                      true
    DoPValue                     true
@@ -93,9 +95,13 @@ Stat {{{
 
 SavePDFTGraph {{{
    PDF                  QcdnumPDF  # LHAPDF6 
+#   PDF                  PDFQ0_diff  # LHAPDF6 
    nx                   100
    xmin                 0.004
    Q2Values             { 1.75, 2.5, 8.5, 20, 90, 800 }
+   LHAPDFoutput         lhaTest
+   Alphas               QcdnumAlphas
+   PDFQ0_diff           PDFQ0_diff
 }}}
 #
 ASaveDataTheory {{{
@@ -116,6 +122,7 @@ InitFunctions {{
    PDFQ0_diff            PDFQ0_diff
    QcdnumInit            QcdnumInit
    QcdnumPDF             QcdnumPDF
+   QcdnumAlphas          QcdnumAlphas
 }}
 
 # --------------------------------------------------------------#
@@ -143,8 +150,8 @@ QcdnumInit.InitEvolution                 1       # 0:false, 1: true   # init QCD
 QcdnumInit.PDF                           PDFQ0_diff # LHAPDF  #QcdnumPDF # PDF1
 # -- if InitEvolution=0: take interanl PDF
 QcdnumInit.Q0                            1.323  # FitB=1.5811, FitA=1.323 must below mcharm
-QcdnumInit.nxGrid                        360 #60 # number of x-grid points
-QcdnumInit.nqGrid                        360 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
+QcdnumInit.nxGrid                        60 #60 # number of x-grid points
+QcdnumInit.nqGrid                        60 #60 # number of q-grid points. Grid points are set by 1,q2,mc,mb,mt,2.05e8
 
 # QcdnumPDF defaults
 QcdnumPDF.QcdnumInit                     QcdnumInit   # one QcdnumInit function must made available
@@ -169,6 +176,8 @@ QcdnumPDF.muf                            4.4721
 #QcdnumDISCS.e-polarity                    0
 
 
+QcdnumAlphas.QcdnumInitializer         QcdnumInit 
+QcdnumAlphas.mur                       2.0  #dummy
 
 
 QcdnumDDISCS.QcdnumInit        QcdnumInit # PDF, alpha_s is provided through QCDNUM
@@ -180,16 +189,70 @@ QcdnumDDISCS.Bg               0.00
 QcdnumDDISCS.Cg              -0.95
 
 
+## Pomeron flux
+#QcdnumDDISCS.a0_IP            1.1182
+#QcdnumDDISCS.ap_IP            0.06
+#QcdnumDDISCS.b0_IP            5.5
+#
+## Reggeon flux
+#QcdnumDDISCS.a0_IR            0.5
+#QcdnumDDISCS.ap_IR            0.3
+#QcdnumDDISCS.b0_IR            1.6
+#QcdnumDDISCS.n_IR             0.0017
+
+
+# common flux parameters (to keep apfel and qcdnum consistent for plotting)
+IP_a0                                    1.1182	 
+IP_ap                                    0.06
+IP_b0                                    5.5
+IR_a0                                    0.5
+IR_ap                                    0.3
+IR_b0                                    1.6
+IR_n                                     0.0017 
+
+
 # Pomeron flux
-QcdnumDDISCS.a0_IP            1.1182
-QcdnumDDISCS.ap_IP            0.06
-QcdnumDDISCS.b0_IP            5.5
+QcdnumDDISCS.a0_IP            IP_a0
+QcdnumDDISCS.ap_IP            IP_ap
+QcdnumDDISCS.b0_IP            IP_b0
 
 # Reggeon flux
-QcdnumDDISCS.a0_IR            0.5
-QcdnumDDISCS.ap_IR            0.3
-QcdnumDDISCS.b0_IR            1.6
-QcdnumDDISCS.n_IR             0.0017
+QcdnumDDISCS.a0_IR            IR_a0
+QcdnumDDISCS.ap_IR            IR_ap
+QcdnumDDISCS.b0_IR            IR_b0
+QcdnumDDISCS.n_IR             IR_n
+
+
+
+
+# --------------------------------------------------------------#
+# DPDF
+DPDF.xpom                                 0.002
+DPDF.zpom                                 0.5
+DPDF.muf                                  5
+DPDF.pom1                                 ApfelxxPDF # ApfelxxPDF # QcdnumPDF # ApfelxxPDF # use any pomeron PDF
+DPDF.pom2                                 0
+DPDF.reg1                                 STROWP1 # use GRVPION or STROWP1
+DPDF.xPomFluxNorm                         0.003
+DPDF.tcut                                 -1
+
+DPDF.Flux_pom1_a0                        IP_a0
+DPDF.Flux_pom1_ap                        IP_ap
+DPDF.Flux_pom1_b0                        IP_b0
+
+DPDF.Flux_pom2_a0                        0
+DPDF.Flux_pom2_ap                        0
+DPDF.Flux_pom2_b0                        0
+
+DPDF.Flux_reg1_a0                        IR_a0
+DPDF.Flux_reg1_ap                        IR_ap
+DPDF.Flux_reg1_b0                        IR_b0
+DPDF.reg1_n                              IR_n 
+
+
+
+
+
 
 
 # PDFQ0_diff
@@ -240,6 +303,27 @@ PDFQ0_diff.v1               0
 PDFQ0_diff.v2               0
 PDFQ0_diff.v3               0
 PDFQ0_diff.v4               0
+
+
+# --------------------------------------------------------------#
+# fastNLODiffDIS
+fastNLODiffDIS.Filename                table.tab                       # default value! Always overwritten by data steering
+fastNLODiffDIS.ScaleFacMuR             1                             # default value! Often overwritten by data steering
+fastNLODiffDIS.ScaleFacMuF             1                             #
+fastNLODiffDIS.Units                   1                               # 0: absoluteUnits, 1: PublicationUnits
+fastNLODiffDIS.iOrd                    iOrd                            #
+fastNLODiffDIS.xpom_min                0
+fastNLODiffDIS.xpom_max                0
+fastNLODiffDIS.nxpom                   18
+fastNLODiffDIS.logxpom                 0
+# flexiDiffDISble-scale options
+fastNLODiffDIS.MuRFuncForm             2                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
+fastNLODiffDIS.MuFFuncForm             2                               # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean (partially overwritten by datasteering)
+fastNLODiffDIS.DPDF                    DPDF                             # PDF function
+fastNLODiffDIS.Alpha_s                 ApfelAs                   # Alpha_s function
+fastNLODiffDIS.PDFUncertainties        0                               # Calculate PDF uncertainties: 0=false, 1=true
+
+
 
 
 
