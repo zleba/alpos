@@ -136,12 +136,17 @@ bool AApfelDDISCS::Update() {  //alpos
    // ------ calc structure functions
    set<double> q2val;
    for ( unsigned int i =0 ; i<q2.size() ; i++ ) q2val.insert(q2[i]);
-   double qin = q0;
+   const double qin = q0;
    double qfi;
    APFEL::SetPDFSet("external");
    for ( auto qq : q2val ) { // order all data points in Q2
       qfi = sqrt(qq);
+
       APFEL::ComputeStructureFunctionsAPFEL(qin,qfi);
+      //cout << "RADEK_qin_qfi: " << qin <<" "<<  qfi << endl;
+      APFEL::SetPDFSet("external");
+
+      /*
       if( qfi > qin ) {
          qin = qfi;
          APFEL::SetPDFSet("apfel");
@@ -150,6 +155,7 @@ bool AApfelDDISCS::Update() {  //alpos
          qin = q0;
          APFEL::SetPDFSet("external");
       }
+      */
       for ( unsigned int i =0 ; i<q2.size() ; i++ ) {
          if ( q2[i] != qq ) continue;
          double F2  = APFEL::F2total(beta[i]);
