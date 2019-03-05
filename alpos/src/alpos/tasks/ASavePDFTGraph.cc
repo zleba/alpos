@@ -250,6 +250,8 @@ bool ASavePDFTGraph::Execute(){
    double ORD  = 2.;
    int nX = 120;
    int nQ = 120;
+   vector<string> additionalparameters;
+   if ( EXIST_NS(AdditionalParameters,NS()) ) additionalparameters= STRING_ARR_NS(AdditionalParameters,NS());
    if ( EXIST_NS(LHAPDF.XMin,NS())) XMin = DOUBLE_NS(LHAPDF.XMin,NS());
    //if ( EXIST_NS(LHAPDF.XMax,NS())) XMax = DOUBLE_NS(LHAPDF.XMax,NS());
    if ( EXIST_NS(LHAPDF.QMin,NS())) QMin = DOUBLE_NS(LHAPDF.QMin,NS());
@@ -291,6 +293,9 @@ bool ASavePDFTGraph::Execute(){
       infofile<<"MZ: "<<MZ<<endl;
       infofile<<"PomeronPrameters: Gluon:   " << DOUBLE_NS(PDFQ0_diff.g0,NS()) <<" "<< DOUBLE_NS(PDFQ0_diff.g1,NS()) <<" "<< DOUBLE_NS(PDFQ0_diff.g2,NS()) << endl;
       infofile<<"PomeronPrameters: Singlet: " << DOUBLE_NS(PDFQ0_diff.s0,NS()) <<" "<< DOUBLE_NS(PDFQ0_diff.s1,NS()) <<" "<< DOUBLE_NS(PDFQ0_diff.s2,NS()) << endl;
+      // for ( string par : additionalparameters ) {
+      //    infofile<<par<<": "<< PAR_ANY(par) <<endl;
+      // }
       infofile.close();
    }
 
@@ -495,6 +500,11 @@ bool ASavePDFTGraph::Execute(){
          gridfile<<"MCharm: "<<MC<<endl;
          gridfile<<"MBottom: "<<MB<<endl;
          gridfile<<"MTop: "<<MT<<endl;
+
+         for ( string par : additionalparameters ) {
+            gridfile<<par<<": "<< PAR_ANY(par) <<endl;
+         }
+
          double asmz = QUICK_ANY(asfunc,vector<double>{MZ})[0];
          double ErrorDef =  EXIST_NS(LHAPDF.ErrorDef,NS()) ?  DOUBLE_NS(LHAPDF.ErrorDef,NS()) : 1.;
          if (asmz0 == 0 ) asmz0=asmz;
