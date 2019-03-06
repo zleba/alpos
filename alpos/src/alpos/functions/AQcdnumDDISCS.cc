@@ -253,7 +253,7 @@ bool AQcdnumDDISCS::Update() {
 //
 
 
-static double rfluxRawInt(double a0, double ap, double b0,  double x_pom, double tAbsMin, double tAbsMax)
+double rfluxRawInt(double a0, double ap, double b0,  double x_pom, double tAbsMin, double tAbsMax)
 {
     const double mp = 0.93827231;
 

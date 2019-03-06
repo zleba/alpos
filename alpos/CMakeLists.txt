@@ -17,7 +17,7 @@ option(PYEXT
 # -- components distributed with Alpos
 
 # AEM
-file(GLOB aem_SRC "${PROJECT_SOURCE_DIR}/src/aem/*.f"  "${PROJECT_SOURCE_DIR}/src/aem/h1pdf2006/*.f"    "${PROJECT_SOURCE_DIR}/src/aem/h1pdf2006Err/*.f")
+file(GLOB aem_SRC "${PROJECT_SOURCE_DIR}/src/aem/*.f"  "${PROJECT_SOURCE_DIR}/src/aem/*.cc"  "${PROJECT_SOURCE_DIR}/src/aem/h1pdf2006/*.f"    "${PROJECT_SOURCE_DIR}/src/aem/h1pdf2006Err/*.f")
 add_library(aem SHARED ${aem_SRC})
 
 # APCALC

@@ -4,7 +4,7 @@
 ##Model systematics {{
 #$asN pars['alphaS']  = valErr(0.118, 0.002)
 #$asL pars['alphaS']  = valErr(0.106, 0.002)
-#pars['mCharm']  =  valErr(1.4, 0.2, -0.07)
+#pars['mCharm']  =  valErr(1.4, 0.2)
 #pars['mBottom'] =  valErr(4.5, 0.5)
 #pars['a0_IR']   =  valErr(0.5,   0.1)
 #pars['ap_IR']   =  valErr(0.3,   0.6, -0.3)
@@ -12,7 +12,8 @@
 #pars['ap_IP']   =  valErr(0.04, 0.08, -0.06)
 #pars['b0_IP']   =  valErr(5.73,   0.84, -0.93)
 #pars['mu']      =  [1, 2, 0.5]
-#pars['Q0']      =  [sqrt(1.75), sqrt(1.94), sqrt(1.15)]
+#pars['Q0']      =  [1.15, 1.39, 1.00]
+##pars['Q0']      =  [sqrt(1.75), sqrt(1.94), sqrt(1.15)]
 ##pars['Q0']      =  [sqrt(2.5), sqrt(2.5), sqrt(2.5)] 
 #
 #shifts = [['alphaS'], ['mCharm'], ['mBottom'], ['a0_IR'], ['ap_IR'],['b0_IR'],['ap_IP', 'b0_IP'],['mu'],['Q0']]
@@ -45,8 +46,8 @@ $heraC H1incDDIS-Comb                 datafiles/h1/1203.4495/h1_ddis_Comb.dat   
 $heraC H1incDDIS-LowE225              datafiles/h1/1107.3420/h1_ddis_lowE_225.dat     QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 $heraC H1incDDIS-LowE252              datafiles/h1/1107.3420/h1_ddis_lowE_252.dat     QcdnumDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 
-$fps3D H1FPS-3D            datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS.dat              ApfelDDISCS   Q2>=8.4   beta<=0.81  mx>=2  #xp<0.03
-$fps4D H1FPS-4D            datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS-4D.dat           ApfelDDISCS   Q2>=8.4   beta<=0.81  mx>=2  #xp<0.03
+$fps3D H1FPS-3D            datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS.dat              QcdnumDDISCS   Q2>=8.4   beta<=0.81  mx>=2  #xp<0.03
+$fps4D H1FPS-4D            datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS-4D.dat           QcdnumDDISCS   Q2>=8.4   beta<=0.81  mx>=2  #xp<0.03
 
 }}
 
@@ -169,8 +170,8 @@ mZ                          91.1876
 QcdnumInit.AlphasMz                      AlphasMz
 QcdnumInit.Mz                            mZ
 QcdnumInit.iOrd                          iOrd
-QcdnumInit.ScaleFacMuR                   1
-QcdnumInit.ScaleFacMuF                   1
+QcdnumInit.ScaleFacMuR                   @mu
+QcdnumInit.ScaleFacMuF                   @mu
 QcdnumInit.PDFQ0Param                    PDFQ0_diff
 
 QcdnumInit.mcharm                        @mCharm   #1.4     #1.47  #1.3

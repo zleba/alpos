@@ -24,6 +24,10 @@ using namespace std;
 
 const string ASavePDFTGraph::fTaskType = "SavePDFTGraph";
 
+double rfluxRawInt(double a0, double ap, double b0,  double x_pom, double tAbsMin, double tAbsMax);
+vector<double>  xfxQownens(double X, double SCALE);
+
+
 //____________________________________________________________________________________ //
 ASavePDFTGraph::ASavePDFTGraph(const string& aname ) : ATask(aname) {
    //! constructor
@@ -291,8 +295,6 @@ bool ASavePDFTGraph::Execute(){
       infofile<<"QMin: "<<QMin<<endl;
       infofile<<"QMax: "<<QMax<<endl;
       infofile<<"MZ: "<<MZ<<endl;
-      infofile<<"PomeronPrameters: Gluon:   " << DOUBLE_NS(PDFQ0_diff.g0,NS()) <<" "<< DOUBLE_NS(PDFQ0_diff.g1,NS()) <<" "<< DOUBLE_NS(PDFQ0_diff.g2,NS()) << endl;
-      infofile<<"PomeronPrameters: Singlet: " << DOUBLE_NS(PDFQ0_diff.s0,NS()) <<" "<< DOUBLE_NS(PDFQ0_diff.s1,NS()) <<" "<< DOUBLE_NS(PDFQ0_diff.s2,NS()) << endl;
       // for ( string par : additionalparameters ) {
       //    infofile<<par<<": "<< PAR_ANY(par) <<endl;
       // }
@@ -485,6 +487,7 @@ bool ASavePDFTGraph::Execute(){
          ofstream gridfile((outputdir+"/"+WriteLHAPDF+"/"+WriteLHAPDF+"_"+Form("%04d",iMem)+".dat").c_str(),std::ofstream::out);
          //gridfile
 
+
          if ( iMem==0 ) gridfile<<"PdfType: central"<<endl;
          else           gridfile<<"PdfType: error"<<endl;
          gridfile<<"Format: lhagrid1"<<endl;
@@ -501,9 +504,33 @@ bool ASavePDFTGraph::Execute(){
          gridfile<<"MBottom: "<<MB<<endl;
          gridfile<<"MTop: "<<MT<<endl;
 
+         bool hasFluxPom = false;
          for ( string par : additionalparameters ) {
-            gridfile<<par<<": "<< PAR_ANY(par) <<endl;
+            if(par.find("IP_") != 0 && par.find("IR_") != 0)
+               gridfile<<par<<": "<< PAR_ANY(par) <<endl;
+            if(par.find("IP_") == 0) {
+               hasFluxPom = true;
+            }
          }
+
+         if(hasFluxPom) {
+            double tAbscutNorm = 1;
+            double xPomNorm = 0.003;
+            double a0 = PAR_ANY("IP_a0");
+            double ap = PAR_ANY("IP_ap");
+            double b0 = PAR_ANY("IP_b0");
+            const double dm =  rfluxRawInt(a0, ap, b0, xPomNorm,  0, tAbscutNorm);
+            double  norm=(1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
+
+            gridfile << "FluxType: Regge" << endl;
+            gridfile << "FluxParams: \"A = "<< norm << ", alpha0 = "<< a0 <<", alphaP = "<< ap<< ", B0 = " << b0 <<"\"" << endl;
+
+            //Write reggeon table
+         }
+
+
+
+
 
          double asmz = QUICK_ANY(asfunc,vector<double>{MZ})[0];
          double ErrorDef =  EXIST_NS(LHAPDF.ErrorDef,NS()) ?  DOUBLE_NS(LHAPDF.ErrorDef,NS()) : 1.;
@@ -537,6 +564,102 @@ bool ASavePDFTGraph::Execute(){
          this->WriteAlphasGrid(gridfile,qpt,&TmpLHAPDFAlphaS_Val0);
          this->WritePDFGrid(gridfile,PDFid,xpt1,qpt,&TmpLHAPDFset0);
          gridfile.close();
+
+
+         //RADEK reggeon add 
+         if(hasFluxPom) {
+            double tAbscutNorm = 1;
+            double xPomNorm = 0.003;
+            double a0 = PAR_ANY("IR_a0");
+            double ap = PAR_ANY("IR_ap");
+            double b0 = PAR_ANY("IR_b0");
+            double nR = PAR_ANY("IR_n");
+            const double dm =  rfluxRawInt(a0, ap, b0, xPomNorm,  0, tAbscutNorm);
+            double  norm= nR * (1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
+
+            string WriteLHAPDFreg = WriteLHAPDF;
+            WriteLHAPDFreg[WriteLHAPDFreg.size()-3] = 'r';
+            WriteLHAPDFreg[WriteLHAPDFreg.size()-2] = 'e';
+            WriteLHAPDFreg[WriteLHAPDFreg.size()-1] = 'g';
+            string outputdir = Alpos::Current()->Settings()->outputdir;
+
+            gSystem->mkdir((outputdir+"/"+WriteLHAPDFreg).c_str(),true);
+            ofstream gridfileReg((outputdir+"/"+WriteLHAPDFreg+"/"+WriteLHAPDFreg+"_"+Form("%04d",iMem)+".dat").c_str(),std::ofstream::out);
+
+            //cout << "file" 
+
+            //gridfile
+
+            gridfileReg<<"Format: lhagrid1" << endl;
+            if ( iMem==0 ) gridfileReg<<"PdfType: central"<<endl;
+            else           gridfileReg<<"PdfType: error"<<endl;
+
+            gridfileReg << "FluxType: Regge" << endl;
+            gridfileReg << "FluxParams: \"A = "<< norm << ", alpha0 = "<< a0 <<", alphaP = "<< ap<< ", B0 = " << b0 <<"\"" << endl;
+            gridfileReg << "---" << endl;
+
+            //Write reggeon table
+
+            //xpt1
+            //qpt
+
+            // write x nodes
+            for ( auto ix : xpt1 ) gridfileReg <<" "<<ix;
+            gridfileReg <<endl;
+            // write Q nodes
+            for ( auto iq : qpt ) gridfileReg <<" "<<iq;
+            gridfileReg <<endl;
+            // write PDF ids
+            gridfileReg  << " -6 -5 -4 -3 -2 -1 21 1 2 3 4 5 6" << endl;
+            for(auto iq : qpt) 
+            for(auto ix : xpt1) {
+
+               vector<double>  vec =  xfxQownens(ix, iq);
+               for(auto v : vec)
+                  gridfileReg << v <<" ";
+               gridfileReg << endl;
+            }
+            gridfileReg <<"---" << endl;
+
+            gridfileReg.close();
+
+            //Reg info file
+            ofstream gridfileRegInfo((outputdir+"/"+WriteLHAPDFreg+"/"+WriteLHAPDFreg+".info").c_str(),std::ofstream::out);
+
+            gridfileRegInfo << "SetDesc: \"Our reggen\"" << endl;
+            gridfileRegInfo << "SetIndex: 00000" << endl;
+            gridfileRegInfo << "Authors: Alpos auto-generated file" << endl;
+            gridfileRegInfo << "Reference: [Add reference here]" << endl;
+            gridfileRegInfo << "Format: lhagrid1" << endl;
+            gridfileRegInfo << "DataVersion: 1" << endl;
+            gridfileRegInfo << "NumMembers: "<< nPDF  << endl;
+            gridfileRegInfo << "Particle: 2212" << endl;
+            gridfileRegInfo << "Flavors: [-6, -5, -4, -3, -2, -1, 21, 1, 2, 3, 4, 5, 6]" << endl;
+            gridfileRegInfo << "OrderQCD: 0" << endl;
+            gridfileRegInfo << "FlavorScheme: variable" << endl;
+            gridfileRegInfo << "NumFlavors: 6" << endl;
+            gridfileRegInfo << "ErrorType: hessian" << endl;
+
+            gridfileRegInfo <<   "AlphaS_MZ: 0.118" << endl;
+            gridfileRegInfo <<   "AlphaS_OrderQCD: 1" << endl;
+            gridfileRegInfo <<   "AlphaS_Lambda4: 0.265" << endl;
+            gridfileRegInfo <<   "AlphaS_Lambda5: 0.182" << endl;
+
+//            XMin: 0.001
+//            XMax: 1
+//            QMin: 1.3
+//            QMax: 14142.1
+//            MZ: 91.1876
+            gridfileRegInfo.close();
+
+
+
+            //cout << "Radek inside "<< WriteLHAPDFreg << endl;
+            //exit(0);
+
+         }
+
+
       }
 
    }
@@ -789,10 +912,10 @@ void ASavePDFTGraph::WriteAlphasGrid(ostream& strm, const vector<double>& qpt, v
    for ( auto iq : qpt )  {
       double asmu = QUICK_ANY(asfunc,vector<double>{iq})[0];
       if ( StoreGrid0 ) 
-	 grid0->push_back(asmu);
+         grid0->push_back(asmu);
       else if ( DoScaleErr ) {
-	 asmu = grid0->at(cc)+(asmu-grid0->at(cc))*ScaleErr;
-	 cc++;
+         asmu = grid0->at(cc)+(asmu-grid0->at(cc))*ScaleErr;
+         cc++;
       }
       strm<<asmu;
       if ( iq!=qpt.back() ) strm<<", ";
@@ -832,12 +955,24 @@ void ASavePDFTGraph::WritePDFGrid(ostream& strm, const vector<int>& PDFid, const
       ScaleErr=1./sqrt(ErrorDef);
    }
 
+   vector<vector<vector<double>>> pdfGrid(qpt.size());
+   //Evaluate PDF
+   for (int i = 0; i < qpt.size(); ++i) { //loop over scale
+      for (auto ix : xpt ) { //loop over x
+         vector<double> xp_muf{ix,qpt[i]};
+         vector<double> xfx = QUICK_ANY(pdffunc,xp_muf);
+         pdfGrid[i].push_back(xfx);
+      }
+   }
+
    int cc=0;
    grid0->reserve(xpt.size()*qpt.size());
-   for ( auto ix : xpt ) {
-      for ( auto iq : qpt ) {
-         vector<double> xp_muf{ix,iq};
-         vector<double> xfx = QUICK_ANY(pdffunc,xp_muf);
+   for (int ix = 0; ix < xpt.size(); ++ix) {
+      for (int iq = 0; iq < qpt.size(); ++iq) {
+         //cout << "Radek " << x<<" " << q <<" : "<< __LINE__ << endl;
+         //vector<double> xp_muf{x,q};
+         //vector<double> xfx = QUICK_ANY(pdffunc,xp_muf);
+         vector<double> &xfx = pdfGrid[iq][ix];
          for ( auto ip : PDFid ) {
             int ipdf = ip;
             if ( ipdf==21 ) ipdf=0; // adjust convention

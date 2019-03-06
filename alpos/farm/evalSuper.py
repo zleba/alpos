@@ -15,7 +15,7 @@ else:
 if 'FitA' in args.super_steering:
    dataSets = ['heraI']
 else:
-   dataSets = ['heraI', 'heraIjets', 'heraC', 'heraCjets', 'fps3D', 'fps4D']
+   dataSets = ['heraI', 'heraIjets', 'heraC', 'heraCjets', 'heraCfps3D', 'heraCfps4D']
 
 #dataSets = ['heraI', 'heraC']
 
@@ -30,22 +30,16 @@ for Ord in orders:
                     #Data replacement
                     if 'heraI' in data:
                         line = line.replace('$heraI', '')
-                        line = line.replace('$heraC', '#')
-                        line = line.replace('$fps3D', '#')
-                        line = line.replace('$fps4D', '#')
-                    elif 'heraC' in data:
-                        line = line.replace('$heraI', '#')
-                        line = line.replace('$heraC', '')
-                        line = line.replace('$fps3D', '#')
-                        line = line.replace('$fps4D', '#')
                     else:
                         line = line.replace('$heraI', '#')
+
+                    if 'heraC' in data:
+                        line = line.replace('$heraC', '')
+                    else:
                         line = line.replace('$heraC', '#')
 
                     if 'jets' in data:
                         line = line.replace('$jets', '')
-                        line = line.replace('$fps3D', '#')
-                        line = line.replace('$fps4D', '#')
                     else:
                         line = line.replace('$jets', '#')
 
