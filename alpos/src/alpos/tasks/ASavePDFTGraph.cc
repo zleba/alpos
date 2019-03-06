@@ -611,8 +611,8 @@ bool ASavePDFTGraph::Execute(){
             gridfileReg <<endl;
             // write PDF ids
             gridfileReg  << " -6 -5 -4 -3 -2 -1 21 1 2 3 4 5 6" << endl;
-            for(auto iq : qpt) 
-            for(auto ix : xpt1) {
+            for(auto ix : xpt1) 
+            for(auto iq : qpt) {
 
                vector<double>  vec =  xfxQownens(ix, iq);
                for(auto v : vec)
