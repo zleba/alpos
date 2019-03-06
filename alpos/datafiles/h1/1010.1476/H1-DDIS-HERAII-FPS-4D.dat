@@ -46,7 +46,7 @@ Is4D                             true
 #mxBin: 0,4,10,15,20,30,50,100
 
 Data {{
-   Q2   beta    xp       tAbs      mx   mxBin     Sigma  dstat   statMC   dsys   dtot  HadEn HadEn1  ElecEn  ElecTh DifBeta DifXpom DifT EpFPS  PxFPS  PyFPS  DifQ2  VtxEff  Backgr Bcccor
+   Q2   beta    xp       tAbs      mx   mxBin     Sigma  stat   statMC   sys    tot  HadEn HadEn1  ElecEn  ElecTh DifBeta DifXpom DifT EpFPS  PxFPS  PyFPS  DifQ2  VtxEff  Backgr Bcccor
 #  5.1  0.0018  0.0500   0.2  53.1811      7     0.0689    7.6  5.37401    8.7   11.5   -0.1    0.0     2.7    1.8   -1.2    0.0   -3.9    0.8    5.2    0.0    1.6   -3.5   -1.5    1.9
 #  5.1  0.0018  0.0500   0.4  53.1811      7     0.0204   10.2  7.21249    8.7   13.4   -0.6    0.0     1.3    0.8   -1.0    0.0    0.8    0.2    6.6    4.4    1.0   -1.7   -0.8    1.9
 #  5.1  0.0018  0.0500   0.6  53.1811      7     0.0080   15.1  10.6773    8.7   17.4    0.0    0.0     4.2   -4.2   -0.4   -0.1    0.3    2.5   -0.4   -3.6    3.3   -2.1   -0.9    1.9
@@ -384,7 +384,7 @@ ErrorUnit                  percent
 
 Errors {{
  ErrorName       Column          Correlation      Nature
-  stat           dstat             ESM0            P
+  stat           stat             ESM0            P
   statMC         statMC            ESM0            P
   HadEn          HadEn             EYM1            M
   HadEnLAr       HadEn1            EYM0            M

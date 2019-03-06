@@ -44,8 +44,8 @@ IsNC                             true
 
 
 Data {{
-    Q2    beta      xp       mx  mxBin   Sigma  Excl dstat statMC stat1p22 dsys   dtot  HadEn ElecEn  ElecTh DifBeta DifXpom DifT EpFPS  PxFPS  PyFPS  DifQ2  VtxEff  Backgr Bcccor
-#   Q2     beta      xp                 xp*sig       dstat   dsys   dtot  HadEn ElecEn  ElecTh DifBeta DifXpom DifT EpFPS  PxFPS  PyFPS  DifQ2  VtxEff  Backgr Bcccor
+    Q2    beta      xp       mx  mxBin   Sigma  Excl  stat statMC stat1p22  sys    tot  HadEn ElecEn  ElecTh DifBeta DifXpom DifT EpFPS  PxFPS  PyFPS  DifQ2  VtxEff  Backgr Bcccor
+#   Q2     beta      xp                 xp*sig        stat    sys    tot  HadEn ElecEn  ElecTh DifBeta DifXpom DifT EpFPS  PxFPS  PyFPS  DifQ2  VtxEff  Backgr Bcccor
 #  5.1  0.0018  0.0500  53.1811    7    0.0340  0    5.9  4.17193  7.2275     8.5   10.3   -0.2    4.2    0.7   -0.9    0.0   -2.8    1.1    5.0    2.9    1.5   -2.4   -1.1    1.0
 #  5.1  0.0018  0.0750  53.1811    7    0.0352  0    6.7  4.73762  8.2075     7.1    9.8   -0.1    1.1    2.7   -0.4    0.1   -3.1    0.8    4.7    2.1    1.0   -0.9   -1.7    0.3
 #  5.1  0.0056  0.0160  30.0934    6    0.0217  0    4.1  2.89914  5.0225     9.4   10.2   -0.5    2.8    3.1   -0.9   -0.1    1.1    3.0    6.4    1.3    1.9   -3.0   -1.6    1.2
@@ -182,9 +182,9 @@ ErrorUnit                  percent
 
 Errors {{
  ErrorName       Column          Correlation      Nature
-  stat           dstat             ESM0            P
+  stat            stat             ESM0            P
   statMC         statMC            ESM0            P
-#  stat2          dstat             ESM0            P
+#  stat2           stat             ESM0            P
   HadEn          HadEn             EYM0            M
   ElecEn         ElecEn            EYM1            M
   ElecTh         ElecTh            EYM1            M
