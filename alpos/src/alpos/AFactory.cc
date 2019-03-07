@@ -44,6 +44,7 @@
     #include "alpos/functions/AApfelxxAlphas.h"
     #include "alpos/functions/AApfelxxDISCS.h"
     #include "alpos/functions/AApfelxxDDISCS.h"
+    #include "alpos/functions/AApfelxxReggeonCS.h"
 #endif //_CMAKE_FOUND_Apfelxx
 #include "alpos/functions/ADPDF.h"
 
@@ -130,6 +131,7 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
    else if ( functype == AApfelxxDDISCS::fFunctionName )      ptr = new AApfelxxDDISCS(funcname);
    else if ( functype == AApfelxxAlphas::fFunctionName )      ptr = new AApfelxxAlphas(funcname);
    else if ( functype == AApfelxxPDF::fFunctionName )         ptr = new AApfelxxPDF(funcname);
+   else if ( functype == AApfelxxReggeonCS::fFunctionName )   ptr = new AApfelxxReggeonCS(funcname);
 #endif //_CMAKE_FOUND_APFELxx
    else if ( functype == ADPDF::fFunctionName )             ptr = new ADPDF(funcname);
    else if ( functype == ALhapdf6::fFunctionName )          ptr = new ALhapdf6(funcname);

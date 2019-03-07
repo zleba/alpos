@@ -25,6 +25,7 @@ const std::vector<std::string> AApfelDDISCS::fRequirements = {
    "a0_IP", "ap_IP", "b0_IP",     //Pomeron flux       
    "a0_IR", "ap_IR", "b0_IR",     //Reggeon flux       
    "n_IR",                        //Reggeon suppression
+   "ReggeonCS"                    // function to calculate reggeon cross section (use H1FitA for hard-coded ones)
 }; //!< List of all AParm's which this function depends on
 const std::vector<std::string> AApfelDDISCS::fStopFurtherNotification = {}; //!< List of Parm's which have changed, but this function does not notify further dependencies
 const std::string AApfelDDISCS::fFunctionName = "ApfelDDISCS"; //!< The function's name
@@ -54,6 +55,7 @@ bool AApfelDDISCS::Init() { //alpos
    sigmaData = DOUBLE_COL_NS(Data,Sigma,GetAlposName());
    fValue.resize(q2.size());
    fError.resize(q2.size());
+
 
    static const double mp2 = pow(0.92, 2);
    if ( y.empty() ) {
@@ -132,6 +134,21 @@ bool AApfelDDISCS::Update() {  //alpos
    APFEL::SetTargetDIS("proton");
    //APFEL::SelectCharge(string selch)://selects one particular charge in the NC structure functions ('selch' = 'down', 'up', 'strange', 'charm', 'bottom', 'top', 'all', default 'selch' = 'all')
 
+   // --- reggeon cross section
+   AParmNamed* AParmReggeonCS = TheoryHandler::Handler()->GetParameter(this->GetAlposName()+std::string(".ReggeonCS"));//->SetValue(VAL,ERR,false);                                        
+   const bool AParmReggeonCSIsFunction = AParmReggeonCS->GetAlposName().find(".ReggeonCS") == string::npos;
+   debug["Update"]<<"Parameter ReggeonCS is a function: "<<(AParmReggeonCSIsFunction?"true":"false")<<endl;
+   const bool H1FitAReg  = !AParmReggeonCSIsFunction && (string(PAR_S(ReggeonCS))=="H1FitA");
+   info["Init"]<<"Use ReggeonCS=='H1FitA': "<< (H1FitAReg ? "true" : "false" )<<endl;
+   vector<double> sigma_reg; 
+   if ( H1FitAReg ) {
+      info["Update"]<<"Using pre-calculated reggeon cross sections from H1FitA"<<endl;
+   }
+   else {
+      info["Update"]<<"Setting DataAlposName to reggeon cross section function and get values."<<endl;
+      SET_S(ReggeonCS.DataAlposName,GetAlposName(),"");
+      sigma_reg = VALUES(ReggeonCS);
+   }
 
    // ------ calc structure functions
    set<double> q2val;
@@ -180,23 +197,32 @@ bool AApfelDDISCS::Update() {  //alpos
 
 
             //--- Get the Reggeon structure function from the H12006
-            static bool isFirst = true; //hack for faster calculation
-            int ifit = 0;
-            if(isFirst) { ifit = 1; isFirst = false; } //Reggeon should be the same for both FitA and FitB
-            double xPq[13];
-            double f2FitA[2], flFitA[2]; //0 = pomeron, 1 = reggeon
-            double c2FitA[2], clFitA[2];
-            qcd_2006_(&beta[i], &q2[i],  &ifit, xPq, f2FitA, flFitA, c2FitA, clFitA);
-            double F2r = f2FitA[1];
-            double FLr = flFitA[1];
-
+            double sigmaReg = 0;
+            if ( H1FitAReg ) {
+               static bool isFirst = true; //hack for faster calculation
+               int ifit = 0;
+               if(isFirst) { ifit = 1; isFirst = false; } //Reggeon should be the same for both FitA and FitB
+               double xPq[13];
+               double f2FitA[2], flFitA[2]; //0 = pomeron, 1 = reggeon
+               double c2FitA[2], clFitA[2];
+               qcd_2006_(&beta[i], &q2[i],  &ifit, xPq, f2FitA, flFitA, c2FitA, clFitA);
+               double F2r = f2FitA[1];
+               double FLr = flFitA[1];
+               
+               sigmaReg = F2r  - y*y/yplus*FLr;
+               //if ( !H1FitAeg ) cout<<"H1FitA="<<sigmaReg<<"\tRegCS="<<sigma_reg[i]<<endl;
+            }
+            else {
+               sigmaReg = sigma_reg[i];
+            }
+            
+            //  reggeon flux
             double flxIR = Is4D ?
                rflux   (a0_IR, ap_IR, b0_IR, xpom[i], tAbsVal[i]):
                rfluxInt(a0_IR, ap_IR, b0_IR, xpom[i], tAbsMin, tAbsMax);
-
-
+            
             //Reduced x-section for reggeon
-            double xpSigRed_IR =  flxIR*xpom[i] * (F2r  - y*y/yplus*FLr);
+            double xpSigRed_IR =  flxIR*xpom[i] * (sigmaReg);
 
 
             // --- reduced cross section

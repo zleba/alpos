@@ -48,7 +48,7 @@ protected:
    TF1 fsTF1;
    TF1 fvTF1;
 
-   double DefaultDiffParam(double x, double A, double B, double C);
+   double DefaultDiffParam(double x, double A, double B, double C, double K);
 
 };
 

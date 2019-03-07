@@ -17,6 +17,7 @@ const std::vector<std::string> APDFQ0_diff::fRequirements = {"xp","iPDF",
 							     "g0", "g1", "g2", "g3", "g4",
 							     "s0", "s1", "s2", "s3", "s4",
 							     "v0", "v1", "v2", "v3", "v4",
+                                                             "K"
 };//< List of all AParm's which this function depends on
 const std::vector<std::string> APDFQ0_diff::fStopFurtherNotification = {"mur"}; //< List of Parm's which have changed, but this function does not notify further dependencies
 const std::string APDFQ0_diff::fFunctionName = "PDFQ0_diff"; //< The function's name
@@ -104,11 +105,11 @@ std::vector<double> APDFQ0_diff::GetQuick(const vector<double>& ipdf_xp_q0) {
    if ( xp==1 )
       ret[0] = 0;
    else if(ipdf== 0) 
-      ret[0] = fgTF1.IsValid() ? fgTF1.Eval(xp) : DefaultDiffParam(xp,PAR(g0),PAR(g1),PAR(g2)); // gluon
+      ret[0] = fgTF1.IsValid() ? fgTF1.Eval(xp) : DefaultDiffParam(xp,PAR(g0),PAR(g1),PAR(g2),PAR(K)); // gluon
    else if(ipdf== 1) 
-      ret[0] = fsTF1.IsValid() ? fsTF1.Eval(xp) : DefaultDiffParam(xp,PAR(s0),PAR(s1),PAR(s2)); // singlet
+      ret[0] = fsTF1.IsValid() ? fsTF1.Eval(xp) : DefaultDiffParam(xp,PAR(s0),PAR(s1),PAR(s2),PAR(K)); // singlet
    else if(ipdf== 2) 
-      ret[0] = fvTF1.IsValid() ? fvTF1.Eval(xp) : DefaultDiffParam(xp,PAR(v0),PAR(v1),PAR(v2)); //valence
+      ret[0] = fvTF1.IsValid() ? fvTF1.Eval(xp) : DefaultDiffParam(xp,PAR(v0),PAR(v1),PAR(v2),PAR(K)); //valence
    else if(ipdf>= 3) // all other cases
       ret[0] = 0;
    else ret[0] = 0;
@@ -222,13 +223,13 @@ bool APDFQ0_diff::Update() {
 
 
 // __________________________________________________________________________________________ // 
-double APDFQ0_diff::DefaultDiffParam(double x, double A, double B, double C) {
+double APDFQ0_diff::DefaultDiffParam(double x, double A, double B, double C, double K) {
    //! standard-like parameterization as used in HERAFitter: 
    //! (following is taken from HERAFitter) 
    //! C  AF = (a*x**b)*(1 - x)**c*(1 + d*x + e*x**2+f*x**3)- 
    //! C     - (ap*x**bp)*(1-x)**cp
    if ( x==1 ) return 0;
-   double xf = A*pow(x,B) * pow(1-x,C) * exp(-0.01/(1-x));
+   double xf = A*pow(x,B) * pow(1-x,C) * exp(-K/(1-x));
    return xf;
 }
 
