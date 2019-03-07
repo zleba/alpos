@@ -381,6 +381,7 @@ PDFQ0_diff.s1                 2.2964
 PDFQ0_diff.s2                 0.56894
 PDFQ0_diff.s3                 0
 PDFQ0_diff.s4                 0
+PDFQ0_diff.K                  0.01
 
 PDFQ0_diff.v0               0
 PDFQ0_diff.v1               0
@@ -448,6 +449,7 @@ ApfelDDISCS.a0_IR            IR_a0
 ApfelDDISCS.ap_IR            IR_ap
 ApfelDDISCS.b0_IR            IR_b0
 ApfelDDISCS.n_IR             IR_n 
+ApfelDDISCS.ReggeonCS        H1FitA
 
 
 # --- APFEL
