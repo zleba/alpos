@@ -9,6 +9,7 @@
 #include "fastnlotk/read_steer.h"
 #include <iostream>
 #include <algorithm>
+#include <TRandom3.h>
 
 
 using namespace std;
@@ -579,7 +580,17 @@ void AData::InitSubsetWithCuts(){
    // build vector of valid points
    vector<bool> valpts(fValue.size(),true);
    for ( const auto& icut : cuts ) { // cut1 && cut2 && cut3 ...
-      const vector<double>& val = read_steer::getdoublecolumn("Data",icut.valname,fDataName);
+      vector<double> val;
+      // if 'Rand' is specified as variable, then generate a list of random values for that data set.
+      if ( icut.valname == "Rand" ) {
+         val = read_steer::getdoublecolumn("Data","Sigma",fDataName);
+         static TRandom3 rnd;
+         for ( double& vv : val ) vv=rnd.Rndm();
+      }
+      else {
+         val = read_steer::getdoublecolumn("Data",icut.valname,fDataName);
+   }
+      //const vector<double>& val = read_steer::getdoublecolumn("Data",icut.valname,fDataName);
       for ( unsigned int iv = 0 ; iv<val.size() ;iv++ ) {
          if ( !valpts[iv] ) continue;
          double cval = icut.vcut;
