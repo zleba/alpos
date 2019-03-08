@@ -179,10 +179,10 @@ bool AApfelDDISCS::Update() {  //alpos
          double FL  = APFEL::FLtotal(beta[i]);
          double xF3 = APFEL::F3total(beta[i]);
          //cout<<"F2: "<<F2<<"\t charge: "<<charge<<endl;
-         double yplus  = 1+(1-y[i])*(1-y[i]);
-         double yminus = 1-(1-y[i])*(1-y[i]);
          double x = beta[i]*xpom[i];
-         double y = q2[i]/(s-mp2)/x;
+         double yy = y[i];//q2[i]/(s-mp2)/x; // y[i]
+         double yplus  = 1+(1-yy)*(1-yy);
+         double yminus = 1-(1-yy)*(1-yy);
 
          //cout<<"Apfel   Q2="<<q2[i]<<"\tf2="<<F2<<"\tfl="<<FL<<"\txpom="<<xpom[i]<<"\tbeta="<<beta[i]<<endl;
 
@@ -193,7 +193,7 @@ bool AApfelDDISCS::Update() {  //alpos
             double flxIP = Is4D ?
                rflux   (a0_IP, ap_IP, b0_IP, xpom[i], tAbsVal[i]):
                rfluxInt(a0_IP, ap_IP, b0_IP, xpom[i], tAbsMin, tAbsMax);
-            double xpSigRed_IP =  flxIP*xpom[i] * (F2  - y*y/yplus*FL);
+            double xpSigRed_IP =  flxIP*xpom[i] * (F2  - yy*yy/yplus*FL);
 
 
             //--- Get the Reggeon structure function from the H12006
@@ -209,8 +209,8 @@ bool AApfelDDISCS::Update() {  //alpos
                double F2r = f2FitA[1];
                double FLr = flFitA[1];
                
-               sigmaReg = F2r  - y*y/yplus*FLr;
-               //if ( !H1FitAeg ) cout<<"H1FitA="<<sigmaReg<<"\tRegCS="<<sigma_reg[i]<<endl;
+               sigmaReg = F2r  - yy*yy/yplus*FLr;
+               //if ( !H1FitAReg && (i<4 || isnan(sigmaReg) || isnan(sigma_reg[i]) ) ) cout<<"q2="<<q2[i]<<"\txpom="<<xpom[i]<<"\tbbeta="<<beta[i]<<"\tH1FitA="<<sigmaReg<<"\tRegCS="<<sigma_reg[i]<<endl;
             }
             else {
                sigmaReg = sigma_reg[i];
@@ -224,9 +224,27 @@ bool AApfelDDISCS::Update() {  //alpos
             //Reduced x-section for reggeon
             double xpSigRed_IR =  flxIR*xpom[i] * (sigmaReg);
 
-
             // --- reduced cross section
             fValue[i] = xpSigRed_IP + n_IR*xpSigRed_IR;
+            if ( isnan(fValue[i]) ) {
+               cout<<"ISNAN: i="<<i<<endl;
+               cout<<"flxIP: "<<flxIP<<endl;
+               cout<<"xpom[i]: "<<xpom[i]<<endl;
+               cout<<"(F2  - yy*yy/yplus*FL): "<<(F2  - yy*yy/yplus*FL)<<endl;
+               cout<<"F2="<<F2<<endl;
+               cout<<"FL="<<FL<<endl;
+               cout<<"flxIR="<<flxIR<<endl;
+               cout<<"xpSigRed_IP: "<<xpSigRed_IP<<endl;
+               cout<<"n_IR="<<n_IR<<endl;
+               cout<<"xpSigRed_IR="<<xpSigRed_IR<<endl;
+               cout<<"FlxIP: "<<a0_IP<<", "<<ap_IP<<", "<<b0_IP<<", "<<xpom[i]<<", "<<tAbsMin<<", "<<tAbsMax<<endl;
+               cout<<"Apfel   Q2="<<q2[i]<<"\tf2="<<F2<<"\tfl="<<FL<<"\txpom="<<xpom[i]<<"\tbeta="<<beta[i]<<endl;
+               cout<<"q2="<<q2[i]
+                   <<"\tyy="<<yy
+                   <<"\ty="<<y[i]
+                   <<"\txpom="<<xpom[i]<<"\tbeta="<<beta[i]<<endl;
+
+            }
 
             // non-diff. DIS
 	    //xF3 *= -1.*charge;
@@ -266,12 +284,16 @@ bool AApfelDDISCS::Update() {  //alpos
    fError.resize(fValue.size());
    if ( std::isnan(fValue[0])) { // this statement fixes some odd compiler optimizations which may yield to nan coming from APFEL::Fxyz()
       error["Update"]<<endl;
-      error["Update"]<<"Cross section is isnan: "<<fValue[0]<<"\t dataset: "<<this->GetAlposName()<<endl; 
+      error["Update"]<<"Cross section[0] is isnan: "<<fValue[0]<<"\t dataset: "<<this->GetAlposName()<<endl; 
       error["Update"]<<endl;
-      TheoryHandler::Handler()->PrintCurrentTheorySet();
+      //TheoryHandler::Handler()->PrintCurrentTheorySet();
       fValue.clear();
       fValue.resize(fError.size());// set all elements to zero ... and continue
       //exit(1);
+
+      for( auto dd : sigma_reg ) cout<<dd<<endl;
+      exit(1);
+
    }
    return true;
 

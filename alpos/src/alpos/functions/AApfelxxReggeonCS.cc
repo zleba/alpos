@@ -65,23 +65,25 @@ bool AApfelxxReggeonCS::Init() { //alpos
    fFLObj = apfel::InitializeFLNCObjectsZM(*fGrid, Thresholds);
    fF3Obj = apfel::InitializeF3NCObjectsZM(*fGrid, Thresholds);
 
+   // fF2Obj = apfel::InitializeF2NCObjectsMassive(*fGrid, Thresholds);
+   // fFLObj = apfel::InitializeFLNCObjectsMassive(*fGrid, Thresholds);
+   // fF3Obj = apfel::InitializeF3NCObjectsZM(*fGrid, Thresholds);
+    
    return true;
 }
 
 
 // __________________________________________________________________________________________ //
 bool AApfelxxReggeonCS::Update() {  //alpos
-   //debug["Update"]<<"AlposName: "<<GetAlposName()<<", with DataAlposName: "<<PAR_S(DataAlposName)<<endl;
+   debug["Update"]<<"AlposName: "<<GetAlposName()<<endl;
 
-   cout<<"update"<<endl;
-   AParmNamed* AParmDataAlposName = TheoryHandler::Handler()->GetParameter(this->GetAlposName()+std::string(".DataAlposName"));//->SetValue(VAL,ERR,false);
-   cout<<"ParmName="<<AParmDataAlposName<<endl;
-   cout<<"DataAlposName->GetAlposName()="<<AParmDataAlposName->GetAlposName()<<endl;
-   AParmS* AParmSDataAlposName = (AParmS*)AParmDataAlposName;
-   cout<<"AParmSDataAlposName. GetValue: "<<AParmSDataAlposName->GetValue()<<endl;
+   // AParmNamed* AParmDataAlposName = TheoryHandler::Handler()->GetParameter(this->GetAlposName()+std::string(".DataAlposName"));//->SetValue(VAL,ERR,false);
+   // cout<<"ParmName="<<AParmDataAlposName<<endl;
+   // cout<<"DataAlposName->GetAlposName()="<<AParmDataAlposName->GetAlposName()<<endl;
+   // AParmS* AParmSDataAlposName = (AParmS*)AParmDataAlposName;
+   // cout<<"AParmSDataAlposName. GetValue: "<<AParmSDataAlposName->GetValue()<<endl;
 
    string DataAlposName = PAR_S(DataAlposName);
-   cout<<"DataAlposName = "<<DataAlposName<<endl;
    const bool DataPresent = EXIST_NS(Data,DataAlposName);
    info["Update"]<<"DataAlposName: "<<DataAlposName<<", Found 'Data': "<<(DataPresent?"true":"false")<<endl;
    if ( !DataPresent) {

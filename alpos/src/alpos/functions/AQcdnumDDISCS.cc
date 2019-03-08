@@ -271,7 +271,9 @@ double rfluxRawInt(double a0, double ap, double b0,  double x_pom, double tAbsMi
 
     //   t-integrated: (1/B)*[exp(-B*tmax)-exp(-B*tmin)]
     fl = fl * (exp(-tAbsMin*b)-exp(-tAbsMax*b))/b;
-
+    if ( isinf(fl) || fl==0 || isnan(fl)) {
+       cout<<"[rfluxRawInt] rflux is not a reasonable value: "<<fl<<"\t fl0 = "<<exp((2.0*a0-1.)*log(1.0/x_pom))<<", b="<<b<<", a0="<<a0<<endl;
+    }
     return fl;
 }
 
@@ -297,7 +299,12 @@ double rfluxInt(double a0, double ap, double b0, double x_pom, double tAbsMin, d
     const double dm =  rfluxRawInt(a0, ap, b0, xPomNorm,  0, tAbscutNorm);
     double  norm=(1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
 
-    return  norm * rfluxRawInt(a0, ap, b0, x_pom, tAbsMin, tAbsMax);
+    double rFlux = norm * rfluxRawInt(a0, ap, b0, x_pom, tAbsMin, tAbsMax);
+    if ( isnan(rFlux) ) {
+       cout<<"[rfluxInt] rFlux isnan: "<<rFlux<<". Input: a0="<<a0<<", ap="<<ap<<", b0="<<b0<<endl;
+       cout<<"[rfluxInt] rFlux isnan.           dm="<<dm<<", xPomNorm="<<xPomNorm<<endl;
+    }
+    return rFlux;
 }
 
 

@@ -40,8 +40,9 @@ bool ASubsetFunction::Init() {
 
 // __________________________________________________________________________________________ //
 bool ASubsetFunction::Update() {
-   fValue.clear();
-   fError.clear();
+   //! update
+   if ( fValue.size() == 0 ) return true; // it's all excluded! See: SetRequirementValidPoints()
+
    if ( GetRequirements().size() != 1) {
       error["Update"]<<"This function 'requires' exactly one other function."<<endl;
       exit(1);
@@ -79,7 +80,10 @@ void ASubsetFunction::SetRequirementValidPoints(const std::string& req, const st
    TheoryHandler::Handler()->NewAlias(alias,req);
    ARegisterRequirements(this);
 
+
    fPointValid = valid;
+   fValue = AlposTools::VectorSubset(vector<double>(valid.size()),fPointValid); // resize fValue, and keep
+   fError = fValue;
    SetIsOutdated();
 }
 
