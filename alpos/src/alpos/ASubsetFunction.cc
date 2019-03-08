@@ -41,6 +41,7 @@ bool ASubsetFunction::Init() {
 // __________________________________________________________________________________________ //
 bool ASubsetFunction::Update() {
    //! update
+   debug["Update"]<<"AlposName: "<<GetAlposName()<<"\tfValue.size()="<<fValue.size()<<", fPointValid.size()="<<fPointValid.size()<<endl;
    if ( fValue.size() == 0 ) return true; // it's all excluded! See: SetRequirementValidPoints()
 
    if ( GetRequirements().size() != 1) {
@@ -83,6 +84,8 @@ void ASubsetFunction::SetRequirementValidPoints(const std::string& req, const st
 
    fPointValid = valid;
    fValue = AlposTools::VectorSubset(vector<double>(valid.size()),fPointValid); // resize fValue, and keep
+   info["SetRequirementValidPoints"]<<" Keeping "<<fValue.size() <<" out of "<<valid.size() <<" points."<<endl;
+
    fError = fValue;
    SetIsOutdated();
 }
