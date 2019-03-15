@@ -13,11 +13,11 @@
 ##########################################################
 #  General parameters of this dataset
 ##########################################################
-AlposName           "bla-33"  # A unique alpos name
-Description         "H1 LRG diffractive dijets HERA-II"
-Reference           "JHEP 1503 (2015) 092 [arxiv:1412.0928]"
-arXiv                           1412.0928
-Inspire                         1332186
+AlposName           "bla-344"  # A unique alpos name
+Description         "H1 FPS diffractive dijets HERA-II"
+Reference           "Eur.Phys.J.C72 (2012) 1970 [arxiv:1111.0584]"
+arXiv                           1111.0584
+Inspire                         944155
 
 ##########################################################
 #  fastNLO parameters, specific to this dataset
@@ -28,13 +28,13 @@ Inspire                         1332186
 #TheoryFunction: 'fastNLO'
 Filenames {
 ##fnhd5200v23_2G_Nodes.40.6.4_mu2PtAvg_dQ2dPt1.tab
-theoryfiles/h1Diff/nnlojet/LRG/nnlo/H1-LQall-8.diff_LRG_xi2zIP.newver.tab
+theoryfiles/h1Diff/nnlojet/LRG/nnlo/H1-LQall-8.diff_LRG_q2.newver.tab
 }
 Units               0      # 0: absoluteUnits, 1: PublicationUnits
 #MuRFuncForm         3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
 #MuFFuncForm         3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
 xpom_min           0.0001 #000001
-xpom_max           0.03
+xpom_max           0.10
 
 ##########################################################
 #  Data table 
@@ -51,20 +51,19 @@ xpom_max           0.03
 ##########################################################
 
 Data {{
-  zpom_min  zpom_max   Sigma    tot     stat     sys    dThE     dEe     dHFS     dQ2   dxpom   dbeta   dptj1   dzpom    dxDijet  dPhi     dt     dbgr   Hadr    dHadr    rad        InvBinSize
-     0.00     0.22     70.4    20.3     9.3     18.0    1.4     3.4     -4.0     1.2    -0.5     4.6     -2.4    12.0      4.1    6.5     -0.5    0.8    1.10    0.03    1.06          4.54545
-     0.22     0.40     132     11.9     6.3     10.1    1.5     3.0     -1.2    -0.9     0.3    -0.1     -3.9    -2.3     -2.2    1.0     -0.9    0.4    1.07    0.02    1.04          5.55556
-     0.40     0.60     89.7    14.9     6.8     13.3    1.2     1.6     -9.1    -1.3     0.8    -1.2     -2.8    -3.9     -1.4    0.5     -0.6    0.3    1.10    0.03    1.02          5
-     0.60     0.80     54.8    14.9     7.5     12.9    2.5     1.9      7.6    -1.4     0.9    -1.2     -3.2    -4.2     -1.4    0.2     -2.0    0.1    1.10    0.10    1.02          5
-     0.80     1.00     19.9    45.0     11.4    43.5    0.8     0.6     -42.1   -1.9     1.3    -2.4     -2.5    -5.1     -2.0    3.0     -1.5    0.6    0.57    0.10    1.00          5
-
+logxpom_min logxpom_max Sigma   tot   stat    sys   dEe   dThE  dEp    dPx    dPy   dEta2   dxp   dEhad  dBeta   dQ2   dPt   Hadr    dHadr InvBinSize
+-2.3         -1.9      32     57.0     49.5   28.2   5.9   3.3   24.0   6.2    13.3   -5.9      1.7    -18.9      0.9     -0.7    0.4   0.96    0.06   2.5    
+-1.9         -1.6      93     20.2     17.6   10.0   1.3   -1.1  -8.4  -6.0    -0.6   -5.4     -0.6      5.0      0.4      0.7    2.0   0.91    0.01   3.33333
+-1.6         -1.4      200     15.9    12.8   9.5    1.1   -1.9  -3.8   6.0    -1.2    0.4      0.1      5.5     -0.4      0.2    1.8   0.89    0.03   5
+-1.4         -1.2      344     13.9    11.0   8.6    0.4   -1.7  -4.3  -4.9    -2.5    4.4     -0.7      4.2     -0.2      0.2    1.9   0.87    0.05   5
+-1.2         -1.0      488     18.8    16.5   9.0   -0.3   -2.1  -5.6  -4.4    -0.8    5.8     -1.7      3.8      0.7      0.1    2.6   0.87    0.06   5     
 #>>/afs/desy.de/user/b/britzger/xxl/alpos/svn-neu/Alpos/Alpos/datafiles/h1/1412.0928/DiffDijetQ2Pt1_DijetQ2Pt_unfolding_final_ModErrBreakdown_141020.txt:1:
 }}
 
 
 
 Subsets {
-    zpom_min 
+    logxpom_min 
 }
 
 Cuts { }
@@ -76,19 +75,18 @@ ErrorUnit         Percent     # Are errors given as: "Absolute", "Relative", "Pe
 Errors {{
 ErrorName      Column           Correlation     Nature
 stat     "stat"                 ESMC          P
-dThE  "dThE"                        EYM1     M
-dEe   "dEe"                         EYM1     M
-dHFS   "dHFS"                       EYM1     M 
-dQ2    "dQ2"                        EYM1     M
-dxpom  "dxpom"                      EYM1     M  
-dbeta  "dbeta"                      EYM1     M  
-dptj1  "dptj1"                      EYM1     M  
-dzpom   "dzpom"                     EYM1     M   
-dxDijet "dxDijet"                   EYM1     M    
-dPhi    "dPhi"                      EYM1     M
-dt      "dt"                        EYM1     M
-dbgr    "dbgr"                      EYM1     M
-dHadr     "had.err"             TYM0.5         M   # Had. corr.
+dEe         "dEe"               EYM1     M
+dThE        "dThE"              EYM1     M
+dEp         "dEp"               EYM1     M
+dPx         "dPx"               EYM1     M
+dPy         "dPy"               EYM1     M
+dEta2       "dEta2"             EYM1     M
+dxp         "dxp"               EYM1     M
+dEhad       "dEhad"             EYM1     M
+dBeta       "dBeta"             EYM1     M
+dQ2         "dQ2"               EYM1     M
+dPt         "dPt"               EYM1     M
+dHadr     "dHadr"             TYM0.5         M   # Had. corr.
 }}
 
 
@@ -98,16 +96,15 @@ TheoryFactors { # a list
 
 
 
-stat_Matrix_Format           "Matrix" # "Matrix" or "SingleValues" or specify single value only
+
+stat_Matrix_Format         "Matrix" # "Matrix" or "SingleValues" or specify single value only
 stat_Matrix_Type         "Correlation" # 'Covariance', 'Correlation' or 'CorrelationPercent'
 
 stat_Matrix {{
   # one empty line here !
-   100     -24      8        1       0
-   -24     100     -31      10      -2
-     8     -31     100     -45      17
-     1      10     -45     100     -52
-     0      -2      17     -52     100
-
-
+  -0.240      0.179      0.161      0.056 
+  0.136      -0.027      -0.047       0   
+ 0.579      0.334       0           0     
+ 0.709       0          0           0     
+  0          0          0           0     
 }}   

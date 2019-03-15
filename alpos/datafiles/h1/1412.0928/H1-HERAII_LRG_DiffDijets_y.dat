@@ -99,10 +99,10 @@ TheoryFactors { # a list
 
 
 
-Stat_Matrix_Format           "Matrix" # "Matrix" or "SingleValues" or specify single value only
-Stat_Matrix_Type         "Correlation" # 'Covariance', 'Correlation' or 'CorrelationPercent'
+stat_Matrix_Format           "Matrix" # "Matrix" or "SingleValues" or specify single value only
+stat_Matrix_Type         "CorrelationPercent" # 'Covariance', 'Correlation' or 'CorrelationPercent'
 
-Stat_Matrix {{
+stat_Matrix {{
   # one empty line here !
     100     -7     8      5     4
     -7      100     -6     8     4
