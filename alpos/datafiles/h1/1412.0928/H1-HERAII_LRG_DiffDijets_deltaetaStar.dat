@@ -28,7 +28,7 @@ Inspire                         1332186
 #TheoryFunction: 'fastNLO'
 Filenames {
 ##fnhd5200v23_2G_Nodes.40.6.4_mu2PtAvg_dQ2dPt1.tab
-theoryfiles/NNLOJET/H1-LQall-8.diff_LRG_ptj1_q2_4_6.NumEvtBinProc.RMS8.pre10.tab
+theoryfiles/h1Diff/nnlojet/LRG/nnlo/H1-LQall-8.diff_LRG_deltaeta.newver.tab
 }
 Units               0      # 0: absoluteUnits, 1: PublicationUnits
 #MuRFuncForm         3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
