@@ -104,9 +104,9 @@ Stat_Matrix_Type         "Correlation" # 'Covariance', 'Correlation' or 'Correla
 
 Stat_Matrix {{
   # one empty line here !
-   0.1   0.2     1    100     -7     8      5     4
-   0.2   0.3     2    0      100     -6     8     4
-   0.3   0.5     3    0       0    100     -4     7
-   0.5   0.6     4    0       0     0    100     -10
-   0.6   0.7     5    0       0     0      0    10
+    100     -7     8      5     4
+    -7      100     -6     8     4
+    8       -6    100     -4     7
+    5       8     -4    100     -10
+    4       4     7      -10      100
 }}   

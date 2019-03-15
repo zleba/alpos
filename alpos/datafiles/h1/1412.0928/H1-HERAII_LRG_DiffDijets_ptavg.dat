@@ -51,12 +51,10 @@ xpom_max           0.03
 ##########################################################
 
 Data {{
-  q2_min   q2_max   Sigma  tot     stat     sys    dThE     dEe     dHFS     dQ2      dxpom   dbeta   dptj1  dzpom    dxDijet dPhi    dt     dbgr   Hadr    dHadr    rad     InvBinSize
-     4         6    8.20    13.2     5.7     11.9    1.0     4.5     -3.9     2.1     1.1      2.8     -5.0     1.9      0.7    1.2     -0.9    0.1    1.05    0.05    1.05       0.5
-     6        10    4.23    11.8     4.0     11.0    2.6     1.7     -5.0    -0.5     0.5     -0.5     -3.1    -3.2     -1.6    1.6     -1.5    0.3    1.05    0.04    1.03      0.25
-     10       18    1.92    11.4     4.0     10.7    1.0     1.9     -4.6    -0.9     0.6     -0.8     -3.1    -3.1     -1.5    1.7     -0.9    0.4    1.05    0.04    1.03      0.125
-     18       34    0.797    11.6     4.8     10.5    1.1     2.1     -5.1    0.1     0.6     -0.1     -2.9    -2.5     -1.3    1.4     -0.6    0.2    1.06    0.04    1.03      0.0625
-     34      100    0.164    12.3     6.2     10.6    0.9     2.3     -5.0   -0.2     0.5     -0.6     -2.7    -2.9     -1.5    1.6     -0.8    0.1    1.06    0.04    1.03     0.0151515
+  ptavg_min  ptavg_max   Sigma    tot      stat     sys    dThE     dEe     dHFS     dQ2   dxpom   dbeta   dptj1    dzpom    dxDijet  dPhi     dt     dbgr   Hadr    dHadr    rad        InvBinSize
+    4.75          6.50     27.6      9.9      3.5      9.3    1.5     2.0     -3.3    -1.1     0.5    -0.8     -1.0    -1.9     -1.0    0.8     -0.8    0.1    1.09    0.06    1.03          0.571429
+    6.50          9.00      8.52    11.3      5.2     10.0    1.4     2.4     -5.0    -0.4     0.8    -0.1     -1.7    -0.8     -0.4    1.5     -1.1    0.5    1.01    0.03    1.04          0.4
+    9.00          15.00     0.701   19.7     13.4     14.4    0.7     1.2     -9.2    -0.3     0.7    -0.2     -5.4    -3.5     -1.3    3.8     -0.9    0.5    1.01    0.03    1.06          0.166667
 
 
 #>>/afs/desy.de/user/b/britzger/xxl/alpos/svn-neu/Alpos/Alpos/datafiles/h1/1412.0928/DiffDijetQ2Pt1_DijetQ2Pt_unfolding_final_ModErrBreakdown_141020.txt:1:
@@ -64,7 +62,7 @@ Data {{
 
 
 Subsets {
-    q2_min 
+    ptavg_min 
 }
 
 Cuts { }
@@ -103,9 +101,11 @@ Stat_Matrix_Type         "Correlation" # 'Covariance', 'Correlation' or 'Correla
 
 Stat_Matrix {{
   # one empty line here !
- 100   -5     5      0     0
- -5    100     1      1    0
- 5     1     100     -2   1
- 0     1      -2    100    8
- 0     0      1      8    100
+      100     -33      12
+      -33     100     -49
+       12     -49     100
+
+
+
+
 }}   
