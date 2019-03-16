@@ -10,9 +10,9 @@
 
 
 /* 
- A temporary implementation of the theory handler
+   A temporary implementation of the theory handler
 
- */
+*/
 
 using namespace std;
 
@@ -26,7 +26,7 @@ TheoryHandler* TheoryHandler::instance = NULL;
 // // // // |   |   |   l   |   |   |   l   |   l   |
 // // // // l___|   |_______l___|   l_______l_______/
 // // // //     `---'                                  
- 
+
 
 //              ,/k.
 //             /  ih,             
@@ -34,7 +34,7 @@ TheoryHandler* TheoryHandler::instance = NULL;
 //      _.-/   '  /b.`.4p,
 //   --"  ,    ,-' ^6x, `."^=._
 
-	
+
 //____________________________________________________________________________________ //
 TheoryHandler::TheoryHandler() : AlposObject("TheoryHandler") {
    cout<<endl;
@@ -60,13 +60,13 @@ TheoryHandler::TheoryHandler() : AlposObject("TheoryHandler") {
    cout<<"          (     , )               ,/'b.        ,d$P'`Y'`Y'`?$b,       .         \\   J               ,d"<<endl; 
    cout<<"   ___I_ (  ,      )            _/    7h,    ,/    / \\      |  \\,   ,d*\\         )  \\    ,/'\\.    ,d  "<<endl;
    cout<<"  /\\-_--\\ ( \\'./  .'   .d^*b, .'    , _ #b--'     ^  |      \\    |./  ' b,_     / ` )) _/   .h,_ /   \\"<<endl;
-    cout<<" /  \\_-__\\ '-| |-'    /  , _\\/     _/'.   /'  ,      /   \\   ^    `-._    \\  ,-'/,  /   , _/ - '/' ^  "<<endl;
-    cout<<" |[]| [] |   | |  __/'  /   ,, __/'    ,-'   ,   /    |    |     \\     `--/' C/-..,'   _/'.  ,-'   '  "<<endl;
-    cout<<"-------------------------------------------------------------------------------------------------------"<<endl;
-    cout<<endl;
-    cout<<endl;
+   cout<<" /  \\_-__\\ '-| |-'    /  , _\\/     _/'.   /'  ,      /   \\   ^    `-._    \\  ,-'/,  /   , _/ - '/' ^  "<<endl;
+   cout<<" |[]| [] |   | |  __/'  /   ,, __/'    ,-'   ,   /    |    |     \\     `--/' C/-..,'   _/'.  ,-'   '  "<<endl;
+   cout<<"-------------------------------------------------------------------------------------------------------"<<endl;
+   cout<<endl;
+   cout<<endl;
 }
- 											   
+
 
 //____________________________________________________________________________________ //
 TheoryHandler::~TheoryHandler(){
@@ -86,7 +86,7 @@ TheoryHandler* TheoryHandler::Handler(){
 bool TheoryHandler::InitTheory(const std::string& steerfile) {
    //! Init all theory functions and parameters.
    debug["InitTheory"]<<"("<<steerfile<<")"<<endl;
-   
+
    if ( steerfile != "" ) {
       string actualsteerfile = steerfile;
       AlposTools::CheckFileExit(actualsteerfile);
@@ -121,19 +121,19 @@ bool TheoryHandler::InitTheory(const std::string& steerfile) {
       // 2,3,4)
       funcs.push_back(AFactory::FunctionFactory(line[1],line[0]));
       if (!CheckFunction(funcs.back())) {
-	 error["InitTheory"]<<"Failed to initialize function '"<<line[0]<<"' of type '"<<line[1]<<"'."<<endl;
+         error["InitTheory"]<<"Failed to initialize function '"<<line[0]<<"' of type '"<<line[1]<<"'."<<endl;
       }
       AllFuncNames.insert(funcs.back()->GetAlposName());
       // init DataTheoryPairs (quite dirty)
       if ( line[1]=="Data" ) 
-	 fDataTheoryPairs[line[0]] = make_pair((AData*)funcs.back(),GetFuncD(line[0]));
+         fDataTheoryPairs[line[0]] = make_pair((AData*)funcs.back(),GetFuncD(line[0]));
    }
    fAllParmNames.insert("");
    fAllParmNames.erase("");
-   
+
    // a short crosscheck
    if (say::debug.GetSpeak()) PrintListOfAllParms();
-   
+
 
    debug["InitTheory"]<<"  *** Registering constants *** \n"<<endl;
    set<string> pars = read_steer::Steering()->GetAvailableLabels();
@@ -141,23 +141,23 @@ bool TheoryHandler::InitTheory(const std::string& steerfile) {
       if ( lab=="")  continue;
       string val = read_steer::Steering()->gets(lab);
       if ( fAllParmNames.count(val) != 0 ) {
-	 debug["InitTheory"]<<" + Skipping initialization of " <<lab<<endl;
-	 // register alias later
+         debug["InitTheory"]<<" + Skipping initialization of " <<lab<<endl;
+         // register alias later
       }
       else {
-	 if (read_steer::CheckNumber(read_steer::Steering()->gets(lab)) ) {
-	    // numeric constant
-	    debug["InitTheory"]<<" + New (double) parameter with name: "<<lab<<", and value: "<<read_steer::Steering()->getd(lab)<<endl;
-	    new AParmD(lab,read_steer::Steering()->getd(lab),0,false);
-	 }
-	 else { // string constant
-	    debug["InitTheory"]<<"  + New (string) parameter with name '"<<lab<<"' and value '"<<val<<"'."<<endl;
-	    string err = "";
-	    new AParmS(lab,val,err,false);	    
-	 }
+         if (read_steer::CheckNumber(read_steer::Steering()->gets(lab)) ) {
+            // numeric constant
+            debug["InitTheory"]<<" + New (double) parameter with name: "<<lab<<", and value: "<<read_steer::Steering()->getd(lab)<<endl;
+            new AParmD(lab,read_steer::Steering()->getd(lab),0,false);
+         }
+         else { // string constant
+            debug["InitTheory"]<<"  + New (string) parameter with name '"<<lab<<"' and value '"<<val<<"'."<<endl;
+            string err = "";
+            new AParmS(lab,val,err,false);	    
+         }
       }
    }
-   
+
 
    //! Now init aliases
    //! Aliases are allowed to point to:
@@ -169,20 +169,20 @@ bool TheoryHandler::InitTheory(const std::string& steerfile) {
       if ( lab=="") continue;
       string val = read_steer::Steering()->gets(lab);
       if ( fAllParmNames.count(val) != 0 ) {
-   	 if (read_steer::CheckNumber(read_steer::Steering()->gets(lab)) ) {
-	    // nothing to do. It is a numeric value
-	 }
-	 else {
-	    if ( TheoryHandler::Handler()->CheckParameter(val) ) { //read_steer::Steering()->exist(val) ) {
-	       //if ( read_steer::Steering()->exist(val) || TheoryHandler::Handler()->CheckParameter(val) ) { //! allow forward declaration
-	       debug["InitTheory"]<<" + New ALIAS '"<<lab<<"' for '"<<val<<"'."<<endl;
-	       TheoryHandler::Handler()->NewAlias(lab,val);
-	    }
-	    else { 
-	       warn["InitTheory"]<<"Could not initialize parameter (neither with value, or as alias). ParName: "<<lab<<", value="<<val<<endl;
-	       warn["InitTheory"]<<"Aliase are only allowed to point to 1) parameters with a value, 2) initializations of functions, 3) to already otherwise defined aliase or parameters."<<endl;
-	    }
-	 }
+         if (read_steer::CheckNumber(read_steer::Steering()->gets(lab)) ) {
+            // nothing to do. It is a numeric value
+         }
+         else {
+            if ( TheoryHandler::Handler()->CheckParameter(val) ) { //read_steer::Steering()->exist(val) ) {
+               //if ( read_steer::Steering()->exist(val) || TheoryHandler::Handler()->CheckParameter(val) ) { //! allow forward declaration
+               debug["InitTheory"]<<" + New ALIAS '"<<lab<<"' for '"<<val<<"'."<<endl;
+               TheoryHandler::Handler()->NewAlias(lab,val);
+            }
+            else { 
+               warn["InitTheory"]<<"Could not initialize parameter (neither with value, or as alias). ParName: "<<lab<<", value="<<val<<endl;
+               warn["InitTheory"]<<"Aliase are only allowed to point to 1) parameters with a value, 2) initializations of functions, 3) to already otherwise defined aliase or parameters."<<endl;
+            }
+         }
       }
    }
 
@@ -190,16 +190,16 @@ bool TheoryHandler::InitTheory(const std::string& steerfile) {
    //!   + Register dependencies
    //!   + Call 'Init'
    debug["InitTheory"]<<"  *** Now finalize initialization of functions *** \n"<<endl;
-   //for ( auto line : lfunc ) {
+   //for ( auto line : lfunc ) 
    for ( const auto& line : AllFuncNames ) {
       debug["InitTheory"]<<">> Registering dependencies for function: "<<line<<endl;
       bool success = ARegisterRequirements(GetFuncD(line));
       debug["InitTheory"]<<"Call Init() function: "<<line<<endl;
       success += GetFuncD(line)->Init();
       if ( success ) 
-	 debug["InitTheory"]<<"Function "<<line <<" initialized successfully."<<endl;
+         debug["InitTheory"]<<"Function "<<line <<" initialized successfully."<<endl;
       else 
-	 error["InitTheory"]<<"Function "<<line<<" could not be initialized successfully."<<endl;
+         error["InitTheory"]<<"Function "<<line<<" could not be initialized successfully."<<endl;
 
    }
 
@@ -219,16 +219,16 @@ bool TheoryHandler::InitSuperFunctions() {
    for ( auto id : GetDataTheoryPairs()) {
       string dan = id.second.first->GetAlposName();
       dan.resize(dan.size()-5);
-	 if ( id.second.second->GetAlposName() != id.first ||  dan != id.first  ) {
-	    warn["InitSuperFunctions"]<<"The map 'DataTheoryPairs' has different map-key than the function name would suggest! Exiting."<<endl;
-	    warn["InitSuperFunctions"]<<"This may cause problems, since map.first is not the same as the data or theory-name."<<endl;
-	    cout<<"map-key: " <<id.first<<endl;
-	    cout<<"     da: "<<id.second.first->GetAlposName()<<endl;
-	    cout<<"     th: "<<id.second.second->GetAlposName()<<endl;
-	    exit(1);
+      if ( id.second.second->GetAlposName() != id.first ||  dan != id.first  ) {
+         warn["InitSuperFunctions"]<<"The map 'DataTheoryPairs' has different map-key than the function name would suggest! Exiting."<<endl;
+         warn["InitSuperFunctions"]<<"This may cause problems, since map.first is not the same as the data or theory-name."<<endl;
+         cout<<"map-key: " <<id.first<<endl;
+         cout<<"     da: "<<id.second.first->GetAlposName()<<endl;
+         cout<<"     th: "<<id.second.second->GetAlposName()<<endl;
+         exit(1);
       }
    }
-   
+
    vector<string> reqs;
    for ( auto id : GetDataTheoryPairs()) {
       //reqs.push_back(id.first); // supposely the same
@@ -281,42 +281,42 @@ bool TheoryHandler::InitSubsetFunctions(const vector<std::string>& reqs, bool Do
    for ( const auto& ireq : reqs ) {
       AData* da = (AData*)GetFuncD(ireq+"_Data");
       for ( const auto& isub : da->GetSubsets() ) {
-	 bool UseSubset = false;
-	 bool IsCut = ( isub.first.find("cuts") != string::npos );
-	 if ( DoCuts && IsCut ) UseSubset=true;
-	 if ( DoSubsets && !IsCut ) UseSubset=true;
-	 if ( UseSubset ) {
-	    // subsetdata
-	    string subsetname = ireq+"_"+isub.first;
-	    ASubsetData* SubDa     =  (ASubsetData* )AFactory::FunctionFactory("SubsetData",subsetname);
-	    SubDa->SetRequirementValidPoints(ireq,isub.second);  
-	    // subset theory
-	    ASubsetFunction* SubTh =  (ASubsetFunction* )AFactory::FunctionFactory("SubsetFunction",subsetname);
-	    SubTh->SetRequirementValidPoints(ireq,isub.second);
-	    // register subset
-	    if ( IsCut ) {
-	       // put no-cut data/theory pair into subsetpair
-	       // make a new subset without cuts (called <xyz>_NoCuts) 
-	       {
-		  vector<bool> nocuts(isub.second.size(),true);
-		  string subnamenocut = ireq+"_NoCuts";
-		  ASubsetData*     SubDaNoCut =  (ASubsetData* )    AFactory::FunctionFactory("SubsetData",subnamenocut);
-		  ASubsetFunction* SubThNoCut =  (ASubsetFunction* )AFactory::FunctionFactory("SubsetFunction",subnamenocut);
-		  SubDaNoCut->SetRequirementValidPoints(ireq,nocuts);  
-		  SubThNoCut->SetRequirementValidPoints(ireq,nocuts);
-		  fSubsetPairs[ireq][subnamenocut] = make_pair(SubDaNoCut,SubThNoCut);
-	       }
-	       // replace 'DataTheoryPair' with subsets including cuts
-	       fDataTheoryPairs.erase(ireq);
-	       //fDataTheoryPairs[ireq] = make_pair(SubDa,SubTh);
-	       fDataTheoryPairs[subsetname] = make_pair(SubDa,SubTh); // give it the new proper name
-	    }
-	    else { // a simple subset 
-	       fSubsetPairs[ireq][subsetname] = make_pair(SubDa,SubTh);
-	    }
+         bool UseSubset = false;
+         bool IsCut = ( isub.first.find("cuts") != string::npos );
+         if ( DoCuts && IsCut ) UseSubset=true;
+         if ( DoSubsets && !IsCut ) UseSubset=true;
+         if ( UseSubset ) {
+            // subsetdata
+            string subsetname = ireq+"_"+isub.first;
+            ASubsetData* SubDa     =  (ASubsetData* )AFactory::FunctionFactory("SubsetData",subsetname);
+            SubDa->SetRequirementValidPoints(ireq,isub.second);  
+            // subset theory
+            ASubsetFunction* SubTh =  (ASubsetFunction* )AFactory::FunctionFactory("SubsetFunction",subsetname);
+            SubTh->SetRequirementValidPoints(ireq,isub.second);
+            // register subset
+            if ( IsCut ) {
+               // put no-cut data/theory pair into subsetpair
+               // make a new subset without cuts (called <xyz>_NoCuts) 
+               {
+                  vector<bool> nocuts(isub.second.size(),true);
+                  string subnamenocut = ireq+"_NoCuts";
+                  ASubsetData*     SubDaNoCut =  (ASubsetData* )    AFactory::FunctionFactory("SubsetData",subnamenocut);
+                  ASubsetFunction* SubThNoCut =  (ASubsetFunction* )AFactory::FunctionFactory("SubsetFunction",subnamenocut);
+                  SubDaNoCut->SetRequirementValidPoints(ireq,nocuts);  
+                  SubThNoCut->SetRequirementValidPoints(ireq,nocuts);
+                  fSubsetPairs[ireq][subnamenocut] = make_pair(SubDaNoCut,SubThNoCut);
+               }
+               // replace 'DataTheoryPair' with subsets including cuts
+               fDataTheoryPairs.erase(ireq);
+               //fDataTheoryPairs[ireq] = make_pair(SubDa,SubTh);
+               fDataTheoryPairs[subsetname] = make_pair(SubDa,SubTh); // give it the new proper name
+            }
+            else { // a simple subset 
+               fSubsetPairs[ireq][subsetname] = make_pair(SubDa,SubTh);
+            }
 
 
-	 }
+         }
       }
    }
    return true;
@@ -338,7 +338,7 @@ void TheoryHandler::PrintListOfAllParms() const {
 void TheoryHandler::PrintCurrentTheorySet(ATheorySet* setptr, std::ostream& strm) const{
    //! Print the current theory set (i.e. all parameters and its values)
    //! or if 'set' is specified, print this set
-   
+
 
    static const string ten = "++++++++++";
    strm<<"\n  +"<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<endl;
@@ -348,62 +348,62 @@ void TheoryHandler::PrintCurrentTheorySet(ATheorySet* setptr, std::ostream& strm
 
    //for ( int zwo = 0 ; zwo<2 ;zwo++ ){
    for ( const auto& i : setptr->GetSet() ) {
-	 string name = i.first;
-	 string alias = TheoryHandler::Handler()->GetParameter(name)->GetAlposName();
-	 if ( alias == name ) 
-	    alias = "";
-	 else {
-	    alias = "--> "+alias;
-	    name += "  "+alias;
-	 }
-	 string cnst = i.second.Const ? "(const)" : "";
-	 if ( i.second.Const ) name += "  (const)";
-
-	 string vals = "[empty]";
-	 if ( !i.second.Values.empty() ) { // if no datasets are instantiated
-             vals = i.second.Values[0]; // single values
-	     if ( !(i.second.Errors[0] == "0" ||  i.second.Errors[0] == "" )) vals += " +- "+i.second.Errors[0]; // errors
-	 }
-
-	 // array (functions)
-	 if ( i.second.Values.size() > 1 ) {
-	    vals += " [0],  "+i.second.Values[1];
-	    if ( !(i.second.Errors[1] == "0" ||  i.second.Errors[1] == "" )) vals += " +- "+i.second.Errors[1];
-	 }
-	 if ( i.second.Values.size() > 2 ) {
-	    vals += " [1],  "+i.second.Values[2];
-	    if ( !(i.second.Errors[2] == "0" ||  i.second.Errors[2] == "" )) vals += " +- "+i.second.Errors[2];
-	 }
-	 else if ( i.second.Values.size() > 1 ) vals += " [1]";
-
-	 if ( i.second.Values.size() == 4 ) {
-	    vals += " [2],  "+i.second.Values[2];
-	    if ( !(i.second.Errors[2] == "0" ||  i.second.Errors[2] == "" )) vals += " +- "+i.second.Errors[2];
-	    vals += " [3];";
-	 }
-	 else if (i.second.Values.size() > 4 ){
-	    vals += " [2],  ... , ";
-	    vals += i.second.Values.back();
-	    if ( !(i.second.Errors.back() == "0" ||  i.second.Errors.back() == "" )) vals += " +- "+i.second.Errors.back();
-	    vals += " ["+to_string(i.second.Values.size()-1)+"];";
-	 }
-
-	 //strm<<"  +  "<<i.first<<"  \t\t"<<i.second.Values[0]<<"\t const="<<i.second.Const<<endl;
-	 // 'ordered' or not? (alpha_s has for instance only 'one' value)
-	 // if ( zwo==0 && i.second.Values.size() == 1 )
-	 //    printf("  +  %-50s  %-7s  %s\n",
-	 // 	   name.c_str(), cnst.c_str(),vals.c_str());
-	 // else if (zwo==1 && i.second.Values.size() > 1)
-	 //    printf("  +  %-50s  %-7s  %s\n",
-	 // 	   name.c_str(), cnst.c_str(),vals.c_str());
-	 //}
-	 char buf[1000];
-	 sprintf(buf,"  +  %-55s  %-7s  %s\n",
-		name.c_str(), cnst.c_str(),vals.c_str());
-	 strm<<buf;
+      string name = i.first;
+      string alias = TheoryHandler::Handler()->GetParameter(name)->GetAlposName();
+      if ( alias == name ) 
+         alias = "";
+      else {
+         alias = "--> "+alias;
+         name += "  "+alias;
       }
-      strm<<"  +"<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<endl;
-      strm<<endl;
+      string cnst = i.second.Const ? "(const)" : "";
+      if ( i.second.Const ) name += "  (const)";
+
+      string vals = "[empty]";
+      if ( !i.second.Values.empty() ) { // if no datasets are instantiated
+         vals = i.second.Values[0]; // single values
+         if ( !(i.second.Errors[0] == "0" ||  i.second.Errors[0] == "" )) vals += " +- "+i.second.Errors[0]; // errors
+      }
+
+      // array (functions)
+      if ( i.second.Values.size() > 1 ) {
+         vals += " [0],  "+i.second.Values[1];
+         if ( !(i.second.Errors[1] == "0" ||  i.second.Errors[1] == "" )) vals += " +- "+i.second.Errors[1];
+      }
+      if ( i.second.Values.size() > 2 ) {
+         vals += " [1],  "+i.second.Values[2];
+         if ( !(i.second.Errors[2] == "0" ||  i.second.Errors[2] == "" )) vals += " +- "+i.second.Errors[2];
+      }
+      else if ( i.second.Values.size() > 1 ) vals += " [1]";
+
+      if ( i.second.Values.size() == 4 ) {
+         vals += " [2],  "+i.second.Values[2];
+         if ( !(i.second.Errors[2] == "0" ||  i.second.Errors[2] == "" )) vals += " +- "+i.second.Errors[2];
+         vals += " [3];";
+      }
+      else if (i.second.Values.size() > 4 ){
+         vals += " [2],  ... , ";
+         vals += i.second.Values.back();
+         if ( !(i.second.Errors.back() == "0" ||  i.second.Errors.back() == "" )) vals += " +- "+i.second.Errors.back();
+         vals += " ["+to_string(i.second.Values.size()-1)+"];";
+      }
+
+      //strm<<"  +  "<<i.first<<"  \t\t"<<i.second.Values[0]<<"\t const="<<i.second.Const<<endl;
+      // 'ordered' or not? (alpha_s has for instance only 'one' value)
+      // if ( zwo==0 && i.second.Values.size() == 1 )
+      //    printf("  +  %-50s  %-7s  %s\n",
+      // 	   name.c_str(), cnst.c_str(),vals.c_str());
+      // else if (zwo==1 && i.second.Values.size() > 1)
+      //    printf("  +  %-50s  %-7s  %s\n",
+      // 	   name.c_str(), cnst.c_str(),vals.c_str());
+      //}
+      char buf[1000];
+      sprintf(buf,"  +  %-55s  %-7s  %s\n",
+            name.c_str(), cnst.c_str(),vals.c_str());
+      strm<<buf;
+}
+strm<<"  +"<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<ten<<endl;
+strm<<endl;
 }
 
 
@@ -432,24 +432,24 @@ void TheoryHandler::SaveCurrentTheorySet(const string& outname, ATheorySet* setp
       //ofstream file((outputdirectory+GetTaskName()+"_"+dataChildren[iChild]->GetAlposName()+".txt").c_str());
       ofstream file(outputfile.c_str());
       for ( const auto& i : setptr->GetSet() ) {
-	 string name = i.first;
-	 // string alias = TheoryHandler::Handler()->GetParameter(name)->GetAlposName();
-	 // if ( alias == name ) 
-	 //    alias = "";
-	 // else {
-	 //    alias = "--> "+alias;
-	 //    name += "  "+alias;
-	 // }
-	 // string cnst = i.second.Const ? "(const)" : "";
-	 // if ( i.second.Const ) name += "  (const)";
-	 
-	 char buf [55];
-	 sprintf(buf,"%-60s",
-		 name.c_str(), "");
-	 
-	 file << buf;
-	 for ( auto val : i.second.Values ) file<<"\t"<<val;
-	 file<<endl;
+         string name = i.first;
+         // string alias = TheoryHandler::Handler()->GetParameter(name)->GetAlposName();
+         // if ( alias == name ) 
+         //    alias = "";
+         // else {
+         //    alias = "--> "+alias;
+         //    name += "  "+alias;
+         // }
+         // string cnst = i.second.Const ? "(const)" : "";
+         // if ( i.second.Const ) name += "  (const)";
+
+         char buf [55];
+         sprintf(buf,"%-60s",
+               name.c_str(), "");
+
+         file << buf;
+         for ( auto val : i.second.Values ) file<<"\t"<<val;
+         file<<endl;
       }
    }
 
@@ -459,8 +459,8 @@ void TheoryHandler::SaveCurrentTheorySet(const string& outname, ATheorySet* setp
       TDirectory* outtdir   = rootfile->mkdir(outname.c_str());
       info["SaveCurrentTheorySet"]<<"Writing Theory set to TDirectory "<<outtdir->GetName()<<" in root file :"<< rootfile->GetName() <<endl;
       outtdir->cd();
-      
-   
+
+
       // reset
       rootfile->cd();
    }
@@ -505,7 +505,7 @@ bool TheoryHandler::CheckFunction(AFuncD* func) {
 
    return true;
 }
- 
+
 
 //____________________________________________________________________________________ //
 set<string> TheoryHandler::GetRequirements(const string& functype) {
@@ -517,7 +517,7 @@ set<string> TheoryHandler::GetRequirements(const string& functype) {
    set<string> keys = read_steer::Steering()->GetAvailableLabels(); // look up in default NS
    debug["GetRequirements"]<<"functype: "<<functype<<endl;
    debug["GetRequirements"]<<"keys.size(): "<<keys.size()<<endl;
-      
+
    set<string> ret;
    string prefix = functype + ".";
    for ( const auto& lbl : keys ) {
@@ -528,9 +528,9 @@ set<string> TheoryHandler::GetRequirements(const string& functype) {
       // }
       debug["GetRequirements"]<<"Checking lbl: "<<lbl<<" for prefix: "<<prefix<<endl;
       if(lbl.substr(0, prefix.size()) == prefix) {
-	 std::string pname = lbl.substr(prefix.size());
-	 debug["GetRequirements"]<<"Found requriement "<<pname <<" for functype: "<<functype<<endl;
-     	 ret.insert(pname);
+         std::string pname = lbl.substr(prefix.size());
+         debug["GetRequirements"]<<"Found requriement "<<pname <<" for functype: "<<functype<<endl;
+         ret.insert(pname);
       }
    }
 
@@ -566,35 +566,35 @@ bool TheoryHandler::NewAlias(const std::string& alias,const std::string& aliasfo
    fParms[alias] = fParms[aliasfor];
    return true;
 }
- 
+
 
 /*
 //____________________________________________________________________________________ //
 set<string> TheoryHandler::GetListOfAllParm() const {
-   //! get a set of all (future) existing parameter names 
-   //!  These are:
-   //!   1)  All primitive values from steering
-   //!   2)  All function names
-   //!   3)  All default function parameters (like: CRunDec.AlphasMz)
-   //!   4)  All function instance parameters (like: As1.AlphasMz, PDF1.Filename)
-   
-   // 1) All primitive values from steering
-   set<string> ret = read_steer::Steering()->GetAvailableLabels();
-   
-   // 2) All function names
-   vector<vector<string> > fcn = read_steer::getstringtable("InitFunctions");
-   for ( const auto& line : fcn ) 
-      ret.insert(line[0]);
+//! get a set of all (future) existing parameter names 
+//!  These are:
+//!   1)  All primitive values from steering
+//!   2)  All function names
+//!   3)  All default function parameters (like: CRunDec.AlphasMz)
+//!   4)  All function instance parameters (like: As1.AlphasMz, PDF1.Filename)
 
-   // 3) All default function parameters (like: CRunDec.AlphasMz)
-   // for ( const auto& line : fcn ) 
-   //    line[1]
-   // 	 hier
+// 1) All primitive values from steering
+set<string> ret = read_steer::Steering()->GetAvailableLabels();
 
-   // 4) All function instance parameters (like: As1.AlphasMz, PDF1.Filename)
+// 2) All function names
+vector<vector<string> > fcn = read_steer::getstringtable("InitFunctions");
+for ( const auto& line : fcn ) 
+ret.insert(line[0]);
 
-   // return;
-   return ret;
+// 3) All default function parameters (like: CRunDec.AlphasMz)
+// for ( const auto& line : fcn ) 
+//    line[1]
+// 	 hier
+
+// 4) All function instance parameters (like: As1.AlphasMz, PDF1.Filename)
+
+// return;
+return ret;
 }
 */
 
@@ -633,20 +633,20 @@ AParmNamed* TheoryHandler::GetParameter(const std::string& name) {
       string rname = FindParameter(name); 
       //cout<<"rname = "<<rname<<"\t (looking for: "<<name<<")"<<endl;
       if ( rname != "" ) {
-	 return fParms.find(rname)->second;  
+         return fParms.find(rname)->second;  
       }
       else { 
-	 error["GetParameter"]<<"Parameter '"<<name<<"' does not exist. Exiting"<<std::endl;
-	 exit(1);// it turned out that in most cases it is not reasonable to continue the program.
-	 // 
-	 new AParmNamed(name);
-	 error["GetParameter"]<<"Adding new AParmNamed with name: "<<name<<std::endl;
-	 error["GetParameter"]<<"It will not be possible to call 'GetValue()' or 'SetValue()' on this parameter."<<std::endl;
-	 return fParms[name];
-	 // GetParameter(name)->SetIsOutdated();
+         error["GetParameter"]<<"Parameter '"<<name<<"' does not exist. Exiting"<<std::endl;
+         exit(1);// it turned out that in most cases it is not reasonable to continue the program.
+         // 
+         new AParmNamed(name);
+         error["GetParameter"]<<"Adding new AParmNamed with name: "<<name<<std::endl;
+         error["GetParameter"]<<"It will not be possible to call 'GetValue()' or 'SetValue()' on this parameter."<<std::endl;
+         return fParms[name];
+         // GetParameter(name)->SetIsOutdated();
       }
    }
-   
+
    // if (CheckParameter(name)) {
    //    //std::cout<<"TH:GetParameter() returning fparms["<<name<<"]"<<std::endl;
    //    return fParms.find(name)->second;//[name];
@@ -684,23 +684,23 @@ string TheoryHandler::FindParameter(const std::string& name) const {
    debug["FindParameter"]<<"("<<name<<")"<<endl;
    if ( toks.size()==1 ) { // nothing todo
       if (CheckParameter(name) ) 
-	 return fParms.find(name)->second->GetAlposName();
+         return fParms.find(name)->second->GetAlposName();
       else return "";
    }
    else if (toks.size() == 2 ) {
       string temp = toks[0]+"."+toks[1];
       if (CheckParameter(temp) ) 
-	 return fParms.find(name)->second->GetAlposName();
+         return fParms.find(name)->second->GetAlposName();
       else {
-	 warn["FindParameter"]<<"No parameter with name '"<<temp<<"' was found when looking for '"<<name<<"'."<<endl;
-	 if ( fParms.find(toks[0]) != fParms.end() ) {
-	    string baseFunction = TheoryHandler::Handler()->GetFuncD(toks[0])->GetFunctionName();
-	    warn["FindParameter"]<<"    Most likely '"<<toks[1]<<"' is not a 'member' of function '"<<baseFunction<<"'."<<endl;
-	 }
-	 else {
-	    warn["FindParameter"]<<"    No parameter "<<toks[0]<<" found at all."<<endl;
-	 }
-	 return "";
+         warn["FindParameter"]<<"No parameter with name '"<<temp<<"' was found when looking for '"<<name<<"'."<<endl;
+         if ( fParms.find(toks[0]) != fParms.end() ) {
+            string baseFunction = TheoryHandler::Handler()->GetFuncD(toks[0])->GetFunctionName();
+            warn["FindParameter"]<<"    Most likely '"<<toks[1]<<"' is not a 'member' of function '"<<baseFunction<<"'."<<endl;
+         }
+         else {
+            warn["FindParameter"]<<"    No parameter "<<toks[0]<<" found at all."<<endl;
+         }
+         return "";
       }
    }
    else { // recursively
@@ -709,12 +709,12 @@ string TheoryHandler::FindParameter(const std::string& name) const {
       //cout<<" ** Recursively. temp="<<temp<<", klar="<<klar<<endl;
       if ( klar=="" ) return ""; // nothing found
       if ( klar==temp) {
-       	 warn["FindParameter"]<<"Parameter not defined or you are looking for an ill-defined name (name="<<name<<"). '"<<temp<<"' may probably be a parameter but not a function."<<endl;
-	 return "";
+         warn["FindParameter"]<<"Parameter not defined or you are looking for an ill-defined name (name="<<name<<"). '"<<temp<<"' may probably be a parameter but not a function."<<endl;
+         return "";
       }
       if ( strstr(klar.c_str(), ".") != NULL ) {
-	 info["FindParameter"]<<"Parameter may not be further resolvable (name="<<name<<"). Found: '"<<temp<<" -> "<<klar<<"', which may probably be a parameter but not a function."<<endl;
-	 //return "";
+         info["FindParameter"]<<"Parameter may not be further resolvable (name="<<name<<"). Found: '"<<temp<<" -> "<<klar<<"', which may probably be a parameter but not a function."<<endl;
+         //return "";
       }
       klar = fParms.find(klar)->second->GetAlposName()+"."+toks[2];
       return FindParameter(klar);
@@ -772,7 +772,7 @@ const std::string& TheoryHandler::GetParmSError(const std::string& name){
 // bool AParmFuncBase<T>::CheckUpdateRequested(const std::string& aname) const{
 //    //! check whether this particluar parameter has changed
 //    //! returns 'true' if updated is needed!
-   
+
 //    const set<AParmNamed*> nots = GetNotifiers();
 //    string lname = GetAlposName() + "." + aname;
 //    cout<<"TH::CheckUpdate: seeking:" <<aname<<", which is "<<lname<<"\t todo: not yet done."<<endl;

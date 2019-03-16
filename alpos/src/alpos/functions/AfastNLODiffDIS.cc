@@ -10,13 +10,13 @@ using namespace std;
 
 // __________________________________________________________________________________________ //
 const std::vector<std::string> AfastNLODiffDIS::fRequirements = {//"Filename",                      // fastNLO table filenmae
-                                                          "DPDF",                           // a 'PDF' function with Quick-function. Moslty LHAPDF6
-                                                          "Alpha_s",                       // a alpha_s(mu_r) function.
-                                                          "ScaleFacMuR","ScaleFacMuF",     // Scale factors for ren. and fact. scale
-                                                          // "Units",                         // publication or absolute units (to obtain same units as your data table)
-                                                          "iOrd",                          // order
-							  "MuRFuncForm","MuFFuncForm",      // mu_r and mu_f functional form for fastNLO flexible scale tables
-							  "xpom_min","xpom_max","nxpom","logxpom" // xpom slicing
+   "DPDF",                           // a 'PDF' function with Quick-function. Moslty LHAPDF6
+   "Alpha_s",                       // a alpha_s(mu_r) function.
+   "ScaleFacMuR","ScaleFacMuF",     // Scale factors for ren. and fact. scale
+   // "Units",                         // publication or absolute units (to obtain same units as your data table)
+   "iOrd",                          // order
+   "MuRFuncForm","MuFFuncForm",      // mu_r and mu_f functional form for fastNLO flexible scale tables
+   "xpom_min","xpom_max","nxpom","logxpom" // xpom slicing
 }; //< List of all AParm's which this function depends on
 const std::vector<std::string> AfastNLODiffDIS::fStopFurtherNotification = {}; //< List of Parm's which have changed, but this function does not notify further dependencies
 const std::string AfastNLODiffDIS::fFunctionName = "fastNLODiffDIS"; //< The function's name
@@ -79,16 +79,16 @@ bool AfastNLODiffDIS::Init() {
       f->SetUnits(static_cast<fastNLO::EUnits>(Units));
       //fnloreaders[i]->SetXPomLinSlicing( INT(NumberOfXPomSlices), 0. ,  .03 ); //12.  
       if ( PAR(logxpom) == 0 ) 
-	 f->SetXPomLinSlicing( PAR(nxpom),PAR(xpom_min),PAR(xpom_max) ); //12.  
+         f->SetXPomLinSlicing( PAR(nxpom),PAR(xpom_min),PAR(xpom_max) ); //12.  
       else
-	 f->SetXPomLogSlicing( PAR(nxpom),PAR(xpom_min),PAR(xpom_max) ); //12.  
+         f->SetXPomLogSlicing( PAR(nxpom),PAR(xpom_min),PAR(xpom_max) ); //12.  
       //int FitID = BOOL(DoFitB) ? 2 : 1;
       //f->SetFitID(2);
       if (f->GetIsFlexibleScaleTable()) {
          // f->SetMuRFunctionalForm(static_cast<fastNLO::EScaleFunctionalForm>(DOUBLE_NS(MuRFuncForm, GetAlposName())));
          // f->SetMuFFunctionalForm(static_cast<fastNLO::EScaleFunctionalForm>(DOUBLE_NS(MuFFuncForm, GetAlposName())));
-	 f->SetMuRFunctionalForm(static_cast<fastNLO::EScaleFunctionalForm>(PAR(MuRFuncForm)));
-	 f->SetMuFFunctionalForm(static_cast<fastNLO::EScaleFunctionalForm>(PAR(MuFFuncForm)));
+         f->SetMuRFunctionalForm(static_cast<fastNLO::EScaleFunctionalForm>(PAR(MuRFuncForm)));
+         f->SetMuFFunctionalForm(static_cast<fastNLO::EScaleFunctionalForm>(PAR(MuFFuncForm)));
       }
    }
 
@@ -111,8 +111,8 @@ bool AfastNLODiffDIS::Init() {
    //fnlo->SetFilename(PAR_S(Filename)); // filename should not be changed
    fnlo->SetUnits(static_cast<fastNLO::EUnits>(PAR(Units)));
    if (fnlo->GetIsFlexibleScaleTable()) {
-      fnlo->SetMuRFunctionalForm(static_cast<fastNLO::EScaleFunctionalForm>(PAR(MuRFuncForm)));
-      fnlo->SetMuFFunctionalForm(static_cast<fastNLO::EScaleFunctionalForm>(PAR(MuFFuncForm)));
+   fnlo->SetMuRFunctionalForm(static_cast<fastNLO::EScaleFunctionalForm>(PAR(MuRFuncForm)));
+   fnlo->SetMuFFunctionalForm(static_cast<fastNLO::EScaleFunctionalForm>(PAR(MuFFuncForm)));
    }
    CONST(MuRFuncForm);
    CONST(MuFFuncForm);
@@ -178,7 +178,7 @@ bool AfastNLODiffDIS::Update() {
 void AfastNLODiffDIS::SetOrder() {
    //! Set correct order of fastNLO calculation
    for ( auto fnlo : fnlos ) {
-   // if ( CHECK(iOrd) ) {
+      // if ( CHECK(iOrd) ) {
       //! Check on existence of various pQCD contributions in table (Id = -1 if not existing)
       //! Check on existence of LO (Id = -1 if not existing)
       int ilo  = fnlo->ContrId(fastNLO::kFixedOrder, fastNLO::kLeading);
@@ -231,7 +231,7 @@ void AfastNLODiffDIS::SetOrder() {
             //exit(1);
          }
       }
-//      }
-//   }
-   }
+      //      }
+      //   }
+}
 }
