@@ -28,7 +28,7 @@ Inspire                         944155
 #TheoryFunction: 'fastNLO'
 Filenames {
 ##fnhd5200v23_2G_Nodes.40.6.4_mu2PtAvg_dQ2dPt1.tab
-theoryfiles/h1Diff/nnlojet/FPS/nnlo/H1-LQall-8.diff_FPS_y.newver.tab
+theoryfiles/h1Diff/nnlojet/FPS/nnlo/H1-LQall-8.diff_FPS_ptj1.newver.tab
 }
 Units               0      # 0: absoluteUnits, 1: PublicationUnits
 #MuRFuncForm         3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
@@ -51,19 +51,16 @@ xpom_max           0.10
 ##########################################################
 
 Data {{
-logxpom_min logxpom_max Sigma   tot   stat    sys   dEe   dThE  dEp    dPx    dPy   dEta2   dxp   dEhad  dBeta   dQ2   dPt   Hadr    dHadr InvBinSize
--2.3         -1.9      32     57.0     49.5   28.2   5.9   3.3   24.0   6.2    13.3   -5.9      1.7    -18.9      0.9     -0.7    0.4   0.96    0.06   2.5    
--1.9         -1.6      93     20.2     17.6   10.0   1.3   -1.1  -8.4  -6.0    -0.6   -5.4     -0.6      5.0      0.4      0.7    2.0   0.91    0.01   3.33333
--1.6         -1.4      200     15.9    12.8   9.5    1.1   -1.9  -3.8   6.0    -1.2    0.4      0.1      5.5     -0.4      0.2    1.8   0.89    0.03   5
--1.4         -1.2      344     13.9    11.0   8.6    0.4   -1.7  -4.3  -4.9    -2.5    4.4     -0.7      4.2     -0.2      0.2    1.9   0.87    0.05   5
--1.2         -1.0      488     18.8    16.5   9.0   -0.3   -2.1  -5.6  -4.4    -0.8    5.8     -1.7      3.8      0.7      0.1    2.6   0.87    0.06   5     
+ptjet1_min ptjet1_max Sigma  tot   stat   sys    dEe  dThE    dEp   dPx  dPy  dEta2   dxp  dEhad  dBeta  dQ2   dPt     Hadr   dHadr InvBinSize
+5.0          6.5      91    17.6   15.3    8.6   1.7  -3.2    0.2  -5.4  2.4   -6.8   2.1   -2.2    3.5  -0.5   2.2     0.81    0.04 0.666667
+6.5          8.5      44    17.0   13.2   10.8  -0.7   0.6   -0.3   6.6  3.2    9.6   1.6    7.3    2.1   0.2   0.7     0.96    0.05 0.5
+8.5         12.0     7.3    39.1   33.0   20.9   3.2  -5.8   -2.0   1.7  4.0   13.9   2.4   19.4   -0.5   0.1   0.5     0.99    0.04 0.285714
 #>>/afs/desy.de/user/b/britzger/xxl/alpos/svn-neu/Alpos/Alpos/datafiles/h1/1412.0928/DiffDijetQ2Pt1_DijetQ2Pt_unfolding_final_ModErrBreakdown_141020.txt:1:
 }}
 
 
-
 Subsets {
-    logxpom_min 
+    ptjet1_min 
 }
 
 Cuts { }
@@ -101,9 +98,7 @@ stat_Matrix_Type         "Correlation" # 'Covariance', 'Correlation' or 'Correla
 
 stat_Matrix {{
   # one empty line here !
-1  -0.24  0.179  0.161  0.056 
--0.24  1  0.136  -0.027  -0.047 
-0.179  0.136  1  0.579  0.334 
-0.161  -0.027  0.579  1  0.709 
-0.056  -0.047  0.334  0.709  1
+1  0.402  0.18 
+0.402  1  0.395 
+0.18  0.395  1
 }}   

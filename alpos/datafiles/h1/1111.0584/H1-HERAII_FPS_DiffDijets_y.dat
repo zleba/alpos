@@ -28,7 +28,7 @@ Inspire                         944155
 #TheoryFunction: 'fastNLO'
 Filenames {
 ##fnhd5200v23_2G_Nodes.40.6.4_mu2PtAvg_dQ2dPt1.tab
-theoryfiles/h1Diff/nnlojet/LRG/nnlo/H1-LQall-8.diff_LRG_q2.newver.tab
+theoryfiles/h1Diff/nnlojet/FPS/nnlo/H1-LQall-8.diff_FPS_y.newver.tab
 }
 Units               0      # 0: absoluteUnits, 1: PublicationUnits
 #MuRFuncForm         3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
@@ -101,9 +101,9 @@ stat_Matrix_Type         "Correlation" # 'Covariance', 'Correlation' or 'Correla
 
 stat_Matrix {{
   # one empty line here !
-    0.506      0.427     0.366     0.224
-    0.557      0.579     0.449      0   
-    0.439      0.335      0        0    
-    0.366       0        0        0     
-      0        0        0        0      
+1  0.506  0.427  0.366  0.224 
+0.506  1  0.557  0.579  0.449 
+0.427  0.557  1  0.439  0.335 
+0.366  0.579  0.439  1  0.366 
+0.224  0.449  0.335  0.366  1
 }}   
