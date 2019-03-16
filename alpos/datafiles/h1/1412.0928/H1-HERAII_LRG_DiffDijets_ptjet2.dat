@@ -86,7 +86,7 @@ dxDijet "dxDijet"                   EYM1     M
 dPhi    "dPhi"                      EYM1     M
 dt      "dt"                        EYM1     M
 dbgr    "dbgr"                      EYM1     M
-dHadr     "had.err"             TYM0.5         M   # Had. corr.
+dHadr     "dHadr"             TYM0.5         M   # Had. corr.
 }}
 
 
