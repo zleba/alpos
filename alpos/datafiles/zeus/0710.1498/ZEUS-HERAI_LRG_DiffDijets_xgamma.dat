@@ -1,0 +1,88 @@
+#! -*-sh-*-
+#
+# The data are taken from: paper after reading
+# double-differential 'absolute' inclusive jet cross sections in bins of Q2 and pt  (Q2_min,Q2_max,Pt_min,Pt_max)
+#
+# phase space is given in the H1 preliminary reports: H1prelim-12-031 and  H1prelim-11-032 
+# normalized cross section are given without units.
+# all errors given in %
+#
+# File adapted from HERAFitter
+#
+
+##########################################################
+#  General parameters of this dataset
+##########################################################
+AlposName           "bla-33"  # A unique alpos name
+Description         "ZEUS LRG diffractive dijets HERA-I"
+Reference           "Eur.Phys.J. C55 (2008) 177-191 [arxiv:0710.1498]"
+arXiv                           0710.1498
+Inspire                         763404
+
+##########################################################
+#  fastNLO parameters, specific to this dataset
+#  not specified parameters are taken from default as
+#  specified in the global steering file
+##########################################################
+#
+#TheoryFunction: 'fastNLO'
+Filenames {
+##fnhd5200v23_2G_Nodes.40.6.4_mu2PtAvg_dQ2dPt1.tab
+ theoryfiles/h1Diff/nnlojet/LRGZEUS/nnlo/H1-LQall-8.diff_LRGZEUS137_q2.newver.tab
+}
+Units               0      # 0: absoluteUnits, 1: PublicationUnits
+#MuRFuncForm         3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+#MuFFuncForm         3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+xpom_min           0.0001 #000001
+xpom_max           0.025
+
+##########################################################
+#  Data table 
+#  
+#  Necessary keys are:
+#   + ErrorSet           (Specifies the 'set' of error, which may correlated to other data sets)
+#   + Data       (the data table, bin boundaries, and errors)
+#   + Errors         (specify the used errors, and its nature)
+#   + ... irgendwas fuer 'interne' correlation  ...
+#   + ... irgendwas fuer  externe  korrlationen ...
+#   + TheoryFactors     (multiplicative factors to be applied on theory) 
+#   + TheoryErrors   (additional errors on the theory [as sepcified in 'Data'])
+# 
+##########################################################
+
+Data {{
+xgamma_min xgamma_max   Sigma   stat   sysUp   sysDn    dESUp    dESDn    dEtaMax          Hadr              InvBinSize
+   0          0.25       5.3    0.6     +0.8    -0.5     +0.6    -0.2       0.7      1.19957064859085          4
+   0.25       0.5       25.0    1.3     +2.8    -1.5     +1.5    -2.2       2.6      1.0467080241381           4
+   0.5        0.75      87.4    3.1     +4.5    -5.7     +7.8    -8.2       3.5      1.66771243597741          4
+   0.75        1       240.5    6.7    +11.0   -17.2    +12.4   -11.7       5.9      0.92250714177024          4
+#>>/afs/desy.de/user/b/britzger/xxl/alpos/svn-neu/Alpos/Alpos/datafiles/h1/1412.0928/DiffDijetQ2Pt1_DijetQ2Pt_unfolding_final_ModErrBreakdown_141020.txt:1:
+}}
+
+
+Subsets {
+    xgamma_min 
+}
+
+Cuts { }
+
+
+ErrorSet        "ZEUSHera-I"   # errors are labelled as "<ErrorSet>_<Name>", and are correlated with other of the same name of other datasets 
+ErrorUnit         Percent     # Are errors given as: "Absolute", "Relative", "Percent"
+
+Errors {{
+ErrorName      Column        Correlation     Nature
+stat     "stat"               ESM0           P
+sys       sysUp:sysDn         EYM1           M
+dES       dESUp:dESDn         EYM1           M
+Lumi           2.25           EYM1           M
+Diss           4.0            EYM1           M
+#dEtaMax    dEtaMax           EYM1           M
+}}
+
+
+TheoryFactors { # a list 
+ "Hadr" InvBinSize
+}
+
+
