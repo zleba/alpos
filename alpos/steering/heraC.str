@@ -39,12 +39,36 @@ DataTheorySets {{
 #  H1incDDIS-HERA-I-SpacMB         datafiles/h1/0606004/h1_ddis_heraI-SpaC-97MB.dat   ApfelDDISCS    Q2>=8.4   beta<=0.81   mx>=2
 #  H1incDDIS-HERA-I-SpacTrg        datafiles/h1/0606004/h1_ddis_heraI-SpaC-97all.dat  ApfelDDISCS    Q2>=8.4   beta<=0.81   mx>=2
 
-#  H1-LRG-DiffDijets                datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets.dat         fastNLODiffDIS              # ptmin>=11 
+   H1-LRG-DiffDijets                datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets.dat         fastNLODiffDIS               Pt_min>=31 
+# H1jets-LRG-q2                  datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_q2.dat            fastNLODiffDIS                  
 
 #  H1incDDIS-HERA-I-A            datafiles/h1/0606004/h1_ddis_heraI.dat          ApfelxxDDISCS   # Q2>=8.4   beta<=0.81   mx>=2
  H1incDDIS-Comb                 datafiles/h1/1203.4495/h1_ddis_Comb.dat         ApfelDDISCS   Q2>=8.4   beta<=0.81   mx>=2
  H1incDDIS-LowE225              datafiles/h1/1107.3420/h1_ddis_lowE_225.dat     ApfelDDISCS   Q2>=8.4   beta<=0.81   mx>=2
  H1incDDIS-LowE252              datafiles/h1/1107.3420/h1_ddis_lowE_252.dat     ApfelDDISCS   Q2>=8.4   beta<=0.81   mx>=2
+
+
+
+#H1jets-LRG-detaetaStar         datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_deltaetaStar.dat  fastNLODiffDIS                  
+#H1jets-LRG-y                   datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_y.dat             fastNLODiffDIS                  
+#H1jets-LRG-ptjet1              datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_ptjet1.dat        fastNLODiffDIS                  
+#H1jets-LRG-ptjet2              datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_ptjet2.dat        fastNLODiffDIS                  
+#H1jets-LRG-ptavg               datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_ptavg.dat         fastNLODiffDIS                  
+#H1jets-LRG-q2                  datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_q2.dat            fastNLODiffDIS                  
+
+
+# H1jets-FPS-detaetaStar         datafiles/h1/1111.0584/H1-HERAII_FPS_DiffDijets_deltaetaStar.dat  fastNLODiffDIS  
+# H1jets-FPS-y                   datafiles/h1/1111.0584/H1-HERAII_FPS_DiffDijets_y.dat             fastNLODiffDIS  
+# H1jets-FPS-ptjet1              datafiles/h1/1111.0584/H1-HERAII_FPS_DiffDijets_ptjet1.dat        fastNLODiffDIS  
+# H1jets-FPS-q2                  datafiles/h1/1111.0584/H1-HERAII_FPS_DiffDijets_q2.dat            fastNLODiffDIS  
+
+ H1jets-VFPS-detaeta             datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_deltaeta.dat   fastNLODiffDIS  
+ H1jets-VFPS-meaneta             datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_meaneta.dat    fastNLODiffDIS  
+ H1jets-VFPS-ptjet1              datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_ptjet1.dat     fastNLODiffDIS  
+ H1jets-VFPS-q2                  datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_q2.dat         fastNLODiffDIS  
+ H1jets-VFPS-y                   datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_y.dat          fastNLODiffDIS  
+
+
 
 # H1FPS-3D            datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS.dat              ApfelDDISCS   Q2>=8.4   beta<=0.81  mx>=2  xp<0.05
 # H1FPS-4D            datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS-4D.dat           ApfelDDISCS   Q2>=8.4   beta<=0.81  mx>=2  xp<0.05
@@ -77,7 +101,7 @@ Tasks {{
 #  Alpos global settings
 # --------------------------------------------------------------#
 ErrorSymmetrization             SignImprovedQuadratic
-Output                          steering.str0_dir/out.root             # commonoutput file for outputs of all tasks
+Output                          steering.str1_ABCDE/out.root             # commonoutput file for outputs of all tasks
 GlobalVerbosity                 Info # Debug, Warning, Error
 InitSubsets                     false  # Init subsets of datasets
 IgnoreTheoryErrors              false                            # Ignore all theory errors when calculating chi2 value
@@ -109,8 +133,8 @@ MyFit {{{
        PDFQ0_diff.g0  
        PDFQ0_diff.g1  
        PDFQ0_diff.g2
-       PDFQ0_diff.g3
-       PDFQ0_diff.g4
+#      PDFQ0_diff.g3
+#      PDFQ0_diff.g4
        PDFQ0_diff.s0  
        PDFQ0_diff.s1  
        PDFQ0_diff.s2  
@@ -137,7 +161,7 @@ SavePDFTGraphPom {{{
    PDF                  ApfelPDF  # LHAPDF6 
    nx                   100
    xmin                 0.004
-   Q2Values             { 1.75, 2.5, 8.5, 20, 90, 800 }
+   Q2Values             { 1.75 }
    LHAPDFoutput         lhaTest_pom
    Alphas               ApfelAs
    PDFQ0_diff           PDFQ0_diff
@@ -376,8 +400,8 @@ PDFQ0_diff.vTF1               "x*0"
 PDFQ0_diff.g0                 0.8   # 0.14591
 PDFQ0_diff.g1                 1.5   # 0
 PDFQ0_diff.g2                -2     # -0.94705
-PDFQ0_diff.g3                 1.    # 0
-PDFQ0_diff.g4                 0.5   # 0
+PDFQ0_diff.g3                 0.    # 0
+PDFQ0_diff.g4                 0.0   # 0
 			      
 PDFQ0_diff.s0                 1.0587
 PDFQ0_diff.s1                 2.2964
