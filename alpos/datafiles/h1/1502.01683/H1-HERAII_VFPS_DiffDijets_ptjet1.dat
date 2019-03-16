@@ -1,0 +1,107 @@
+#! -*-sh-*-
+#
+# The data are taken from: paper after reading
+# double-differential 'absolute' inclusive jet cross sections in bins of Q2 and pt  (Q2_min,Q2_max,Pt_min,Pt_max)
+#
+# phase space is given in the H1 preliminary reports: H1prelim-12-031 and  H1prelim-11-032 
+# normalized cross section are given without units.
+# all errors given in %
+#
+# File adapted from HERAFitter
+#
+
+##########################################################
+#  General parameters of this dataset
+##########################################################
+AlposName           "bla-33"  # A unique alpos name
+Description         "H1 VFPS diffractive dijets HERA-II"
+Reference           "JHEP 1505 (2015) 056 [arxiv:1502.01683]"
+arXiv                           1502.01683
+Inspire                         1343110
+
+##########################################################
+#  fastNLO parameters, specific to this dataset
+#  not specified parameters are taken from default as
+#  specified in the global steering file
+##########################################################
+#
+#TheoryFunction: 'fastNLO'
+Filenames {
+##fnhd5200v23_2G_Nodes.40.6.4_mu2PtAvg_dQ2dPt1.tab
+theoryfiles/h1Diff/nnlojet/VFPS/nnlo/H1-LQall-8.diff_VFPS_ptj1.newver.tab
+}
+Units               0      # 0: absoluteUnits, 1: PublicationUnits
+#MuRFuncForm         3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+#MuFFuncForm         3      # 0: scale1, 1: scale2, 2: quad.sum, 3: quad.mean
+xpom_min           0.010 #000001
+xpom_max           0.024
+
+##########################################################
+#  Data table 
+#  
+#  Necessary keys are:
+#   + ErrorSet           (Specifies the 'set' of error, which may correlated to other data sets)
+#   + Data       (the data table, bin boundaries, and errors)
+#   + Errors         (specify the used errors, and its nature)
+#   + ... irgendwas fuer 'interne' correlation  ...
+#   + ... irgendwas fuer  externe  korrlationen ...
+#   + TheoryFactors     (multiplicative factors to be applied on theory) 
+#   + TheoryErrors   (additional errors on the theory [as sepcified in 'Data'])
+# 
+##########################################################
+
+Data {{
+ptjet1_min ptjet1_max   Sigma   stat      sys      Hadr     rad     InvBinSize
+   5.5       7          11.24     8.3    11.9     1.006    0.999     0.666667
+   7        8.5          5.66    16.4    12.6     1.034    0.986     0.666667
+   8.5       10          2.55    36.0    29.8     1.112    1.050     0.666667
+   10       14.5         0.485   45.2    15.0     0.976    0.961     0.222222
+#>>/afs/desy.de/user/b/britzger/xxl/alpos/svn-neu/Alpos/Alpos/datafiles/h1/1412.0928/DiffDijetQ2Pt1_DijetQ2Pt_unfolding_final_ModErrBreakdown_141020.txt:1:
+}}
+
+Subsets {
+    ptjet1_min 
+}
+
+Cuts { }
+
+
+ErrorSet        "H1Hera-II"   # errors are labelled as "<ErrorSet>_<Name>", and are correlated with other of the same name of other datasets 
+ErrorUnit         Percent     # Are errors given as: "Absolute", "Relative", "Percent"
+
+Errors {{
+ErrorName      Column           Correlation     Nature
+stat     "stat"                     ESMC          P
+sys      "sys"                      ESMC          M
+}}
+
+
+TheoryFactors { # a list 
+ "Hadr" InvBinSize
+}
+
+
+
+stat_Matrix_Format           "Matrix" # "Matrix" or "SingleValues" or specify single value only
+stat_Matrix_Type         "CorrelationPercent" # 'Covariance', 'Correlation' or 'CorrelationPercent'
+
+sys_Matrix_Format           "Matrix" # "Matrix" or "SingleValues" or specify single value only
+sys_Matrix_Type         "CorrelationPercent" # 'Covariance', 'Correlation' or 'CorrelationPercent'
+
+stat_Matrix {{
+  # one empty line here !
+   100  -4  -22  10 
+   -4  100  -21  -14 
+   -22  -21  100  -39 
+   10  -14  -39  100 
+}}   
+
+
+sys_Matrix {{
+  # one empty line here !
+   100  -25  -70  -30 
+   -25  100  80  38 
+   -70  80  100  42 
+   -30  38  42  100 
+}}   
+
