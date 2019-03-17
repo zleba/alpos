@@ -65,8 +65,9 @@ Subsets {
 
 Cuts { }
 
+TheoryFactors { 0.83333 }
 
-ErrorSet        "H1Hera-II"   # errors are labelled as "<ErrorSet>_<Name>", and are correlated with other of the same name of other datasets 
+ErrorSet        "H1Hera-II-VFPS"   # errors are labelled as "<ErrorSet>_<Name>", and are correlated with other of the same name of other datasets 
 ErrorUnit         Percent     # Are errors given as: "Absolute", "Relative", "Percent"
 
 Errors {{
@@ -77,7 +78,7 @@ sys      "sys"                      ESMC          M
 
 
 TheoryFactors { # a list 
- "Hadr" InvBinSize
+ 0.83333 "Hadr" InvBinSize
 }
 
 

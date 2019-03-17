@@ -67,8 +67,7 @@ Subsets {
 
 Cuts { }
 
-
-ErrorSet        "H1Hera-II"   # errors are labelled as "<ErrorSet>_<Name>", and are correlated with other of the same name of other datasets 
+ErrorSet        "H1Hera-II-FPS"   # errors are labelled as "<ErrorSet>_<Name>", and are correlated with other of the same name of other datasets 
 ErrorUnit         Percent     # Are errors given as: "Absolute", "Relative", "Percent"
 
 Errors {{
@@ -90,7 +89,7 @@ dHadr     "dHadr"             TYM0.5         M   # Had. corr.
 
 
 TheoryFactors { # a list 
- "Hadr" InvBinSize
+ 0.83333 "Hadr" InvBinSize
 }
 
 
