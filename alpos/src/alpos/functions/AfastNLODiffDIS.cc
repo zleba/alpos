@@ -5,6 +5,11 @@
 #include <iostream>
 #include <alpos/AError.h>
 
+#include <functional>
+#include <numeric>
+#include "TH1D.h"
+#include "TVectorD.h"
+
 using namespace std;
 
 
@@ -21,6 +26,11 @@ const std::vector<std::string> AfastNLODiffDIS::fRequirements = {//"Filename",  
 const std::vector<std::string> AfastNLODiffDIS::fStopFurtherNotification = {}; //< List of Parm's which have changed, but this function does not notify further dependencies
 const std::string AfastNLODiffDIS::fFunctionName = "fastNLODiffDIS"; //< The function's name
 
+
+vector<double> CalculateSpecialVar(fastNLOAlposDPDF  &fnlodiff,
+                                   std::function<double(double,double,double)>  func);//xpom,q2,tableVar
+
+vector<double> CalculateSpecialXpom(fastNLOAlposDPDF  &fnlodiff);
 
 // __________________________________________________________________________________________ //
 AfastNLODiffDIS::AfastNLODiffDIS(const std::string& name) : AParmFuncBase<double>(name) {
@@ -75,6 +85,7 @@ bool AfastNLODiffDIS::Init() {
       //fastNLODiffH12006FitB* f = new fastNLODiffH12006FitB(fn);
       fastNLOAlposDPDF* f = new fastNLOAlposDPDF(fn);
       fnlos.push_back(f);
+      cout << "Radek " << this->GetAlposName() << endl;
       f->SetAlposName(this->GetAlposName());
       f->SetUnits(static_cast<fastNLO::EUnits>(Units));
       //fnloreaders[i]->SetXPomLinSlicing( INT(NumberOfXPomSlices), 0. ,  .03 ); //12.  
@@ -82,6 +93,9 @@ bool AfastNLODiffDIS::Init() {
          f->SetXPomLinSlicing( PAR(nxpom),PAR(xpom_min),PAR(xpom_max) ); //12.  
       else
          f->SetXPomLogSlicing( PAR(nxpom),PAR(xpom_min),PAR(xpom_max) ); //12.  
+      f->SetTIntegratedRange(-1.);
+      f->SetProtonE(920.);
+
       //int FitID = BOOL(DoFitB) ? 2 : 1;
       //f->SetFitID(2);
       if (f->GetIsFlexibleScaleTable()) {
@@ -128,12 +142,41 @@ bool AfastNLODiffDIS::CalcCrossSections() {
 
    using namespace AlposTools;
 
+   const auto MX = [] (double xpom, double Q2, double y) {
+      const double s = 4*27.6*920.;
+      return  sqrt( max(0.0,y * s * xpom - Q2)); };
+
+   const auto ZP = [] (double xpom, double Q2, double xi12) {
+      return xi12/xpom; };
+
+   const auto BETA= [] (double xpom, double Q2, double xBjor) {
+      return xBjor/xpom; };
+
+
    // get cross sections
    fValue.clear();
    for ( auto fnlo : fnlos ) {
       // fnlo->CalcCrossSection();
       // fValue += fnlo->GetCrossSection();
-      fValue += fnlo->GetDiffCrossSection();
+
+      string aname = fnlo->GetAlposName();
+      string fname = fnlo->GetFilename();
+      if(fname.find("xi2zIP") != string::npos) { //isZpom
+         fValue +=  CalculateSpecialVar(*fnlo, ZP);
+      }
+      else if(fname.find("yMx") != string::npos) { //isMx
+         fValue +=  CalculateSpecialVar(*fnlo, MX); 
+      }
+      else if(fname.find("xbjbeta") != string::npos) { //isBeta
+         fValue +=  CalculateSpecialVar(*fnlo, BETA); 
+      }
+      else if(aname.find("xpom") != string::npos) {
+         fValue += CalculateSpecialXpom(*fnlo);
+      }
+
+      else {
+         fValue += fnlo->GetDiffCrossSection();
+      }
    }
    // apply binmap if applicable
    if ( !fBinmap.empty() ) {
@@ -178,7 +221,7 @@ bool AfastNLODiffDIS::Update() {
 void AfastNLODiffDIS::SetOrder() {
    //! Set correct order of fastNLO calculation
    for ( auto fnlo : fnlos ) {
-      // if ( CHECK(iOrd) ) {
+      // if ( CHECK(iOrd) ) 
       //! Check on existence of various pQCD contributions in table (Id = -1 if not existing)
       //! Check on existence of LO (Id = -1 if not existing)
       int ilo  = fnlo->ContrId(fastNLO::kFixedOrder, fastNLO::kLeading);
@@ -231,7 +274,193 @@ void AfastNLODiffDIS::SetOrder() {
             //exit(1);
          }
       }
-      //      }
-      //   }
+      //      
+      //   
+   }
 }
+
+
+TMatrixD CreateInterpolationMatrix(vector<double> &fastBinsLo, vector<double> &fastBinsHi)
+{
+    const int Nb = fastBinsLo.size();
+
+    assert(Nb >2);
+
+    vector<double> wb(Nb);
+    for(int i = 0; i < Nb; ++i)
+        wb[i] = fastBinsHi[i] - fastBinsLo[i];
+
+    TMatrixD mat(Nb,Nb);
+
+    mat(0,0)     = 1;
+    mat(Nb-1,Nb-1) = 1;
+
+    for(int i = 1; i < Nb-1; ++i) {
+        mat(i,i-1) = 1./4 * wb[i] / ( wb[i-1] + wb[i] );
+        mat(i,i+1) = 1./4 * wb[i] / ( wb[i+1] + wb[i] );
+        mat(i,i  ) = 1./4 * ( 2 + wb[i-1] / (wb[i-1]+wb[i]) + wb[i+1] / (wb[i+1]+wb[i]) );
+    }
+
+    return mat.Invert();
+
+}
+
+
+
+
+
+
+vector<double> CalculateSpecialVar(fastNLOAlposDPDF  &fnlodiff,
+                                   std::function<double(double,double,double)>  func) //xpom,q2,tableVar
+{
+
+    //  If you want to receive your cross section in
+    //   pb/GeV or in pb. Here we choose pb/GeV
+    fnlodiff.SetUnits(fastNLO::kPublicationUnits);
+
+
+    //fnlodiff.SetExternalFuncForMuR (&Function_Mu);
+    //fnlodiff.SetExternalFuncForMuF (&Function_Mu);
+
+
+
+    vector<double> fastBinsLo = fnlodiff.GetObsBinsLoBounds(0);
+    vector<double> fastBinsHi = fnlodiff.GetObsBinsUpBounds(0);
+
+
+    // calculate and access the cross section
+    typedef std::map<double,  std::vector < std::map< double, double > > >  array3D;
+
+    array3D xsQ2;
+    //std::map<double,  std::vector < std::map< double, double > > > xsQ2 = new array3D[3+npdfall];
+
+    //TODO Need to get data binning to xMin, xMax
+   vector<double> xMin = {0., 0.3, 0.6, 0.9};
+   vector<double> xMax = {0.3, 0.6, 0.9, 1.0};
+   int nBins = xMin.size();
+
+    vector<double> bins(nBins+1);
+    for(int i = 0; i < nBins; ++i)
+        bins[i] = xMin[i];
+    bins[nBins] = xMax[nBins-1];
+
+    int hash = rand();
+
+    TH1::AddDirectory(false);
+    TH1D hist("histogram", "histogram", nBins, bins.data());
+
+    //fnlodiff.SetLHAPDFMember(0);
+
+    //fnlodiff.SetScaleFactorsMuRMuF(1.0, 1.0);
+    vector<double> NloXs=fnlodiff.GetDiffCrossSection();
+    xsQ2 = fnlodiff.Get3DCrossSection();
+
+    /*
+    double Sum=0;
+    for(int i = 0; i <NloXs.size(); ++i) {
+        Sum+= NloXs[i] * (fastBinsHi[i]-fastBinsLo[i]);
+        cout << i <<" : "<<  fastBinsLo[i]<<" "<<fastBinsHi[i]<< "  <>  "<<   NloXs[i] << endl;
+    }
+    cout << "Sum is " << Sum << endl;
+    exit(0);
+    */
+
+
+    //For interpretation
+    TMatrixD mat = CreateInterpolationMatrix(fastBinsLo, fastBinsHi);
+    TVectorD nloVec(fastBinsLo.size() );
+
+
+    //Fill array of Q2
+    vector<double> Q2arr;
+    for(const auto &a :   (xsQ2.begin()->second)[0])
+        Q2arr.push_back(a.first);
+
+
+    const int Niter = 400;
+    srand(1);
+
+
+    for( const auto &v : xsQ2 ) {
+        double xpom = v.first;
+        auto xs2D   = v.second;
+
+        for(unsigned i = 0; i < fastBinsLo.size(); ++i) {
+            for(const auto &item : xs2D[i]) {
+                double Q2 = item.first;
+                double xs = item.second*(fastBinsHi[i]-fastBinsLo[i]) / Niter;
+                for(int k = 0; k < Niter; ++k) {
+                    double varHist = fastBinsLo[i] + rand()/(RAND_MAX+0.) * (fastBinsHi[i]-fastBinsLo[i]);
+                    double VarCalc = func(xpom, Q2, varHist);
+                    //cout << "Zpom " << VarCalc <<  endl; 
+                    hist.Fill(VarCalc, xs);
+                }
+            }
+        }
+    }
+
+    vector<double> xsc;
+    xsc.resize(nBins);
+
+    //double Units = DOUBLE_NS(Units,GetAlposName());
+
+    for(int i = 0; i < nBins; ++i) {
+        double corr = 1; // 1./ (xMax[i]-xMin[i]); Todiff
+        xsc[i]=hist.GetBinContent(i+1) * corr;
+    }
+
+
+    return xsc;
+}
+
+
+vector<double> CalculateSpecialXpom(fastNLOAlposDPDF  &fnlodiff)
+{
+    string name = "xpom";
+
+    vector<double> logxpomLRG = {-2.30, -2.10, -1.90, -1.70, -1.52};
+    vector<double> logxpomFPS = {-2.3, -1.9, -1.6, -1.4, -1.2, -1.0};
+    vector<double> xpomVFPS   = {0.010,  0.014, 0.019, 0.024};
+    vector<double> xpomZEUS   = {0.0025, 0.0050, 0.0079, 0.0126, 0.0199, 0.0300};
+   //xpom binning
+    vector<double> xMin = logxpomLRG;
+    xMin.erase(xMin.end()-1); //remove last
+    vector<double> xMax = logxpomLRG;
+    xMax.erase(xMax.begin()); //remove first
+
+    int nBins = xMin.size();
+    vector<double>  nloXpom(nBins);
+
+    //cout << "RADEKHERE " << __LINE__ << endl;
+
+
+    for(int i = 0; i < nBins; ++i) {
+    //cout << "RADEKHERE " << __LINE__ << endl;
+
+        if(name.find("xpom") != string::npos) {
+            fnlodiff.SetXPomLinSlicing( 5, xMin[i], xMax[i]); // VFPS range
+            fnlodiff.SetTIntegratedRange(-0.6);
+        }
+        else if(name.find("logxpom") != string::npos) {
+            fnlodiff.SetXPomLogSlicing( 5, pow(10,xMin[i]) ,  pow(10,xMax[i]) ); 
+            fnlodiff.SetTIntegratedRange(-1.);
+    //cout << "RADEKHERE " << __LINE__ << endl;
+            
+        }
+        else {
+            cout << "error in xpom " << name <<  endl;
+        }
+
+        vector<double> Xs = fnlodiff.GetDiffCrossSection();
+        //assume absolute units 
+        double thTot = accumulate(Xs.begin(),Xs.end(), 0.);
+
+        double bw = 1;//xMax[i] - xMin[i]; Normalization
+
+        nloXpom[i]   = thTot / bw;
+
+    }
+
+    return nloXpom;
+
 }

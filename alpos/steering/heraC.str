@@ -39,7 +39,8 @@ DataTheorySets {{
 #  H1incDDIS-HERA-I-SpacMB         datafiles/h1/0606004/h1_ddis_heraI-SpaC-97MB.dat   ApfelDDISCS    Q2>=8.4   beta<=0.81   mx>=2
 #  H1incDDIS-HERA-I-SpacTrg        datafiles/h1/0606004/h1_ddis_heraI-SpaC-97all.dat  ApfelDDISCS    Q2>=8.4   beta<=0.81   mx>=2
 
-   H1-LRG-DiffDijets                datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets.dat         fastNLODiffDIS               Pt_min>=31 
+#   H1-LRG-DiffDijets                datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets.dat         fastNLODiffDIS               Pt_min>=31 
+
 # H1jets-LRG-q2                  datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_q2.dat            fastNLODiffDIS                  
 
 #  H1incDDIS-HERA-I-A            datafiles/h1/0606004/h1_ddis_heraI.dat          ApfelxxDDISCS   # Q2>=8.4   beta<=0.81   mx>=2
@@ -49,25 +50,28 @@ DataTheorySets {{
 
 
 
-#H1jets-LRG-detaetaStar         datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_deltaetaStar.dat  fastNLODiffDIS                  
-#H1jets-LRG-y                   datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_y.dat             fastNLODiffDIS                  
-#H1jets-LRG-ptjet1              datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_ptjet1.dat        fastNLODiffDIS                  
-#H1jets-LRG-ptjet2              datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_ptjet2.dat        fastNLODiffDIS                  
-#H1jets-LRG-ptavg               datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_ptavg.dat         fastNLODiffDIS                  
-#H1jets-LRG-q2                  datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_q2.dat            fastNLODiffDIS                  
+ H1jets-LRG-ptjet1-q2           datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_ptjet1_q2.dat     fastNLODiffDIS #  ptjet1_min>100
+ H1jets-LRG-detaetaStar         datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_deltaetaStar.dat  fastNLODiffDIS #  deltaetaStar_min>100
+ H1jets-LRG-y                   datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_y.dat             fastNLODiffDIS #  y_min>100
+ H1jets-LRG-ptjet1              datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_ptjet1.dat        fastNLODiffDIS #  ptjet1_min>100
+ H1jets-LRG-ptjet2              datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_ptjet2.dat        fastNLODiffDIS #  ptjet2_min>100
+ H1jets-LRG-ptavg               datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_ptavg.dat         fastNLODiffDIS #  ptavg_min>100
+ H1jets-LRG-q2                  datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_q2.dat            fastNLODiffDIS #  q2_min>100
 
 
-# H1jets-FPS-detaetaStar         datafiles/h1/1111.0584/H1-HERAII_FPS_DiffDijets_deltaetaStar.dat  fastNLODiffDIS  
-# H1jets-FPS-y                   datafiles/h1/1111.0584/H1-HERAII_FPS_DiffDijets_y.dat             fastNLODiffDIS  
-# H1jets-FPS-ptjet1              datafiles/h1/1111.0584/H1-HERAII_FPS_DiffDijets_ptjet1.dat        fastNLODiffDIS  
-# H1jets-FPS-q2                  datafiles/h1/1111.0584/H1-HERAII_FPS_DiffDijets_q2.dat            fastNLODiffDIS  
+ H1jets-FPS-detaetaStar         datafiles/h1/1111.0584/H1-HERAII_FPS_DiffDijets_deltaetaStar.dat  fastNLODiffDIS #  deltaetaStar_min>100
+ H1jets-FPS-y                   datafiles/h1/1111.0584/H1-HERAII_FPS_DiffDijets_y.dat             fastNLODiffDIS #  y_min>100
+ H1jets-FPS-ptjet1              datafiles/h1/1111.0584/H1-HERAII_FPS_DiffDijets_ptjet1.dat        fastNLODiffDIS #  ptjet1_min>100
+ H1jets-FPS-q2                  datafiles/h1/1111.0584/H1-HERAII_FPS_DiffDijets_q2.dat            fastNLODiffDIS #  q2_min>100
 
- H1jets-VFPS-detaeta             datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_deltaeta.dat   fastNLODiffDIS  
- H1jets-VFPS-meaneta             datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_meaneta.dat    fastNLODiffDIS  
- H1jets-VFPS-ptjet1              datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_ptjet1.dat     fastNLODiffDIS  
- H1jets-VFPS-q2                  datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_q2.dat         fastNLODiffDIS  
- H1jets-VFPS-y                   datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_y.dat          fastNLODiffDIS  
+ H1jets-VFPS-detaeta             datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_deltaeta.dat   fastNLODiffDIS #  deltaeta_min>100
+ H1jets-VFPS-meaneta             datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_meaneta.dat    fastNLODiffDIS #  meaneta_min>100
+ H1jets-VFPS-ptjet1              datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_ptjet1.dat     fastNLODiffDIS #  ptjet1_min>100
+ H1jets-VFPS-q2                  datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_q2.dat         fastNLODiffDIS #  q2_min>100
+ H1jets-VFPS-y                   datafiles/h1/1502.01683/H1-HERAII_VFPS_DiffDijets_y.dat          fastNLODiffDIS #  y_min>100
 
+# ZEUSjets-LRG-w                  datafiles/zeus/0710.1498/ZEUS-HERAI_LRG_DiffDijets_w.dat         fastNLODiffDIS
+ ZEUSjets-LRG-q2                 datafiles/zeus/0710.1498/ZEUS-HERAI_LRG_DiffDijets_q2.dat        fastNLODiffDIS #  q2_min>100
 
 
 # H1FPS-3D            datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS.dat              ApfelDDISCS   Q2>=8.4   beta<=0.81  mx>=2  xp<0.05
@@ -101,7 +105,7 @@ Tasks {{
 #  Alpos global settings
 # --------------------------------------------------------------#
 ErrorSymmetrization             SignImprovedQuadratic
-Output                          steering.str1_ABCDE/out.root             # commonoutput file for outputs of all tasks
+Output                          steering.ManyJets/out.root             # commonoutput file for outputs of all tasks
 GlobalVerbosity                 Info # Debug, Warning, Error
 InitSubsets                     false  # Init subsets of datasets
 IgnoreTheoryErrors              false                            # Ignore all theory errors when calculating chi2 value
