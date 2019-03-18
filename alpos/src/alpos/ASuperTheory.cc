@@ -41,10 +41,37 @@ bool ASuperTheory::Update() {
    using namespace AlposTools;
    fValue.clear();
    fError.clear();
+
+   for(auto f : fValue)
+      cout <<"RADEK-f: "<<  f << endl;
+   for ( const auto& i : GetRequirements()) {
+      cout << "RADEK-i: "<< i << endl;
+   }
+   vector<pair<string,vector<double>>> vals;
+   for ( const auto& i : GetRequirements()) {
+      vals.push_back(make_pair(i, vector<double>({})));
+   }
+
+#pragma omp parallel for
+   for(int k = 0; k < vals.size(); ++k) {
+      string i = vals[k].first;
+      vals[k].second = VALUES_ANY(GetAlposName()+std::string(".")+i);
+      cout << "Radek inside super-i: "<< i << endl;
+   }
+
+   //Merge them
+   for(int k = 0; k < vals.size(); ++k) {
+      fValue += vals[k].second;
+   }
+
+   /* RADEK comment
    for ( const auto& i : GetRequirements()) {
       //#define VALUES(X)        TheoryHandler::Handler()->GetFuncD(this->GetAlposName()+std::string(".")+std::string(#X))->GetValues()
       fValue += VALUES_ANY(GetAlposName()+std::string(".")+i);
+      cout << "Radek inside super-i: "<< i << endl;
    }
+   */
+
    fError.resize(fValue.size()); // not yet implemented
 
    // update pointers to data tables of "child" theory function objects
