@@ -155,29 +155,44 @@ bool AfastNLODiffDIS::CalcCrossSections() {
 
    // get cross sections
    fValue.clear();
-   for ( auto fnlo : fnlos ) {
+   cout << "start" << endl;
+
+
+   vector<vector<double>> vals(fnlos.size());
+
+//#pragma omp parallel for
+   for(int i = 0; i < fnlos.size(); ++i) {
+      auto fnlo = fnlos[i];
+   //for ( auto fnlo : fnlos ) {
       // fnlo->CalcCrossSection();
       // fValue += fnlo->GetCrossSection();
 
       string aname = fnlo->GetAlposName();
       string fname = fnlo->GetFilename();
+      cout << "Radek " << fname << endl;
       if(fname.find("xi2zIP") != string::npos) { //isZpom
-         fValue +=  CalculateSpecialVar(*fnlo, ZP);
+         vals[i] =  CalculateSpecialVar(*fnlo, ZP);
       }
       else if(fname.find("yMx") != string::npos) { //isMx
-         fValue +=  CalculateSpecialVar(*fnlo, MX); 
+         vals[i] =  CalculateSpecialVar(*fnlo, MX); 
       }
       else if(fname.find("xbjbeta") != string::npos) { //isBeta
-         fValue +=  CalculateSpecialVar(*fnlo, BETA); 
+         vals[i] =  CalculateSpecialVar(*fnlo, BETA); 
       }
       else if(aname.find("xpom") != string::npos) {
-         fValue += CalculateSpecialXpom(*fnlo);
+         vals[i] = CalculateSpecialXpom(*fnlo);
       }
 
       else {
-         fValue += fnlo->GetDiffCrossSection();
+         vals[i] = fnlo->GetDiffCrossSection();
       }
    }
+   //Merge outputs
+   for(auto v : vals)
+      fValue += v;
+
+
+   //cout << endl;
    // apply binmap if applicable
    if ( !fBinmap.empty() ) {
       int ii=0;
@@ -334,9 +349,32 @@ vector<double> CalculateSpecialVar(fastNLOAlposDPDF  &fnlodiff,
     array3D xsQ2;
     //std::map<double,  std::vector < std::map< double, double > > > xsQ2 = new array3D[3+npdfall];
 
+
+   string aname = fnlodiff.GetAlposName();
+   string fname = fnlodiff.GetFilename();
+
     //TODO Need to get data binning to xMin, xMax
-   vector<double> xMin = {0., 0.3, 0.6, 0.9};
-   vector<double> xMax = {0.3, 0.6, 0.9, 1.0};
+   vector<double> xMin; //= {0., 0.3, 0.6, 0.9};
+   vector<double> xMax; //= {0.3, 0.6, 0.9, 1.0};
+
+   if(fname.find("xi2zIP") != string::npos) { //isZpom
+      xMin = DOUBLE_COL_NS(Data,zpom_min,aname);
+      xMax = DOUBLE_COL_NS(Data,zpom_max,aname);
+   }
+   else if(fname.find("yMx") != string::npos) { //isMx
+      xMin = DOUBLE_COL_NS(Data,mx_min,aname);
+      xMax = DOUBLE_COL_NS(Data,mx_max,aname);
+   }
+   else if(fname.find("xbjbeta") != string::npos) { //isBeta
+      xMin = DOUBLE_COL_NS(Data,beta_min,aname);
+      xMax = DOUBLE_COL_NS(Data,beta_max,aname);
+   }
+   else {
+      cout << "Unknow type" << endl;
+      exit(1);
+   }
+
+
    int nBins = xMin.size();
 
     vector<double> bins(nBins+1);

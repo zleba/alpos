@@ -42,21 +42,24 @@ bool ASuperTheory::Update() {
    fValue.clear();
    fError.clear();
 
+   /*
    for(auto f : fValue)
       cout <<"RADEK-f: "<<  f << endl;
    for ( const auto& i : GetRequirements()) {
       cout << "RADEK-i: "<< i << endl;
    }
+   */
+
    vector<pair<string,vector<double>>> vals;
    for ( const auto& i : GetRequirements()) {
       vals.push_back(make_pair(i, vector<double>({})));
    }
 
-#pragma omp parallel for
+//#pragma omp parallel for
    for(int k = 0; k < vals.size(); ++k) {
       string i = vals[k].first;
       vals[k].second = VALUES_ANY(GetAlposName()+std::string(".")+i);
-      cout << "Radek inside super-i: "<< i << endl;
+      //cout << "Radek inside super-i: "<< i << endl;
    }
 
    //Merge them
