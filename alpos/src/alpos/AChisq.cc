@@ -263,32 +263,26 @@ double AChisqCov::DoEval(const double *p) const {
    //!    chisq = sum_ij [m_i - t_i] * V^-1_ij * [m_i - t_i]
    //! V is the covariance matrix containing all uncertainties
    //!
-   //! \note any uncertainties marked as multiplicative
-   //!       will be treated as additive by this chi-square
-   //!       definition.
+   //! \note any uncertainties marked as multiplicative will
+   //!       be treated as additive by this chi-square definition
 
    // --- set new theory parameters
    for ( unsigned int ipar = 0 ; ipar < fFitPar.size() ; ipar++ )
       SET_ANY(fFitPar[ipar],p[ipar],0);
 
    // --- get data and theory values
-   const vector<double>& th = Theo()->GetValues();// VALUES_ANY("SuperTheory");
-   const vector<double>& da = Data()->GetValues();// VALUES_ANY("SuperData");
+   const vector<double>& th = Theo()->GetValues();
+   const vector<double>& da = Data()->GetValues();
 
    // --- get uncertainties from data and theory objects
 
-   // pointers to 'sum' matrices entering into the 'final' covariance matrix
-   std::set<const TMatrixDSym*> matCollection;
-
    // additive errors can be considered directly
-   const TMatrixDSym* InvCov = &AInvMatrices::Instance()->GetInvMatrix(
-      {
+   const TMatrixDSym* InvCov = &AInvMatrices::Instance()->GetInvMatrix({
          &fData->GetSumErrorMatrix("AA", "AbsAvTotAll"),
          &fTheo->GetSumErrorMatrix("AA", "AbsAvTotAll")
-      }
-   );
+      });
 
-   // --- loop over all super-vector data points and calculate chisq
+   // --- loop over all data points and calculate chisq
    double chisq = 0;
    for ( unsigned int x = 0 ; x<th.size() ; x++ ) {
       chisq += pow((da[x]-th[x]),2) * (*InvCov)[x][x] ;
@@ -1061,13 +1055,11 @@ double AChisqHERAFitterDefault::DoEval(const double *p) const {
    //!                  D_i,unc^2 t_i^2 + D_i,stat^2 t_i m_i (1-sum_k g_ik b_k)
    //!
    //! Matrix-type correlations are considered only for stat-uncertainties, and otherwise ignored.
-   //!
+   // --- set new theory parameters
+
    using namespace AlposTools;
 
-   // --- set new theory parameters
-   for ( unsigned int ipar = 0 ; ipar < fFitPar.size() ; ipar++ ) {
-      SET_ANY(fFitPar[ipar],p[ipar],0);
-   }
+   for ( unsigned int ipar = 0 ; ipar < fFitPar.size() ; ipar++ ) SET_ANY(fFitPar[ipar],p[ipar],0);
 
    // --- get 'superdata' and 'supertheory' arrays
    const vector<double>& th = Theo()->GetValues();// VALUES_ANY("SuperTheory");
@@ -1081,7 +1073,6 @@ double AChisqHERAFitterDefault::DoEval(const double *p) const {
    vector<vector<double> > gerr;
    for ( const auto& ie : errors ) {
       if ( ie.second.GetCorrelatedFraction() > 0 ) {
-         //gerr.push_back(ie.second.GetErrorCorrRelAvg());  // old interface
          gerr.push_back(ie.second.GetError("RelAvCor"));
          if ( ie.second.GetIsMult() ) gerr.back()*=th;// multiplicative
 	 else {  // additive
@@ -1092,23 +1083,14 @@ double AChisqHERAFitterDefault::DoEval(const double *p) const {
       }
    }
 
-   //vector<double> Eunc = fData->GetUncertaintyUncorrRel();  // old interface
    vector<double> Eunc = fData->GetSumError("AY", "RelAvUnc");
-
-   //vector<double> Emat = fData->GetUncertaintyMatRel();  // old interface (left in, for now)
-   //vector<double> Emat = fData->GetSumError("??", "???????????");  // FIXME: this is not accessible via new interface
-
-   //const vector<double>& dstat = fData->GetUncertaintyStatRel();  // old interface
    const vector<double>& dstat = fData->GetSumError("AS", "RelAvTot");
 
    Eunc *= th; // ('linear' rescale)
-   //Emat *= th; // ('linear' rescale)
-   // --- things to keep (b, Ei, Vinv, d-t)
    vector<double> b(gerr.size());
    vector<double> Ei0(th.size()); // E_i = sum_j g_ij b_j
    vector<double> VDiag(th.size());
    for ( unsigned int x = 0 ; x<th.size() ; x++ ) {
-      // cout<<x<<"\tdt="<<da[x]<<"\tth="<<th[x]<<"\tstat="<<dstat[x]<<"\tEunc="<<Eunc[x]<<"\tEUncRel="<<fData->GetUncertaintyUncorrRel()[x]<<"\tsize: "<< fData->GetUncertaintyUncorrRel().size()<<"\tname: "<<fData->GetAlposName()<<endl;
       VDiag[x] = Eunc[x]*Eunc[x] + dstat[x]*dstat[x]*th[x]*da[x];
    }
    vector<double> dmt(da);
