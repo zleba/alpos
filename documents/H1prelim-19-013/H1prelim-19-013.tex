@@ -297,23 +297,27 @@ The extracted DPDFs are compared to the alternative existing DPDFs at NLO accura
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                    Introduction
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Status of document}
+The present document is just a collection of plots, for the preliminary request on 28.3.2019.
+Further text, and references still have to be included.
+
 \section{Introduction}
 
-Diffractive processes in deep-inelastic scattering, $ep \to eXY$, where the final state systems $X$ and $Y$ are separated in rapidity, have been studied extensively at the electron-proton collider HERA [1].
+%Diffractive processes in deep-inelastic scattering, $ep \to eXY$, where the final state systems $X$ and $Y$ are separated in rapidity, have been studied extensively at the electron-proton collider HERA [1].
+%%
+%The forward system $Y$ consists of the leading proton, which stays intact after the collisions, but may also contain its low mass dissociation.
+%%
+%Between the systems $X$ and $Y$ a depleted region without any hadronic activity is observed, the so-called large rapidity gap
+%(LRG).
+%%
+%This is a consequence of the vacuum quantum numbers of the diffractive exchange which is often referred to as a pomeron (IP).
+%%
+%Experimentally, the diffractive events can be selected either by requiring a rapidity region in the direction of the proton beam without any hadronic activity (LRG method) or by direct detection of the leading proton using dedicated spectrometers.
+%%
+%In the second case, the system $Y$ is free of any diffractive dissociation.
 %
-The forward system $Y$ consists of the leading proton, which stays intact after the collisions, but may also contain its low mass dissociation.
-%
-Between the systems $X$ and $Y$ a depleted region without any hadronic activity is observed, the so-called large rapidity gap
-(LRG).
-%
-This is a consequence of the vacuum quantum numbers of the diffractive exchange which is often referred to as a pomeron (IP).
-%
-Experimentally, the diffractive events can be selected either by requiring a rapidity region in the direction of the proton beam without any hadronic activity (LRG method) or by direct detection of the leading proton using dedicated spectrometers.
-%
-In the second case, the system $Y$ is free of any diffractive dissociation.
-
-The deep-inelastic scattering is characterized by a virtuality $Q^2$ ($Q^2 >> \lambda_{QCD}$) which represents the hard scale of the process.
-The factorisation theorem for DDIS \cite{Collins:1997sr} [...].
+%The deep-inelastic scattering is characterized by a virtuality $Q^2$ ($Q^2 >> \lambda_{QCD}$) which represents the hard scale of the process.
+%The factorisation theorem for DDIS \cite{Collins:1997sr} [...].
 
 
 
@@ -341,9 +345,9 @@ the selected inclusive neutral-current DDIS data samples are summarised in table
       \multicolumn{1}{c}{Data set} & $\sqrt{s}$ & int. $\mathcal{L}$ & DIS kinematic  \\  
       \multicolumn{1}{c}{[ref.]}  & $[\GeV]$   & $[{\rm pb}^{-1}]$  &  range         \\   
       \hline
-      \HIcomb      & 319 & 2.0 & $3<\Qsq<13.5\,\GeVsq$   \\
-      \HILowEb     & 252 & 10.6 & $13.5<\Qsq<105\,\GeVsq$   \\
-      \HILowEb     & 225 & 61.6 & $133\GeVsq < \Qsq $   \\
+      \HIcomb      & 319 & 336.6 & $8.5<\Qsq<1600\,\GeVsq$   \\
+      \HILowEa     & 252 & 5.2   & $8.5<\Qsq<44\,\GeVsq$   \\
+      \HILowEb     & 225 & 8.5   & $8.5 <\Qsq<44\,\GeVsq $   \\
       \hline
     \end{tabular}
     \caption{
@@ -451,27 +455,53 @@ The selected dijet cross section data is summarised in table~\ref{tab:datasetsJe
 %                    Theory
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\clearpage
-\begin{boldmath}
-\section{Theory}
-\end{boldmath}
-\label{sec:theory}
+%\begin{boldmath}
+%\section{Theory}
+%\end{boldmath}
+%\label{sec:theory}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                    Methodology
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Methodology}
-\label{sec:method}
+%\section{Methodology}
+%\label{sec:method}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                      Results
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\clearpage
-\subsection{Results: H1DPDF2019}
+\section{Results}
+\label{sec:results}
+
+
+\begin{table}[tbhp]
+  \footnotesize
+  %\scriptsize
+  \begin{center}
+    \begin{tabular}{lcc}
+%      \multicolumn{6}{c}{\bf Kinematic range of H1 jet data} \\
+      \hline
+      \multicolumn{1}{c}{Data set} & process & $\chisq/\ndf$ \\
+      \hline
+      \HIcomb   & inclusive NC DDIS & $192/191$   \\
+      \HILowEa  & inclusive NC DDIS & $19/12$   \\
+      \HILowEb & inclusive NC DDIS & $10/13$   \\
+      \HLRG   & dijet production  & $12/15$   \\
+      \hline
+      all     &                   & $235/231$   \\
+    \end{tabular}
+    \caption{
+      Summary of the partial \chisq\ values and the total value of \chisq\ for the
+      DPDF fit to inclusive NC DDIS and dijet data in NNLO.
+    }
+    \label{tab:chisq}
+    \end{center}
+\end{table}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   main results
-\paragraph{Fit to inclusive DDIS data}
+\section{Summary of figures}
 \label{sec:resultsIncl}
 
 
@@ -537,6 +567,21 @@ The selected dijet cross section data is summarised in table~\ref{tab:datasetsJe
   The inner error of the data displays the statistical uncertainty, and the full error bars displays the total experimental uncertainty.
 }
 \label{fig:jets}
+\end{figure}
+
+
+
+\begin{figure}[tbhp]
+\begin{center}
+     \includegraphics[width=0.64\textwidth,page=11]{{plots/jets}.pdf}
+     \includegraphics[clip,trim=0 0 10cm 0.2cm,width=0.32\textwidth,page=12]{{plots/jets}.pdf}
+\end{center}
+\caption{
+  Comparison of NNLO predictions using \DPDF\ (full line) to H1 dijet cross section data (full circles)
+  as a function of \meanpt\ for different \Qsq\ intervals.
+  The band indicates the uncertainties associated to the \DPDF.
+}
+\label{fig:}
 \end{figure}
 
 
@@ -919,6 +964,9 @@ The selected dijet cross section data is summarised in table~\ref{tab:datasetsJe
 
 
 
+
+
+
 % \begin{figure}[tbhp]
 % \begin{center}
 %   \includegraphics[width=0.8\textwidth]{{{plots/q2_xpom0.03}.pdf}}
@@ -994,19 +1042,19 @@ The selected dijet cross section data is summarised in table~\ref{tab:datasetsJe
 
 
 
-\paragraph{Fit to inclusive DDIS and dijet data}
-\label{sec:resultsJets}
+%\paragraph{Fit to inclusive DDIS and dijet data}
+%\label{sec:resultsJets}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                    Summary
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\clearpage
-\section{Summary}
-The new next-to-next-to-leading order pQCD calculations (NNLO) for dijet
-production cross sections in diffractive neutral current DIS are exploited for a
-determination of diffractive parton distribution functions (DPDFs) inclusive
-dijet and inclusive NC DDIS cross section measurements published by the H1 Collaboration. 
+%\section{Summary}
+%The new next-to-next-to-leading order pQCD calculations (NNLO) for dijet
+%production cross sections in diffractive neutral current DIS are exploited for a
+%determination of diffractive parton distribution functions (DPDFs) inclusive
+%dijet and inclusive NC DDIS cross section measurements published by the H1 Collaboration. 
 
 
 
