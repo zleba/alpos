@@ -160,9 +160,26 @@
 \newcommand{\asmur}{\ensuremath{\alpha_{\rm s}(\mur)}\xspace}
 \newcommand{\chad}{\ensuremath{c_{\rm had}}\xspace}
 \newcommand{\ord}{\ensuremath{\mathcal{O}}\xspace}
-\newcommand{\PDFasResult}{0.1142}
 
 \renewcommand{\contentsname}{Content \footnotesize (only for editorial purposes)}
+
+\newcommand{\pom}{\ensuremath{I\!\!P}}
+\newcommand{\reg}{\ensuremath{I\!\!R}}
+\newcommand{\mxq}{\ensuremath{M_{\rm X}^{2}}\xspace}
+\newcommand{\mx}{\ensuremath{M_{\rm X}}\xspace}
+\newcommand{\MY}{\ensuremath{M_{\rm Y}}\xspace}
+\newcommand{\xpom}{\ensuremath{x_{\pom}}\xspace}
+\newcommand{\zpom}{\ensuremath{z^{\rm obs}_{\pom}}\xspace}
+\newcommand{\zint}{\ensuremath{z_{\pom}}\xspace}
+\newcommand{\xbj}{\ensuremath{x_{\mathrm{Bj}}\xspace}}
+
+% The DPDFs
+\newcommand{\DPDF}{H1DPDF2019 (prel.)\xspace}
+\newcommand{\DPDFFitA}    {H1FitA\xspace}
+\newcommand{\DPDFFitB}    {H1FitB\xspace}
+\newcommand{\DPDFFitJets} {H1FitJets\xspace}
+\newcommand{\DPDFZSJ} {ZEUSSJ\xspace}
+\newcommand{\DPDFMRW} {MRW\xspace}
 
 
 % % % Journal macro
@@ -196,15 +213,16 @@
 \begin{titlepage}
 \noindent
 \begin{flushleft}
-{\tt H1prelim-19-013 DRAFT ! \hfill    ISSN abcd-abcd} \\
-{\tt March 2019}                  \\
+% {\tt H1prelim-19-013 DRAFT ! \hfill    ISSN abcd-abcd} \\
+{\tt H1prelim-19-013} \\
+{\tt April 2019}                  \\
 \end{flushleft}
 
 \noindent
-Date:   ~   \ \ March 2019 %31.\,08.\,2017      \\
-Version:~   0.0 \\
-Editors:~   D.~Britzger, R.~\v{Z}leb\v{c}\'{i}k (daniel.britzger@desy.de, zlebcr@mail.desy.de) \\
-Referees:  A.~B, B.~C \\
+%Date:   ~   \ \ April 2019 %31.\,08.\,2017      \\
+%Version:~   0.0 \\
+%Editors:~   D.~Britzger, R.~\v{Z}leb\v{c}\'{i}k (daniel.britzger@desy.de, zlebcr@mail.desy.de) \\
+%Referees:  K.~Cerny, L.~Favart \\
 %Final reading scheduled for ....         \\
 \noindent
 
@@ -213,8 +231,9 @@ Referees:  A.~B, B.~C \\
 \begin{Large}
 
 {\bf
-   A NNLO Combined fit of the inclusive and dijet data
-
+  A determination of diffractive parton distribution functions from
+  H1 inclusive diffractive deep-inelastic scattering data and H1 diffractive dijet cross section data
+  in next-to-next-to-leading order QCD
 }
 
 \vspace{1.5cm}
@@ -392,16 +411,516 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
 
 
 %%%%%%%% Fig.:   %%%%%%%%%%%%%%%%%%%%
-\begin{figure}[ht]
+
+
+\begin{figure}[tbhp]
 \begin{center}
-%  \includegraphics[width=0.8\textwidth]{plots/ratio.pdf}
+  \includegraphics[width=0.8\textwidth]{{{plots/pdfsLin}.pdf}}
 \end{center}
 \caption{
-  test
+  Singlet (left, $\Sigma$) and gluon (right, $g$) distributions of the pomeron
+  in \DPDF as a function of $z$
+  for three different values of \muf\ at a value of $\xpom=0.003$.
+  The inner (dark) error band displays the experimental uncertainty, while
+  the outer (bright) error band displays the full uncertianty, i.e.\ experimental,
+  parameterisation, model and theoretical uncertainties added in quadrature.
+  The \DPDF is compared to \DPDFFitB\ (dashed line), which was obtained in an NLO pQCD fit.
 }
-\label{fig:DPDFratio}
+\label{fig:pdfsLin}
 \end{figure}
 
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/pdfsRatLog}.pdf}}
+\end{center}
+\caption{
+  Ratio to \DPDF\ as function of $z$for three different values
+  of \muf\ at a value of $\xpom=0.003$.
+  More details as in fig.~\ref{fig:pdfsLin}.
+  Mind the logarithmic scale of the abscissa in contrast to fig.~\ref{fig:pdfsLin}.
+}
+\label{fig:pdfsRatLog}
+\end{figure}
+
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_q2_xpom0.03}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data at
+  $\xpom=0.03$ (full circles) as a function of \Qsq.
+  The predictions are extrapolated to data points, which are not included in the \DPDF fit (dahsed line).
+}
+\label{fig:comb_q2_xpom0p03}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_q2_xpom0.01}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data as a function of \Qsq\ at
+  $\xpom=0.01$ (full circles).
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_q2_xpom0.003}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data as a function of \Qsq\ at
+  $\xpom=0.003$ (full circles).
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_q2_xpom0.001}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data as a function of \Qsq\ at
+  $\xpom=0.001$ (full circles).
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_q2_xpom0.0003}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data as a function of \Qsq\ at
+  $\xpom=0.0003$ (full circles).
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_beta_xpom0.03}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data as a function of $\beta$ at
+  $\xpom=0.03$ (full circles).
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_beta_xpom0.01}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data as a function of $\beta$ at
+  $\xpom=0.01$ (full circles).
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_beta_xpom0.003}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data as a function of $\beta$ at
+  $\xpom=0.003$ (full circles).
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_beta_xpom0.001}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data as a function of $\beta$ at
+  $\xpom=0.001$ (full circles).
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_beta_xpom0.0003}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data as a function of $\beta$ at
+  $\xpom=0.0003$ (full circles).
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+
+%%% ------------------ ratio's --------------------- %%
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_betaRat_xpom0.03}.pdf}}
+\end{center}
+\caption{
+  Ratio of NNLO pQCD predictions using \DPDF to H1 inclusive DDIS data
+  at $\xpom=0.03$ 
+  as a function of $\beta$
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.  
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_betaRat_xpom0.01}.pdf}}
+\end{center}
+\caption{
+  Ratio of NNLO pQCD predictions using \DPDF to H1 inclusive DDIS data
+  at $\xpom=0.01$ 
+  as a function of $\beta$
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.  
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_betaRat_xpom0.003}.pdf}}
+\end{center}
+\caption{
+  Ratio of NNLO pQCD predictions using \DPDF to H1 inclusive DDIS data
+  at $\xpom=0.003$ 
+  as a function of $\beta$
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.  
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_betaRat_xpom0.001}.pdf}}
+\end{center}
+\caption{
+  Ratio of NNLO pQCD predictions using \DPDF to H1 inclusive DDIS data
+  at $\xpom=0.001$ 
+  as a function of $\beta$
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.  
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/comb_betaRat_xpom0.0003}.pdf}}
+\end{center}
+\caption{
+  Ratio of NNLO pQCD predictions using \DPDF to H1 inclusive DDIS data
+  at $\xpom=0.0003$ 
+  as a function of $\beta$
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.  
+}
+\label{fig:}
+\end{figure}
+
+%\begin{figure}[tbhp]
+%\begin{center}
+%  \includegraphics[width=0.8\textwidth]{{{plots/chi2Ndf}.pdf}}
+%\end{center}
+%\caption{
+%}
+%\label{fig:}
+%\end{figure}
+%
+%\begin{figure}[tbhp]
+%\begin{center}
+%  \includegraphics[width=0.8\textwidth]{{{plots/chi2NdfJets}.pdf}}
+%\end{center}
+%\caption{
+%}
+%\label{fig:}
+%\end{figure}
+
+
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/beta_xpom0.03}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+% 
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/beta_xpom0.01}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+% 
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/beta_xpom0.003}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+% 
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/beta_xpom0.001}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+% 
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/beta_xpom0.0003}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+% 
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/muSimdepHeraI}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+% 
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/muSimdepHeraInew}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+%
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/jets}.pdf}}
+\end{center}
+\caption{
+  NNLO pQCD predictions (full blue line) using \DPDF\ for the total dijet cross section measured in six different
+  analysis by the H1 and ZEUS collaboration (full circles).
+  For comparison, also NLO pQCD predictions using \DPDFFitB\ are displayed.
+  The upper panel displays the total cross section, and the lower panel the ratio
+  of the predictions to data.
+  The inner error band (dark blue) displays the DPDF uncertainty of the \DPDF\ fit,
+  and the outer error band (light blue) displays the DPDF uncertainty and scale
+  uncertainty added in quadrature.
+  The hatched band displays the DPDF uncertainty and NLO scale uncertainty of the NLO predictions.
+  The inner error of the data displays the statistical uncertainty, and the full error bars displays the total experimental uncertainty.
+}
+\label{fig:jets}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.6\textwidth]{{{plots/gluonFr}.pdf}}
+\end{center}
+\caption{
+  Momentum fraction of the gluon distribution function of \DPDF (blue line) in comparison
+  to \DPDFFitB (red line) as a function of \Qsq.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/e252_beta_xpom0.003}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $E_p=252\,\GeV$ at  $\xpom=0.003$ (full circles) as a function of $\beta$.
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/e252_beta_xpom0.001}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $E_p=252\,\GeV$ at  $\xpom=0.001$ (full circles) as a function of $\beta$.
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/e252_beta_xpom0.0005}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $E_p=252\,\GeV$ at  $\xpom=0.0005$ (full circles) as a function of $\beta$.
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/e252_betaRat_xpom0.003}.pdf}}
+\end{center}
+\caption{
+  Ratio of NNLO pQCD predictions using \DPDF to H1 LRG data taken with $E_p=252\,\GeV$ at  $\xpom=0.003$ (full circles) as a function of $\beta$.
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/e252_betaRat_xpom0.0005}.pdf}}
+\end{center}
+\caption{
+  Ratio of NNLO pQCD predictions using \DPDF to H1 LRG data taken with $E_p=252\,\GeV$ at  $\xpom=0.0005$ (full circles) as a function of $\beta$.
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/e225_beta_xpom0.003}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $E_p=225\,\GeV$ at  $\xpom=0.003$ (full circles) as a function of $\beta$.
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/e225_beta_xpom0.0005}.pdf}}
+\end{center}
+\caption{
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $E_p=225\,\GeV$ at  $\xpom=0.0005$ (full circles) as a function of $\beta$.
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/e225_betaRat_xpom0.003}.pdf}}
+\end{center}
+\caption{
+  Ratio of NNLO pQCD predictions using \DPDF to H1 LRG data taken with $E_p=225\,\GeV$ at  $\xpom=0.003$ (full circles) as a function of $\beta$.
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{{{plots/e225_betaRat_xpom0.0005}.pdf}}
+\end{center}
+\caption{
+  Ratio of NNLO pQCD predictions using \DPDF to H1 LRG data taken with $E_p=225\,\GeV$ at  $\xpom=0.0005$ (full circles) as a function of $\beta$.
+  Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
+}
+\label{fig:}
+\end{figure}
+
+
+
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/q2_xpom0.03}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+% 
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/q2_xpom0.01}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+% 
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/q2_xpom0.003}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+% 
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/q2_xpom0.001}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+% 
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/q2_xpom0.0003}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+% 
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/muSimdepLRG}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+% 
+% \begin{figure}[tbhp]
+% \begin{center}
+%   \includegraphics[width=0.8\textwidth]{{{plots/muSimdepLRGnew}.pdf}}
+% \end{center}
+% \caption{
+%   test
+% }
+% \label{fig:}
+% \end{figure}
+% 
 
 
 
