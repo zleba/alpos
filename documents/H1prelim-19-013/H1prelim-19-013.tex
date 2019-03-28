@@ -126,6 +126,8 @@
 \newcommand{\pt}{\ensuremath{P_{T}}}
 \newcommand{\PP}{\ensuremath{\mathcal{P}}}
 %\newcommand{\ptAvg}{\ensuremath{\langle P_T^{jet}\rangle}}
+\newcommand{\ptjone}{\ensuremath{p_{\mathrm{T}}^{\ast,\rm jet1}}\xspace}
+\newcommand{\ptjtwo}{\ensuremath{p_{\mathrm{T}}^{\ast,\rm jet2}}\xspace}
 \newcommand{\Qsq}{\ensuremath{Q^{2}}}
 %% unfolding
 \newcommand{\chisq}{\ensuremath{\chi^{2}}}
@@ -162,6 +164,7 @@
 \newcommand{\ord}{\ensuremath{\mathcal{O}}\xspace}
 
 \renewcommand{\contentsname}{Content \footnotesize (only for editorial purposes)}
+\newcommand{\invpb}{\ensuremath{{\rm pb}^{-1}}\xspace}
 
 \newcommand{\pom}{\ensuremath{I\!\!P}}
 \newcommand{\reg}{\ensuremath{I\!\!R}}
@@ -180,6 +183,21 @@
 \newcommand{\DPDFFitJets} {H1FitJets\xspace}
 \newcommand{\DPDFZSJ} {ZEUSSJ\xspace}
 \newcommand{\DPDFMRW} {MRW\xspace}
+
+% The data
+\newcommand{\HIcomb} {H1comb-LRG\xspace}
+\newcommand{\HILowEa} {H1-LowE-225\xspace}
+\newcommand{\HILowEb} {H1-LowE-252\xspace}
+% the jet data
+\newcommand{\HERAI} {\protect\scalebox{0.8}{(HERA~{1})}}
+\newcommand{\HERAII} {\protect\scalebox{0.8}{(HERA~{2})}}
+\newcommand{\LowEP} {\protect\scalebox{0.8}{($300\,\GeV$)}}
+\newcommand{\HLRG}  {H1 LRG \HERAII\xspace}
+\newcommand{\HVFPS} {H1 VFPS \HERAII\xspace}
+\newcommand{\HFPS}  {H1 FPS \HERAII\xspace}
+\newcommand{\HLRGI} {H1 LRG \HERAI\xspace}
+\newcommand{\ZLRG}  {ZEUS LRG \HERAI\xspace}
+\newcommand{\HLRGEp}{H1 LRG \LowEP\xspace}
 
 
 % % % Journal macro
@@ -249,11 +267,11 @@ H1 Collaboration%\footnote{}
 \begin{abstract}
 \noindent
 %Abstract
-A new combined fit of diffractive parton distribution functions (DPDFs) to the HERA inclusive and jet data in diffractive deep-inelastic scattering (DDIS) at next-to-next-to-leading order accuracy (NNLO) is presented.
-The inclusion of the most comprehensive dijet cross section data, together with their NNLO predictions, provide enhanced constraints to the gluon component of the DPDF, which is of particular importance for diffractive PDFs.
-Compared to the previous HERA fits, the presented fit includes the high-precision HERA-II data, which represents 40times higher luminosity for inclusive sample and 6times higher luminosity for the jet sample.
-In addition to the inclusive DDIS sample at the nominal centre-of-mass energy $\sqrt{s}=319$, also the inclusive data at 252, 225 GeV are included into the fit.
-The extracted DPDFs are compared to the alternative existing DPDFs, and are used to predict cross sections for large number of the available jet measurements and different observables.
+A new combined fit of diffractive parton distribution functions (DPDFs) to the H1 inclusive neutral-current and dijet production data in diffractive deep-inelastic scattering (DDIS) at next-to-next-to-leading order accuracy (NNLO) is presented.
+Compared to the previous HERA fits, the presented study includes the high-precision H1 HERA-II data, which represents 40~times higher luminosity for inclusive DDIS data sample and 6~times higher luminosity for the jet data, than previous studies by H1.
+In addition to the inclusive DDIS data at the nominal centre-of-mass energy $\sqrt{s}=319$, also the inclusive data at 252 and 225\,GeV are included into the fit.
+The inclusion of the most comprehensive dijet cross section data, together with their NNLO predictions, provide enhanced constraints to the gluon component of the DPDF.
+The extracted DPDFs are compared to the alternative existing DPDFs at NLO accuracy, and are used to predict cross sections for a large number of the available dijet measurements.
 \noindent
 \end{abstract}
 
@@ -295,7 +313,7 @@ Experimentally, the diffractive events can be selected either by requiring a rap
 In the second case, the system $Y$ is free of any diffractive dissociation.
 
 The deep-inelastic scattering is characterized by a virtuality $Q^2$ ($Q^2 >> \lambda_{QCD}$) which represents the hard scale of the process.
-The \cite{Collins:1997sr}.
+The factorisation theorem for DDIS \cite{Collins:1997sr} [...].
 
 
 
@@ -305,16 +323,13 @@ The \cite{Collins:1997sr}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\clearpage
 \section{Data selection}
-For the present analysis measurements of jet cross sections and inclusive DIS cross sections in lepton-proton collisions performed by the H1 experiment at HERA are exploited.
+For the present analysis measurements of jet cross sections and inclusive DDIS cross sections in lepton-proton collisions performed by the H1 experiment at HERA are exploited.
 %
 Compared to the previous H1 fits \cite{Aktas:2006hy,Aktas:2007bv} which where based on the HERA~I data from years 1996-1997, the new fit includes the HERA-II data for both the inclusive DIS and the jet production in DIS.
-These data has about 40times higher luminosity in case of inclusive production and 6times higher for the dijets.
-Currently, only data based on the large rapidity gap selection method are used.
+These data has about 40~times higher luminosity in case of inclusive production and 6~times higher for the dijets.
 These data covers the region of $|t| < 1\,\text{GeV}^2$ of the proton four-momentum transfer and $M_Y < 1.6\,\text{GeV}$.
-
-\paragraph{Inclusive diffractive DIS data}
-incl. DDIS data
-
+For the present study, data based on the large rapidity gap selection method are used, and
+the selected inclusive neutral-current DDIS data samples are summarised in table~\ref{tab:datasetsDDIS}.
 
 \begin{table}[tbhp]
   \footnotesize
@@ -326,60 +341,110 @@ incl. DDIS data
       \multicolumn{1}{c}{Data set} & $\sqrt{s}$ & int. $\mathcal{L}$ & DIS kinematic  \\  
       \multicolumn{1}{c}{[ref.]}  & $[\GeV]$   & $[{\rm pb}^{-1}]$  &  range         \\   
       \hline
-      1997 MB   & 300 & 2.0 & $3<\Qsq<13.5\,\GeVsq$   \\
-      1997 all  & 300 & 10.6 & $13.5<\Qsq<105\,\GeVsq$   \\
-      1999-2000 & 319 & 61.6 & $133\GeVsq < \Qsq $   \\
+      \HIcomb      & 319 & 2.0 & $3<\Qsq<13.5\,\GeVsq$   \\
+      \HILowEb     & 252 & 10.6 & $13.5<\Qsq<105\,\GeVsq$   \\
+      \HILowEb     & 225 & 61.6 & $133\GeVsq < \Qsq $   \\
+      \hline
     \end{tabular}
     \caption{
-      An old table to be used as template.
+      Summary of inclusive NC DDIS data samples selected for the present DPDF fit.
     }
-    \label{tab:datasetsJets}
+    \label{tab:datasetsDDIS}
     \end{center}
 \end{table}
 
 
-
-
-\paragraph{Dijet data in dffractive DIS}
-The overview of the available H1 jet data can be seen in table~\ref{tab:datasetsJets}.
-In the current analysis, only the HERA-II jet data based on LRG selection are fitted.
-
-
+The combined data set \HIcomb\ was obtained from a combination of six individual data sets as summarised in table~\ref{tab:datasetsComb}
 \begin{table}[tbhp]
   \footnotesize
   %\scriptsize
   \begin{center}
-    \begin{tabular}{cccccc}
+    \begin{tabular}{cccc}
 %      \multicolumn{6}{c}{\bf Kinematic range of H1 jet data} \\
       \hline
-      \multicolumn{1}{c}{Data set} & $\sqrt{s}$ & int. $\mathcal{L}$ & DIS kinematic &  Inclusive jets &  Dijets   \\  
-      \multicolumn{1}{c}{[ref.]}  & $[\GeV]$   & $[{\rm pb}^{-1}]$  &  range        &                 &   $n_{\rm jets}\ge2 $  \\   
+      \multicolumn{1}{c}{Data set} & $\sqrt{s}$ & int. $\mathcal{L}$ & DIS kinematic  \\  
+      \multicolumn{1}{c}{[ref.]}  & $[\GeV]$   & $[{\rm pb}^{-1}]$  &  range         \\   
       \hline
-      $300\,\GeV$ & 300 & 33& $150<\Qsq<5000\,\GeVsq$  & $7<\ptjet<50\,\GeV$ & $\ptjet>7\,\GeV$  \\
-      \cite{Adloff:2000tq} &          & & $0.2<y<0.6$             &            & $8.5<\meanpt<35\,\GeV$    \\
+      1999 MB   & 319 & 3.5  & $3<\Qsq<25\,\GeVsq$   \\
+      1999-2000 & 319 & 34.3 & $10< \Qsq<105\,\GeVsq $   \\
+      2004-2007 & 319 & 336.6 & $10 \Qsq<105\,\GeVsq $   \\
       \hline
-      HERA-I    & 319  &43.5 & $5<\Qsq<100\,\GeVsq$   &   $5<\ptjet<80\,\GeV$ & $5<\ptjet<50\,\GeV$  \\
-\cite{Aaron:2010ac}  &      &     & $0.2<y<0.7$                &                      & $5<\meanpt<80\,\GeV$  \\
-                &           &     &                            &                      & $\Mjj>18\,\GeV$  \\
-                &           &     &                            &                      & $(\meanpt>7\,\GeV)^*$ \\
-      \hline
-      HERA-I    & 319  &65.4 & $150<\Qsq<15000\,\GeVsq$   &   $5<\ptjet<50\,\GeV$ & $-$  \\
-\cite{Aktas:2007aa} &  &     & $0.2<y<0.7$             &                      &  \\
-      \hline
-      HERA-II   & 319  & 290& $5.5<\Qsq<80\,\GeVsq$        & $4.5<\ptjet<50\,\GeV$ & $\ptjet>4\,\GeV$  \\
-\cite{Andreev:2016tgi}&& & $0.2<y<0.6$                &                      & $5<\meanpt<50\,\GeV$  \\
-      \hline
-      HERA-II   & 319  & 351& $150<\Qsq<15000\,\GeVsq$     &   $5<\ptjet<50\,\GeV$ & $5<\ptjet<50\,\GeV$  \\
- \cite{Andreev:2014wwa,Andreev:2016tgi}               &           & & $0.2<y<0.7$                &                      & $7<\meanpt<50\,\GeV$  \\
-                &           & &                            &                      & $\Mjj>16\,\GeV$  \\
+      1997 MB   & 300 & 2.0 & $3<\Qsq<13.5\,\GeVsq$   \\
+      1997 all  & 300 & 10.6 & $13.5<\Qsq<105\,\GeVsq$   \\
+      1999-2000 & 319 & 61.6 & $133\GeVsq < \Qsq $   \\
       \hline
     \end{tabular}
     \caption{
-      An old table to be used as template.
+      Summary of the individual data sets that went into the \HIcomb data set, which
+      is then selected for the present DPDF fit.
+    }
+    \label{tab:datasetsComb}
+    \end{center}
+\end{table}
+
+In addition to the inclusive NC DDIS data, also cross sections for dijet production
+in NC DDIS are considered for the present DPDF fit.
+Albeit there is considerable variety of different measurements, we select only 
+only the HERA-II dijet cross section data based on LRG selection for the present study, due to
+its outstanding statistical uncertainty in comparison to other analysis, and since
+this analysis was performed double-differentially as a function of \Qsq\ and the average transverse
+momentum of the two leading jets, \meanpt.
+The selected dijet cross section data is summarised in table~\ref{tab:datasetsJets}.
+\begin{table*}[tbhp]
+  \scriptsize
+  \begin{center}
+    \begin{tabular}{ccccc}
+%      \multicolumn{5}{c}{\bf Summary of experimental data sets} \\                                                                                                                                                                    
+            \hline
+            {\bf Data Set}  & {\boldmath{$\mathcal{L}$}}
+            & {\bf DIS} & {\bf Dijet} & {\bf Diffractive}   \\     %                                                                                                                                                                   
+            & [{\invpb}]
+            & {\bf range} & {\bf range} & {\bf range} \\
+      \hline
+%      \HFPS \cite{Aaron:2011mp} &  156.6 &  $4<\Qsq<110\,\GeVsq$ & $\ptjone>5\,\GeV$ & $\xpom<0.1$ \\
+%            &(581ev)& $0.05 < y < 0.7$ & $\ptjtwo>4.0\,\GeV$& $|t|<1\,\GeVsq$ \\
+%            & & & $-1<\etalab<2.5$& $\MY= m_P $ \\
+%      \hline
+%      \HVFPS \cite{Andreev:2015cwa} &  50 &  $4<\Qsq<80\,\GeVsq$ & $\ptjone>5.5\,\GeV$ & $0.010<\xpom<0.024$ \\
+%            &(550ev)& $0.2 < y < 0.7$ & $\ptjtwo>4.0\,\GeV$& $|t|<0.6\,\GeVsq$ \\
+%            & & & $-1<\etalab<2.5$ & $\MY= m_P $ \\
+%      \hline
+      \HLRG \cite{Andreev:2014yra} &  290 &  $4<\Qsq<100\,\GeVsq$ & $\ptjone>5.5\,\GeV$ & $\xpom<0.03$ \\
+            &($\sim$15000ev)& $0.1 < y < 0.7$ & $\ptjtwo>4.0\,\GeV$& $|t|<1\,\GeVsq$ \\
+            & & & $-1<\etalab<2$ & $\MY<1.6 \, \GeV$ \\
+      \hline
+%      \HLRGI \cite{Aktas:2007bv} & 51.5 &  $4<\Qsq<80\,\GeVsq$ & $\ptjone>5.5\,\GeV$ & $\xpom<0.03$ \\
+%            &(2723ev)& $0.1 < y < 0.7$ & $\ptjtwo>4.0\,\GeV$& $|t|<1\,\GeVsq$ \\
+%            & & & $-3<\eta^{*\mathrm{jet}}<0$ & $\MY<1.6 \, \GeV$ \\
+%      \hline
+%      \HLRGEp \cite{Aktas:2007hn} &  18 &  $4<\Qsq<80\,\GeVsq$ & $\ptjone>5\,\GeV$ & $\xpom<0.03$ \\
+%             &(322ev)& $165 < W < 242\,\GeV$ & $\ptjtwo>4.0\,\GeV$& $|t|<1\,\GeVsq$ \\
+%             & & $(0.30 < y < 0.65)$& $-1<\etalab<2$& $\MY<1.6 \, \GeV$ \\
+%             & &  & $-3<\eta^{*\mathrm{jet}}<0$&  \\
+%      \hline
+%      \ZLRG \cite{Chekanov:2007aa} &  61 &  $5<\Qsq<100\,\GeVsq$ & $\ptjone>5\,\GeV$ & $\xpom<0.03$ \\
+%            &(5539ev)& $100 < W < 250\,\GeV$ & $\ptjtwo>4.0\,\GeV$& $|t|<1\,\GeVsq$ \\
+%            & &  $(0.10 < y < 0.62)$  & $-3.5<\eta^{*\mathrm{jet}}<0$ & $\MY = m_P$ \\
+%      \hline
+    \end{tabular}
+    \caption{
+      Summary of the dijet data sets used in the present DPDF analysis.
+%      The first column represents the data set label and the second
+%      shows the integrated luminosity and the number of events of the
+%      given data set.
+%      The other columns summarise the definition of the phase space of
+%      the given data.
+%      In cases, where the DIS phase space is defined in terms of $W$,
+%      the corresponding range in $y=W^2/s$ is shown.
+%      All measurements have in common a requirement of $n_{\rm jets}
+%      \geq 2$, which is applied after identifying the two leading
+      %      jets.
+      From the \HLRG\ dijet measurement, the double-differential cross sections as functions of \Qsq\ and \meanpt\ are selected.
     }
     \label{tab:datasetsJets}
     \end{center}
-\end{table}
+\end{table*}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -442,10 +507,43 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
 \label{fig:pdfsRatLog}
 \end{figure}
 
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.6\textwidth]{{{plots/gluonFr}.pdf}}
+\end{center}
+\caption{
+  Momentum fraction of the gluon distribution function of \DPDF (blue line) in comparison
+  to \DPDFFitB (red line) as a function of \Qsq.
+}
+\label{fig:}
+\end{figure}
+
+
 
 \begin{figure}[tbhp]
 \begin{center}
-  \includegraphics[width=0.8\textwidth]{{{plots/comb_q2_xpom0.03}.pdf}}
+  \includegraphics[width=0.8\textwidth]{{{plots/jets}.pdf}}
+\end{center}
+\caption{
+  NNLO pQCD predictions (full blue line) using \DPDF\ in comparison to the total dijet cross section measured in six different
+  analysis by the H1 or ZEUS collaborations (full circles).
+  For comparison, also NLO pQCD predictions using \DPDFFitB\ are displayed.
+  The upper panel displays the total cross section, and the lower panel the ratio
+  of the predictions to data.
+  The inner error band (dark blue) displays the DPDF uncertainty of the \DPDF\ fit,
+  and the outer error band (light blue) displays the DPDF uncertainty and scale
+  uncertainty added in quadrature.
+  The hatched band displays the DPDF uncertainty and NLO scale uncertainty of the NLO predictions.
+  The inner error of the data displays the statistical uncertainty, and the full error bars displays the total experimental uncertainty.
+}
+\label{fig:jets}
+\end{figure}
+
+
+
+\begin{figure}[tbhp]
+\begin{center}
+  \includegraphics[width=0.7\textwidth]{{{plots/comb_q2_xpom0.03}.pdf}}
 \end{center}
 \caption{
   Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data at
@@ -457,7 +555,7 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
 
 \begin{figure}[tbhp]
 \begin{center}
-  \includegraphics[width=0.8\textwidth]{{{plots/comb_q2_xpom0.01}.pdf}}
+  \includegraphics[width=0.7\textwidth]{{{plots/comb_q2_xpom0.01}.pdf}}
 \end{center}
 \caption{
   Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data as a function of \Qsq\ at
@@ -469,7 +567,7 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
 
 \begin{figure}[tbhp]
 \begin{center}
-  \includegraphics[width=0.8\textwidth]{{{plots/comb_q2_xpom0.003}.pdf}}
+  \includegraphics[width=0.7\textwidth]{{{plots/comb_q2_xpom0.003}.pdf}}
 \end{center}
 \caption{
   Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data as a function of \Qsq\ at
@@ -481,7 +579,7 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
 
 \begin{figure}[tbhp]
 \begin{center}
-  \includegraphics[width=0.8\textwidth]{{{plots/comb_q2_xpom0.001}.pdf}}
+  \includegraphics[width=0.7\textwidth]{{{plots/comb_q2_xpom0.001}.pdf}}
 \end{center}
 \caption{
   Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data as a function of \Qsq\ at
@@ -493,7 +591,7 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
 
 \begin{figure}[tbhp]
 \begin{center}
-  \includegraphics[width=0.8\textwidth]{{{plots/comb_q2_xpom0.0003}.pdf}}
+  \includegraphics[width=0.7\textwidth]{{{plots/comb_q2_xpom0.0003}.pdf}}
 \end{center}
 \caption{
   Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 combined LRG data as a function of \Qsq\ at
@@ -722,40 +820,10 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
 
 \begin{figure}[tbhp]
 \begin{center}
-  \includegraphics[width=0.8\textwidth]{{{plots/jets}.pdf}}
-\end{center}
-\caption{
-  NNLO pQCD predictions (full blue line) using \DPDF\ for the total dijet cross section measured in six different
-  analysis by the H1 and ZEUS collaboration (full circles).
-  For comparison, also NLO pQCD predictions using \DPDFFitB\ are displayed.
-  The upper panel displays the total cross section, and the lower panel the ratio
-  of the predictions to data.
-  The inner error band (dark blue) displays the DPDF uncertainty of the \DPDF\ fit,
-  and the outer error band (light blue) displays the DPDF uncertainty and scale
-  uncertainty added in quadrature.
-  The hatched band displays the DPDF uncertainty and NLO scale uncertainty of the NLO predictions.
-  The inner error of the data displays the statistical uncertainty, and the full error bars displays the total experimental uncertainty.
-}
-\label{fig:jets}
-\end{figure}
-
-\begin{figure}[tbhp]
-\begin{center}
-  \includegraphics[width=0.6\textwidth]{{{plots/gluonFr}.pdf}}
-\end{center}
-\caption{
-  Momentum fraction of the gluon distribution function of \DPDF (blue line) in comparison
-  to \DPDFFitB (red line) as a function of \Qsq.
-}
-\label{fig:}
-\end{figure}
-
-\begin{figure}[tbhp]
-\begin{center}
   \includegraphics[width=0.8\textwidth]{{{plots/e252_beta_xpom0.003}.pdf}}
 \end{center}
 \caption{
-  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $E_p=252\,\GeV$ at  $\xpom=0.003$ (full circles) as a function of $\beta$.
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $\sqrt{s}=252\,\GeV$ at  $\xpom=0.003$ (full circles) as a function of $\beta$.
   Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
 }
 \label{fig:}
@@ -766,7 +834,7 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
   \includegraphics[width=0.8\textwidth]{{{plots/e252_beta_xpom0.001}.pdf}}
 \end{center}
 \caption{
-  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $E_p=252\,\GeV$ at  $\xpom=0.001$ (full circles) as a function of $\beta$.
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $\sqrt{s}=252\,\GeV$ at  $\xpom=0.001$ (full circles) as a function of $\beta$.
   Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
 }
 \label{fig:}
@@ -777,7 +845,7 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
   \includegraphics[width=0.8\textwidth]{{{plots/e252_beta_xpom0.0005}.pdf}}
 \end{center}
 \caption{
-  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $E_p=252\,\GeV$ at  $\xpom=0.0005$ (full circles) as a function of $\beta$.
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $\sqrt{s}=252\,\GeV$ at  $\xpom=0.0005$ (full circles) as a function of $\beta$.
   Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
 }
 \label{fig:}
@@ -788,7 +856,7 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
   \includegraphics[width=0.8\textwidth]{{{plots/e252_betaRat_xpom0.003}.pdf}}
 \end{center}
 \caption{
-  Ratio of NNLO pQCD predictions using \DPDF to H1 LRG data taken with $E_p=252\,\GeV$ at  $\xpom=0.003$ (full circles) as a function of $\beta$.
+  Ratio of NNLO pQCD predictions using \DPDF to H1 LRG data taken with $\sqrt{s}=252\,\GeV$ at  $\xpom=0.003$ (full circles) as a function of $\beta$.
   Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
 }
 \label{fig:}
@@ -799,7 +867,7 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
   \includegraphics[width=0.8\textwidth]{{{plots/e252_betaRat_xpom0.0005}.pdf}}
 \end{center}
 \caption{
-  Ratio of NNLO pQCD predictions using \DPDF to H1 LRG data taken with $E_p=252\,\GeV$ at  $\xpom=0.0005$ (full circles) as a function of $\beta$.
+  Ratio of NNLO pQCD predictions using \DPDF to H1 LRG data taken with $\sqrt{s}=252\,\GeV$ at  $\xpom=0.0005$ (full circles) as a function of $\beta$.
   Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
 }
 \label{fig:}
@@ -810,7 +878,7 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
   \includegraphics[width=0.8\textwidth]{{{plots/e225_beta_xpom0.003}.pdf}}
 \end{center}
 \caption{
-  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $E_p=225\,\GeV$ at  $\xpom=0.003$ (full circles) as a function of $\beta$.
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $\sqrt{s}=225\,\GeV$ at  $\xpom=0.003$ (full circles) as a function of $\beta$.
   Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
 }
 \label{fig:}
@@ -821,7 +889,7 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
   \includegraphics[width=0.8\textwidth]{{{plots/e225_beta_xpom0.0005}.pdf}}
 \end{center}
 \caption{
-  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $E_p=225\,\GeV$ at  $\xpom=0.0005$ (full circles) as a function of $\beta$.
+  Comparison of (fitted) NNLO predictions using \DPDF\ (full line) to H1 LRG data taken with $\sqrt{s}=225\,\GeV$ at  $\xpom=0.0005$ (full circles) as a function of $\beta$.
   Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
 }
 \label{fig:}
@@ -832,7 +900,7 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
   \includegraphics[width=0.8\textwidth]{{{plots/e225_betaRat_xpom0.003}.pdf}}
 \end{center}
 \caption{
-  Ratio of NNLO pQCD predictions using \DPDF to H1 LRG data taken with $E_p=225\,\GeV$ at  $\xpom=0.003$ (full circles) as a function of $\beta$.
+  Ratio of NNLO pQCD predictions using \DPDF to H1 LRG data taken with $\sqrt{s}=225\,\GeV$ at  $\xpom=0.003$ (full circles) as a function of $\beta$.
   Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
 }
 \label{fig:}
@@ -843,7 +911,7 @@ In the current analysis, only the HERA-II jet data based on LRG selection are fi
   \includegraphics[width=0.8\textwidth]{{{plots/e225_betaRat_xpom0.0005}.pdf}}
 \end{center}
 \caption{
-  Ratio of NNLO pQCD predictions using \DPDF to H1 LRG data taken with $E_p=225\,\GeV$ at  $\xpom=0.0005$ (full circles) as a function of $\beta$.
+  Ratio of NNLO pQCD predictions using \DPDF to H1 LRG data taken with $\sqrt{s}=225\,\GeV$ at  $\xpom=0.0005$ (full circles) as a function of $\beta$.
   Other details as in fig.~\ref{fig:comb_q2_xpom0p03}.
 }
 \label{fig:}
