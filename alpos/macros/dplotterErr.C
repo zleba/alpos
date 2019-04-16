@@ -67,9 +67,11 @@ struct dPlotter {
     void plotPDF(double q2, int fl, bool inLog);
     void plotPDFsErrors(bool inLog, bool onlyErr=true);
     void plotShiftsChi2();
+    void plotErr2Composition(bool inLog);
 
 
     pair<TGraphAsymmErrors*,TGraphAsymmErrors*> getBandModel(double q2);
+   pair<vector<TH1D*>,vector<TH1D*>> getErr2Model(double q2);
 
     void plotParametersShifts(int sh);
     TGraphAsymmErrors *getPamametersBand(int shMax = 999);
@@ -171,20 +173,39 @@ pair<TGraphAsymmErrors*, TGraphAsymmErrors*> getGluonSinglet2006Err(TGraph *grRe
 
 
 
-void dplotterErr(TString inDir = "../farm/variants/Ext_nloF_heraCjets.str_dir")
+//void dplotterErr(TString inDir = "../farm/variants/Ext_nloF_heraCjets.str_dir")
+void dplotterErr(TString inDir = "../farm/variants/FitA_nloF_heraI.str_dir/")
+//void dplotterErr(TString inDir = "../testA")
 {
     dPlotter dplt;
+    inDir = "../farm/variants/AExt_nnlo_heraCjets.str_dir";
+    //inDir = "../farm/variants/AExt_nlo_heraC.str_dir";
 
     dplt.readData(inDir, 18);
 
 
-    /*
-    dplt.plotPDFsErrors(true, true);
-    dplt.plotPDFsErrors(false, true);
+    //dplt.plotPDFsErrors(true, false);
+    //dplt.plotPDFsErrors(false, true);
+    //dplt.plotPDFsErrors(false, false);
+
+    //return;
+
+    dplt.plotPDFs(false, false);
+    dplt.plotPDFs(true, true);
+
+    //dplt.plotPDFs(false, true);
+    //dplt.plotPDFs(true, true);
+    //dplt.plotPDFs(false, false);
+    //dplt.plotPDFs(true, false);
     return 0;
-    */
+
+
 
     dplt.plotShiftsChi2();
+
+    //dplt.plotPDFsErrors(true);
+
+    //dplt.plotErr2Composition(true);
 
     return;
 
@@ -236,7 +257,9 @@ void sysShift::readData(TString inFile)
 
 
     int nShifts = 2*hPars->GetNbinsX() + 1;
-    vector<double> q2Vals = {1.75, 8.5, 20, 90, 800};
+    //vector<double> q2Vals = {1.75, 8.5, 20, 90, 800};
+    vector<double> q2Vals = {1.75,  20,  800};
+
     //vector<double> q2Vals = {2.5, 8.5, 20, 90, 800};
     for(double q2 : q2Vals) {
         singletQ2[q2].resize(nShifts, nullptr);
@@ -247,6 +270,22 @@ void sysShift::readData(TString inFile)
             //cout << Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_SIGMA", q2, i ) << endl;
             gluonQ2[q2][i]   = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_gluon", q2, i )));
             singletQ2[q2][i] = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_SIGMA", q2, i )));
+
+            TGraph *singletC, *singletB;
+            singletC = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_c", q2, i )));
+            singletB = dynamic_cast<TGraph*>(file->Get(Form("SaveDPDFTGraph/Q2_%g/DPDF_%d/Pom_b", q2, i )));
+
+            //Subtract heavy component
+            for(int k = 0; k < singletQ2[q2][i]->GetN(); ++k) {
+               double x, y, yb, yc;
+               singletQ2[q2][i]->GetPoint(k, x, y);
+               singletC->GetPoint(k, x, yc);
+               singletB->GetPoint(k, x, yb);
+               singletQ2[q2][i]->SetPoint(k, x, y - 2*yc - 2*yb);
+            }
+
+
+
             if(!gluonQ2[q2][i] || !singletQ2[q2][i]) {
                 cout << "Not loaded " << __LINE__  << endl;
                 exit(1);
@@ -359,6 +398,24 @@ TGraphAsymmErrors *addBands(vector<TGraphAsymmErrors*> graphs)
     return gr;
 }
 
+void Normalize(vector<TH1D*> &hVec)
+{
+    for(int i = 1; i <= hVec[0]->GetNbinsX(); ++i) {
+       double sum = 0;
+       for(int k = 0; k < hVec.size(); ++k)
+          sum += hVec[k]->GetBinContent(i);
+
+       for(int k = 0; k < hVec.size(); ++k) {
+          double v = hVec[k]->GetBinContent(i);
+          hVec[k]->SetBinContent(i, v/sum);
+       }
+    }
+}
+
+
+
+
+
 double GetMaximum(TGraph *gr)
 {
     double m = -1e40;
@@ -428,6 +485,55 @@ TGraphAsymmErrors *getBand(vector<TGraph*> graphs)
 
 }
 
+TH1D *getExpErr(vector<TGraph*> graphs)
+{
+    vector<double> vals;
+    vector<double> zMin, zMax;
+
+    for(int i = 0; i < graphs[0]->GetN(); ++i) {
+        double x, vCnt;
+        graphs[0]->GetPoint(i, x, vCnt);
+
+        double err2 = 0;
+        for(auto g : graphs) {
+            double xTmp, vNow;
+            g->GetPoint(i, xTmp, vNow) ;
+            double v = vNow - vCnt;
+            err2 += v*v;
+        }
+
+        double xLeft = x, xRight = x;
+        if(i > 0) {
+            double vTmp;
+            graphs[0]->GetPoint(i-1, xLeft, vTmp);
+        }
+        if(i < graphs[0]->GetN() - 1) {
+            double vTmp;
+            graphs[0]->GetPoint(i+1, xRight, vTmp);
+        }
+
+        vals.push_back(err2);
+
+        zMin.push_back(x - (x-xLeft)/2);
+        zMax.push_back(x + (xRight-x)/2);
+    }
+
+    vector<double> bins = zMin;
+    bins.push_back(zMax.back());
+   
+    //TH1D::AddDirectory(false);
+    TH1D *h = new TH1D(rn(), "", bins.size()-1, bins.data());
+    for(int i = 0; i < vals.size(); ++i) {
+      h->SetBinContent(i+1, vals[i]);   
+    }
+
+    return h;
+}
+
+
+
+
+
 
 pair<TGraphAsymmErrors*,TGraphAsymmErrors*> dPlotter::getBandModel(double q2)
 {
@@ -439,6 +545,21 @@ pair<TGraphAsymmErrors*,TGraphAsymmErrors*> dPlotter::getBandModel(double q2)
 
     return {getBand(gluons), getBand(singlets)};
 }
+
+
+pair<vector<TH1D*>,vector<TH1D*>> dPlotter::getErr2Model(double q2)
+{
+    vector<TH1D*> gluons, singlets;
+    for(int k = 1; k < (shifts.size()-1)/2; ++k) {
+       int id1 = 2*k-1;
+       int id2 = 2*k;
+        singlets.push_back(getExpErr({shifts[0].singletQ2.at(q2)[0],  shifts[id1].singletQ2.at(q2)[0], shifts[id2].singletQ2.at(q2)[0]}));
+        gluons.push_back(getExpErr({shifts[0].gluonQ2.at(q2)[0],  shifts[id1].gluonQ2.at(q2)[0], shifts[id2].gluonQ2.at(q2)[0]}));
+    }
+
+    return {gluons, singlets};
+}
+
 
 
 
@@ -581,6 +702,17 @@ void dPlotter::plotParametersShifts(int sh)
     can->SaveAs(outDir + Form("/parsErr%d.pdf",sh));
 }
 
+
+map<TString, TString> nameMap = {
+{"QcdnumInit.mcharm", "m_{c}"},
+{"QcdnumInit.ScaleFacMuR", "#mu_{R,F}"},
+{"QcdnumInit.Q0", "Q_{0}"},
+{"QcdnumInit.AlphasMz", "#alpha_{S}"},
+{"DPDF.Flux_reg1_b0", "B^{0}_{IR}"},
+{"DPDF.Flux_reg1_a0", "#alpha_{IR}(0)"},
+};
+
+
 void dPlotter::plotShiftsChi2()
 {
     map<TString,TGraphAsymmErrors*> grTab, grFit;
@@ -669,13 +801,14 @@ void dPlotter::plotShiftsChi2()
 
         grTab[n]->SetFillColor(kYellow);
         grTab[n]->SetLineColor(kRed);
-        grTab[n]->SetLineWidth(2);
+        grTab[n]->SetLineWidth(3);
         grTab[n]->SetFillStyle(1001);
         grTab[n]->DrawClone("pe2 same");
 
         grTab[n]->SetPointEXlow(0,0);
         grTab[n]->SetPointEXhigh(0,0);
-        grTab[n]->SetLineStyle(2);
+        grTab[n]->SetLineStyle(3);
+        grFit[n]->SetLineWidth(2);
         grTab[n]->Draw("ze same");
         grFit[n]->Draw("pe same");
         GetYaxis()->SetRangeUser(-0.5, 0.5);
@@ -690,7 +823,9 @@ void dPlotter::plotShiftsChi2()
 
         UpdateFrame();
 
-        DrawLatexLeft(1, n, -1, "r");
+
+        TString nn = nameMap.count(n) ? nameMap.at(n) : n;
+        DrawLatexLeft(1, nn, -1, "r");
         DrawLatexRight(1, Form("%.1f", dChi2Min.at(n)), -1, "l");
 
         ++i;
@@ -727,12 +862,12 @@ void dPlotter::plotPDFs(bool inLog, bool doRatio)
     }
 
     gStyle->SetOptStat(0);
-    TCanvas *can = new TCanvas(rn(),"", 600, 600);
-    SetLeftRight(0.1, 0.14);
+    TCanvas *can = new TCanvas(rn(),"", 600, 500);
+    SetLeftRight(0.1, 0.16);
     SetTopBottom(0.1, 0.1);
 
     double zMin = 4e-3;
-    DivideTransparent(group(1, 0.5, 2), group(1, 0, q2s.size()));
+    DivideTransparent(group(1, 0.3, 2), group(1, 0, q2s.size()));
 
     for(int i = 0; i < q2s.size(); ++i) {
         //Fill Graph
@@ -780,28 +915,33 @@ void dPlotter::plotPDFs(bool inLog, bool doRatio)
 
 
         grS->SetFillColorAlpha(kBlue, 0.5);
+        grS->SetLineWidth(2);
+        grS->SetLineColor(kBlue);
         grS->SetFillStyle(1001);
         grS->Draw("le3 same");
 
-        grSfA->SetLineColor(kRed);
+        //grSfA->SetLineColor(kRed);
         grSfB->SetLineColor(kMagenta);
-        grSfA->Draw("l same");
+        grSfB->SetLineWidth(2);
+        //grSfA->Draw("l same");
         grSfB->Draw("l same");
 
 
         if(doRatio) GetYaxis()->SetRangeUser(0.4, 1.6);
-        else        GetYaxis()->SetRangeUser(0, 0.27);
+        else        GetYaxis()->SetRangeUser(0, 0.56);
         //GetYaxis()->SetRangeUser(0.9, 1.1);
         GetYaxis()->SetNdivisions(503);
         GetXaxis()->SetNdivisions(404);
-        SetFTO({15}, {6}, {1.4, 2.2, 0.4, 3.9});
+        SetFTO({15}, {6}, {1.4, 1.8, 0.4, 2.6});
+        GetXaxis()->SetTitleSize(1.3*GetXaxis()->GetLabelSize());
+        GetYaxis()->SetTitleSize(1.3*GetYaxis()->GetLabelSize());
 
         if(inLog) gPad->SetLogx();
 
         if(i == 0) {
             DrawLatexUp(-1, "Singlet");
-            if(doRatio) GetYaxis()->SetTitle("#Sigma(z,Q^{2}) / #Sigma_{0}(z,Q^{2})");
-            else        GetYaxis()->SetTitle("z #Sigma(z,Q^{2})");
+            if(doRatio) GetYaxis()->SetTitle("#Sigma(z,#mu^{2}) / #Sigma_{0}(z,#mu^{2})");
+            else        GetYaxis()->SetTitle("z #Sigma(z,#mu^{2})");
 
         }
         if(i == q2s.size()-1) {
@@ -812,14 +952,26 @@ void dPlotter::plotPDFs(bool inLog, bool doRatio)
         }
 
 
-        if(i == 3 && doRatio) {
+        if(i == 1 /*&& doRatio*/) {
             auto *leg = newLegend(kPos7);
-            leg->SetNColumns(2);
-            leg->AddEntry(grG,   "OurFit", "lf");
-            leg->AddEntry(grGfA, "2006 FitA", "l");
-            leg->AddEntry((TObject*)nullptr, "", "");
-            leg->AddEntry(grGfB, "2006 FitB", "l");
-            DrawLegends({leg});
+            leg->SetNColumns(1);
+            leg->SetTextSize(GetXaxis()->GetLabelSize());
+            leg->AddEntry(grG,   "H1 Fit2019 NNLO prel.", "l");
+            leg->AddEntry(grG,   "exp. unc.", "f");
+            leg->AddEntry(grGtot, "+exp. +theor. unc.", "f");
+            //leg->AddEntry(grGfA, "2006 FitA", "l");
+            //leg->AddEntry((TObject*)nullptr, "", "");
+            if(!doRatio) {
+               leg->AddEntry(grGfB, "H1 Fit2006B NLO", "l");
+               DrawLegends({leg});
+            }
+            else {
+               DrawLegends({leg});
+               auto *leg2 = newLegend(kPos1);
+               leg2->SetTextSize(GetXaxis()->GetLabelSize());
+               leg2->AddEntry(grGfB, "H1 Fit2006B NLO", "l");
+               DrawLegends({leg2});
+            }
         }
 
 
@@ -832,27 +984,34 @@ void dPlotter::plotPDFs(bool inLog, bool doRatio)
         grGtot->Draw("le3 same");
 
         grG->SetFillColorAlpha(kBlue, 0.5);
+        grG->SetLineWidth(2);
         grG->SetFillStyle(1001);
         grG->Draw("le3 same");
 
-        grGfA->SetLineColor(kRed);
+        //grGfA->SetLineColor(kRed);
         grGfB->SetLineColor(kMagenta);
-        grGfA->Draw("l same");
+        grGfB->SetLineWidth(2);
+        //grGfA->Draw("l same");
         grGfB->Draw("l same");
 
         if(doRatio) GetYaxis()->SetRangeUser(0.4, 1.6);
-        else        GetYaxis()->SetRangeUser(0, 2.25);
+        //else        GetYaxis()->SetRangeUser(0, 2.25);
+        else        GetYaxis()->SetRangeUser(0, 0.56);
 
         //GetYaxis()->SetRangeUser(0.9, 1.1);
         GetYaxis()->SetNdivisions(503);
         GetXaxis()->SetNdivisions(404);
-        SetFTO({15}, {6}, {1.4, 2.2, 0.4, 3.9});
+        SetFTO({15}, {6}, {1.4, 1.8, 0.4, 2.6});
+        GetXaxis()->SetTitleSize(1.3*GetXaxis()->GetLabelSize());
+        GetYaxis()->SetTitleSize(1.3*GetYaxis()->GetLabelSize());
+
+
         if(inLog) gPad->SetLogx();
 
         if(i == 0) {
             DrawLatexUp(-1, "Gluon");
-            if(doRatio) GetYaxis()->SetTitle("g(z,Q^{2}) / g_{0}(z,Q^{2})");
-            else        GetYaxis()->SetTitle("z g(z,Q^{2})");
+            if(doRatio) GetYaxis()->SetTitle("g(z,#mu^{2}) / g_{0}(z,#mu^{2})");
+            else        GetYaxis()->SetTitle("z g(z,#mu^{2})");
         }
         if(i == q2s.size()-1) {
             GetXaxis()->SetTitle("z");
@@ -861,15 +1020,17 @@ void dPlotter::plotPDFs(bool inLog, bool doRatio)
             GetXaxis()->SetLabelOffset(50000);
         }
 
-        DrawLatexRight(1, Form("Q^{2}=%g",q2s[i]), -1, "l");
+        DrawLatexRight(0.8, Form("#mu^{2}=%g GeV^{2}",q2s[i]), 15, "l");
 
-        if(i == 3 && !doRatio) {
+        /*
+        if(i == 1 && !doRatio) {
             auto *leg = newLegend(kPos9);
-            leg->AddEntry(grG,   "OurFit", "lf");
-            leg->AddEntry(grGfA, "2006 FitA", "l");
-            leg->AddEntry(grGfB, "2006 FitB", "l");
+            leg->SetTextSize(GetXaxis()->GetLabelSize());
+            leg->AddEntry(grG,   "H1 Fit 2019 NNLO", "lf");
+            leg->AddEntry(grGfB, "H1 2006 FitB NLO", "l");
             DrawLegends({leg});
         }
+        */
     }
 
     TString sRat = doRatio ? "Rat" : "";
@@ -877,6 +1038,12 @@ void dPlotter::plotPDFs(bool inLog, bool doRatio)
     else      can->SaveAs(outDir + "/pdfs"+sRat+"Lin.pdf");
 
 }
+
+
+
+
+
+
 
 
 
@@ -1050,7 +1217,7 @@ void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
         grG->SetLineColor(kBlue);
 
         TGraphAsymmErrors *grSfA = grSfAVec[i], *grSfB = grSfBVec[i];
-        TGraphAsymmErrors *grGfA = grGfAVec[i], *grGfB = grSfBVec[i];
+        TGraphAsymmErrors *grGfA = grGfAVec[i], *grGfB = grGfBVec[i];
         //tie(grGfA,grSfA) = getGluonSinglet2006Err(grGtot, q2s[i], 1);
         //tie(grGfB,grSfB) = getGluonSinglet2006Err(grGtot, q2s[i], 2);
 
@@ -1059,17 +1226,17 @@ void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
             TGraph *grSRef = (TGraph*) grS->Clone();
             grS    = GetFraction(grS, grSRef);
             grStot = GetFraction(grStot, grSRef);
-            if(!onlyErr) grSfA  = GetFraction(grSfA, grSRef);
-            else         grSfA  = GetFraction(grSfA, (TGraph*)grSfA->Clone());
-            grSfB  = GetFraction(grSfB, grSRef);
+            if(!onlyErr) grSfB  = GetFraction(grSfB, grSRef);
+            else         grSfB  = GetFraction(grSfB, (TGraph*)grSfB->Clone());
+            grSfA  = GetFraction(grSfA, grSRef);
 
             TGraph *grGRef =(TGraph*) grG->Clone();
             grG    = GetFraction(grG, grGRef);
             grGtot = GetFraction(grGtot, grGRef);
             //grGfA  = GetFraction(grGfA, grGRef);
-            if(!onlyErr) grGfA  = GetFraction(grGfA, grGRef);
-            else         grGfA  = GetFraction(grGfA, (TGraph*)grGfA->Clone());
-            grGfB  = GetFraction(grGfB, grGRef);
+            if(!onlyErr) grGfB  = GetFraction(grGfB, grGRef);
+            else         grGfB  = GetFraction(grGfB, (TGraph*)grGfB->Clone());
+            grGfA  = GetFraction(grGfA, grGRef);
         }
 
 
@@ -1080,22 +1247,22 @@ void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
 
         grStot->SetFillColorAlpha(kRed, 0.5);
         grStot->SetFillStyle(1001);
-        grStot->Draw("le3 same");
+        grStot->Draw("le03 same");
 
         grS->SetFillColorAlpha(kBlue, 0.5);
         grS->SetFillStyle(1001);
-        grS->Draw("le3 same");
+        grS->Draw("le03 same");
 
 
         grSfA->SetLineColor(kRed);
         grSfB->SetLineColor(kMagenta);
 
-        grSfA->SetFillColorAlpha(kRed,0.5);
-        grSfA->SetFillStyle(3244);
+        grSfB->SetFillColorAlpha(kMagenta,0.5);
+        grSfB->SetFillStyle(3244);
         //grSfA->SetFillStyle(1001);
 
-        grSfA->Draw("le02 same");
-        if(!onlyErr) grSfB->Draw("lX same");
+        grSfB->Draw("le02 same");
+        if(!onlyErr) grSfA->Draw("lX same");
 
 
         if(doRatio) GetYaxis()->SetRangeUser(0.4, 1.6);
@@ -1139,11 +1306,11 @@ void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
 
         grGtot->SetFillColorAlpha(kRed, 0.5);
         grGtot->SetFillStyle(1001);
-        grGtot->Draw("le3 same");
+        grGtot->Draw("le03 same");
 
         grG->SetFillColorAlpha(kBlue, 0.5);
         grG->SetFillStyle(1001);
-        grG->Draw("le3 same");
+        grG->Draw("le03 same");
 
 
         if(q2s[i] == 8.5) {
@@ -1159,11 +1326,11 @@ void dPlotter::plotPDFsErrors(bool inLog, bool onlyErr)
         grGfA->SetLineColor(kRed);
         grGfB->SetLineColor(kMagenta);
 
-        grGfA->SetFillColorAlpha(kRed,0.5);
-        grGfA->SetFillStyle(3244);
-        grGfA->Draw("le2 same");
+        grGfB->SetFillColorAlpha(kMagenta,0.5);
+        grGfB->SetFillStyle(3244);
+        grGfB->Draw("le02 same");
 
-        if(!onlyErr) grGfB->Draw("lX same");
+        if(!onlyErr) grGfA->Draw("lX same");
 
         if(doRatio) GetYaxis()->SetRangeUser(0.4, 1.6);
         else        GetYaxis()->SetRangeUser(0, 2.25);
@@ -1313,4 +1480,116 @@ void dPlotter::plotParameters()
     */
 
     can->SaveAs(outDir + Form("/pars.pdf"));
+}
+
+
+
+void dPlotter::plotErr2Composition(bool inLog)
+{
+    vector<double> q2s;
+    for(auto v : shifts[0].gluonQ2) {
+        q2s.push_back(v.first);
+    }
+
+    gStyle->SetOptStat(0);
+    TCanvas *can = new TCanvas(rn(),"", 600, 600);
+    SetLeftRight(0.1, 0.14);
+    SetTopBottom(0.1, 0.1);
+
+    double zMin = 4e-3;
+    DivideTransparent(group(1, 0.5, 2), group(1, 0, q2s.size()));
+
+    for(int i = 0; i < q2s.size(); ++i) {
+        //Fill Graph
+
+        TH1D *hSexp = getExpErr(shifts[0].singletQ2.at(q2s[i]));
+        TH1D *hGexp = getExpErr(shifts[0].gluonQ2.at(q2s[i]));
+
+
+        vector<TH1D*> hS, hG;
+        tie(hG, hS) = getErr2Model(q2s[i]);
+
+        hG.insert(hG.begin(), hGexp);
+        hS.insert(hS.begin(), hSexp);
+
+        Normalize(hG);
+        Normalize(hS);
+
+        THStack *sG = new THStack(rn(),"");
+        THStack *sS = new THStack(rn(),"");
+        for(auto &h : hG){
+           h->SetFillColor(kBlue);
+           sG->Add(h);
+        }
+        for(auto &h : hS) {
+           h->SetFillColor(kBlue);
+           sS->Add(h);
+        }
+
+
+        can->cd(2*i + 1);
+        TH1D *hFrS = new TH1D(rn(), "", 1, zMin, 1);
+        hFrS->Draw("axis");
+
+        //int p = 0;
+        /*
+        for(auto & h : hS) {
+           //for(int k = 1; k < h->GetNbinsX(); ++k)
+              //cout << p<< " "<<q2s[i] <<" "<<h->GetBinCenter(k)<<" "<<  h->GetBinContent(k) << endl;
+           h->SetLineColor(kBlack);
+           h->Draw("hist same");
+           //++p;
+        }
+        */
+
+
+        for(int k = 1; k < hS[0]->GetNbinsX(); ++k)
+           cout << 0<< " "<<q2s[i] <<" "<<hS[0]->GetBinCenter(k)<<" "<<  hS[0]->GetBinContent(k) << endl;
+
+        for(int l = 0; l < hS.size(); ++l) {
+           TGraph *g = new TGraph();
+           g->SetLineColor(l+1);
+           for(int k = 1; k < hS[0]->GetNbinsX(); ++k)
+              g->SetPoint(k-1, hS[0]->GetBinCenter(k), hS[0]->GetBinContent(k));
+           g->Draw("l same");
+        }
+
+        /*
+        hS[0]->SetLineColor(kBlack);
+        hS[0]->SetLineWidth(2);
+        hS[0]->Draw("hist same");
+        */
+
+        //sS->Draw();
+        //g->Draw("l same");
+
+
+        //sS->Draw();
+
+        GetYaxis()->SetRangeUser(0, 1.2);
+
+        GetYaxis()->SetNdivisions(503);
+        GetXaxis()->SetNdivisions(404);
+        SetFTO({15}, {6}, {1.4, 2.2, 0.4, 3.9});
+
+        if(inLog) gPad->SetLogx();
+
+
+        can->cd(2*i + 2);
+        TH1D *hFrG = new TH1D(rn(), "", 1, zMin, 1);
+        hFrG->Draw("axis");
+
+        sG->Draw();
+
+        GetYaxis()->SetRangeUser(0, 1.2);
+
+        GetYaxis()->SetNdivisions(503);
+        GetXaxis()->SetNdivisions(404);
+        SetFTO({15}, {6}, {1.4, 2.2, 0.4, 3.9});
+        if(inLog) gPad->SetLogx();
+
+    }
+
+    if(inLog) can->SaveAs(outDir + "/pdfsErr2Log.pdf");
+    else      can->SaveAs(outDir + "/pdfsErr2Lin.pdf");
 }

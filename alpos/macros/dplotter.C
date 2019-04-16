@@ -13,6 +13,7 @@ using namespace PlottingHelper;
 
 #include <vector>
 #include <map>
+#include <algorithm>
 
 
 using namespace PlottingHelper;//pollute the namespace!
@@ -24,61 +25,175 @@ TString rn() {return Form("%d",rand());}
 #include <vector>
 
 
-struct point {
+struct pointInc {
     double xp,  q2,  beta, xpSig;
     double th, thErr;
     double thOrgA, thOrgB;
     double errStat, errSys, errTot, errUnc;
+    bool isInside;
     std::vector<double> errs;//10 items
 };
 
 
 struct dPlotter {
-    std::vector<point> data;
+    std::vector<pointInc> data;
+    std::map<pair<double,double>, TH1D*> jetsData, jetsTh;
+
     TH1D *hPars;
     TH2D *hCorrs;
     TString outDir;
 
-    void readData(TString inFile);
-    void plotBeta(double xpom);
-    void plotQ2(double xpom);
+    void readDataInc(TString inFile, vector<TString> samples);
+    void readDataJets(TString inFile, vector<TString> samples);
+    void plotBeta(TString fTag, double xpom);
+    void plotBetaRat(TString fTag, double xpom);
+    void plotBetaMore(TString fTag, vector<double> xpomVec);
+
+    void plotQ2(TString fTag, double xpom);
     void plotXpom();
     void plotPDFs(bool inLog);
     void plotParameters();
     void plotCorrelations();
 
 
+    void plotJets();
 
 
 };
 
+void plotJets(dPlotter &nlo, dPlotter &nnlo);
 
 
-void dplotter(TString inFile = "test/alpos.out.root")
+void dplotter(TString inFile = "../testA/alpos.out.root")
 {
     dPlotter dplt;
-    dplt.readData(inFile);
-    dplt.plotBeta(0.0003);
-    dplt.plotBeta(0.001);
-    dplt.plotBeta(0.003);
-    dplt.plotBeta(0.01);
-    dplt.plotBeta(0.03);
+
+    inFile = "../farm/variants/AExt_nnlo_heraCjets.str_dir/steering.str0_dir/out.root";
+    //inFile = "../farm/variants/Ext_nloF_heraI.str_dir/steering.str0_dir/out.root";
+
+    //inFile = "../steering.str0_FactorizationNNLO/out.root";
+
+    //dplt.readDataInc(inFile, {"H1incDDIS_HERA_I_LAr_cuts", "H1incDDIS_HERA_I_SpacMB_cuts", "H1incDDIS_HERA_I_SpacTrg_cuts"});
+    //dplt.readDataInc(inFile, {});
+
+    dplt.readDataInc(inFile, {"H1incDDIS_Comb"});
 
 
-    dplt.plotQ2(0.0003);
-    dplt.plotQ2(0.001);
-    dplt.plotQ2(0.003);
-    dplt.plotQ2(0.01);
-    dplt.plotQ2(0.03);
+    dplt.plotBeta("comb", 0.0003);
+    dplt.plotBeta("comb", 0.001);
+    dplt.plotBeta("comb", 0.003);
+    dplt.plotBeta("comb", 0.01);
+    dplt.plotBeta("comb", 0.03);
 
-    dplt.plotParameters();
-    dplt.plotCorrelations();
+
+    /*
+    dplt.plotBetaRat("comb", 0.0003);
+    dplt.plotBetaRat("comb", 0.001);
+    dplt.plotBetaRat("comb", 0.003);
+    dplt.plotBetaRat("comb", 0.01);
+    dplt.plotBetaRat("comb", 0.03);
+    */
+
+
+    dplt.plotQ2("comb", 0.0003);
+    dplt.plotQ2("comb", 0.001);
+    dplt.plotQ2("comb", 0.003);
+    dplt.plotQ2("comb", 0.01);
+    dplt.plotQ2("comb", 0.03);
+
+
+    //return;
+
+    dPlotter dplt252;
+    dplt252.readDataInc(inFile, {"H1incDDIS_LowE252"});
+    //dplt252.plotBeta("e252", 0.0005);
+    //dplt252.plotBeta("e252", 0.003);
+    dplt252.plotBetaMore("e252", {0.003, 0.0005});
+
+
+    dPlotter dplt225;
+    dplt225.readDataInc(inFile, {"H1incDDIS_LowE225"});
+    dplt225.plotBetaMore("e225", {0.003, 0.0005});
+
+    //dplt225.plotBeta("e225", 0.0005);
+    //dplt225.plotBeta("e225", 0.003);
+
+    //dplt225.plotBetaRat("e225", 0.0005);
+    //dplt225.plotBetaRat("e225", 0.003);
+
+    /*
+    dPlotter dpltNNLO;
+    dpltNNLO.readDataJets("../farm/variants/AExt_nnlo_heraCjets.str_dir/steering.str0_dir/out.root", {"H1_LRG_DiffDijets"});
+    dPlotter dpltNLO;
+    dpltNLO.readDataJets("../farm/variants/AExt_nlo_heraCjets.str_dir/steering.str0_dir/out.root", {"H1_LRG_DiffDijets"});
+    plotJets(dpltNLO, dpltNNLO);
+    return;
+    */
+
+    //dplt.readDataInc(inFile, {"H1incDDIS_LowE252_cuts"});
+    //dplt.plotBeta(0.003);
+    //dplt.plotBeta(0.0005);
+
+
+    //dplt.plotParameters();
+    //dplt.plotCorrelations();
 
     //dplt.plotBeta(0.03f);
 
 }
 
-void dPlotter::readData(TString inFile)
+void dPlotter::readDataInc(TString inFile, vector<TString> samples)
+{
+    TFile *file = TFile::Open(inFile);
+
+
+    hPars  = dynamic_cast<TH1D*>(file->Get("fitparameters"));
+    hCorrs = dynamic_cast<TH2D*>(file->Get("fitcorrelations"));
+    assert(hPars);
+    assert(hCorrs);
+
+
+
+    //Loop over all
+    //vector<TString> dataNames = {"sample_H1incDDIS_HERA_I_LAr_cuts", "sample_H1incDDIS_HERA_I_SpacMB_cuts", "sample_H1incDDIS_HERA_I_SpacTrg_cuts"};
+    for(auto n : samples) {
+       TNtuple *tuple = (TNtuple*) file->Get("ASaveDataTheory/sample_" + n);
+
+
+       pointInc pt;
+       Char_t isIn;
+       tuple->SetBranchAddress("xp",&pt.xp);
+       tuple->SetBranchAddress("isInside",&isIn);
+       tuple->SetBranchAddress("Q2",&pt.q2);
+       tuple->SetBranchAddress("beta",&pt.beta);
+       tuple->SetBranchAddress("xpSigData",&pt.xpSig);
+       tuple->SetBranchAddress("xpSigDataErr",&pt.errTot);
+       tuple->SetBranchAddress("xpSigTh",&pt.th);
+       tuple->SetBranchAddress("xpSigThErr",&pt.thErr);
+
+       tuple->SetBranchAddress("xpSigThOrgA",&pt.thOrgA);
+       tuple->SetBranchAddress("xpSigThOrgB",&pt.thOrgB);
+
+
+       Int_t nentries = (Int_t)tuple->GetEntries();
+       for (Int_t i=0;i<nentries;i++) {
+           tuple->GetEntry(i);
+            pt.isInside = isIn;
+           //cout << "Bla " << pt.q2 <<" "<< pt.isInside << endl;
+           //cout << "Hel " << pt.xp <<" "<< pt.xpSig  <<" "<< pt.errTot <<   endl;
+           data.push_back(pt);
+       }
+       delete tuple;
+    }
+
+    outDir =  inFile(0, inFile.Last('/'));
+    outDir += "/dPlots";
+
+    gSystem->mkdir(outDir, true);
+}
+
+
+void dPlotter::readDataJets(TString inFile, vector<TString> samples)
 {
     TFile *file = TFile::Open(inFile);
 
@@ -87,43 +202,257 @@ void dPlotter::readData(TString inFile)
     assert(hPars);
     assert(hCorrs);
 
+    //Loop over all
+    //vector<TString> dataNames = {"sample_H1incDDIS_HERA_I_LAr_cuts", "sample_H1incDDIS_HERA_I_SpacMB_cuts", "sample_H1incDDIS_HERA_I_SpacTrg_cuts"};
+    for(auto n : samples) {
+       TNtuple *tuple = (TNtuple*) file->Get("ASaveDataTheory/sample_" + n);
 
-    TNtuple *tuple = (TNtuple*) file->Get("ASaveDataTheory/ThDataTab");
+       double q2_max, q2_min, pt_min, pt_max;
 
+       tuple->SetBranchAddress("q2_min",&q2_min);
+       tuple->SetBranchAddress("q2_max",&q2_max);
 
-    point pt;
-    tuple->SetBranchAddress("xp",&pt.xp);
-    tuple->SetBranchAddress("Q2",&pt.q2);
-    tuple->SetBranchAddress("beta",&pt.beta);
-    tuple->SetBranchAddress("xpSigData",&pt.xpSig);
-    tuple->SetBranchAddress("xpSigDataErr",&pt.errTot);
-    tuple->SetBranchAddress("xpSigTh",&pt.th);
-    tuple->SetBranchAddress("xpSigThErr",&pt.thErr);
-
-    tuple->SetBranchAddress("xpSigThOrgA",&pt.thOrgA);
-    tuple->SetBranchAddress("xpSigThOrgB",&pt.thOrgB);
+       tuple->SetBranchAddress("pt_min",&pt_min);
+       tuple->SetBranchAddress("pt_max",&pt_max);
 
 
-    Int_t nentries = (Int_t)tuple->GetEntries();
-    for (Int_t i=0;i<nentries;i++) {
-        tuple->GetEntry(i);
-        //cout << "Hel " << pt.xp <<" "<< pt.xpSig  <<" "<< pt.errTot <<   endl;
-        data.push_back(pt);
+       double Sig, errTot, th;
+       tuple->SetBranchAddress("SigData",&Sig);
+       tuple->SetBranchAddress("SigDataErr",&errTot);
+       tuple->SetBranchAddress("SigTh",&th);
+       //tuple->SetBranchAddress("SigThErr",&pt.thErr);
+
+
+       const vector<double> bins  = {5.5, 7, 9, 15};
+
+
+       Int_t nentries = (Int_t)tuple->GetEntries();
+       for (Int_t i=0;i<nentries;i++) {
+           tuple->GetEntry(i);
+           //cout << "Hel " << pt.xp <<" "<< pt.xpSig  <<" "<< pt.errTot <<   endl;
+
+          if(jetsData.count({q2_min,q2_max}) == 0) {
+             jetsData[{q2_min,q2_max}] = new TH1D(rn(), "", bins.size()-1,bins.data());
+          }
+          if(jetsTh.count({q2_min,q2_max}) == 0) {
+             jetsTh[{q2_min,q2_max}] = new TH1D(rn(), "", bins.size()-1,bins.data());
+          }
+
+          int binId = jetsData[{q2_min,q2_max}]->FindBin((pt_min+pt_max)/2);
+
+          errTot *= Sig; //To absolute
+          jetsData[{q2_min,q2_max}]->SetBinContent(binId, Sig);
+          jetsData[{q2_min,q2_max}]->SetBinError(binId, errTot);
+          jetsTh[{q2_min,q2_max}]->SetBinContent(binId, th);
+
+       }
+       delete tuple;
     }
 
     outDir =  inFile(0, inFile.Last('/'));
     outDir += "/dPlots";
 
     gSystem->mkdir(outDir, true);
+}
+
+void dPlotter::plotBetaMore(TString fTag, vector<double> xpomVec)
+{
+    vector<map<double, vector<pointInc>>> dataMap(xpomVec.size());
+
+    for(int ixp = 0; ixp < xpomVec.size(); ++ixp) {
+       for(pointInc &p : data)
+           if(p.xp == xpomVec[ixp]) {
+               dataMap[ixp][p.q2].push_back(p);
+           }
+    }
+
+    int nRows = xpomVec.size();
+    //cout << dataMap.size() << endl;
+
+    gStyle->SetOptStat(0);
+    TCanvas *can = new TCanvas(rn(),"", (1+4)*200, (1+nRows)*200);
+    SetLeftRight(0.5/(1+4) +0.05, 0.5/(1+4) -0.05);
+    SetTopBottom(0.5/(1+nRows), 0.5/(1+nRows));
+
+    DivideTransparent(group(1, 0, 4), group(1, 0, nRows));
+
+    cout << "next " << dataMap.size() <<  endl;
+    for(int ixp = 0; ixp < dataMap.size(); ++ixp) {
+       int i = ixp*4;
+       for(auto item : dataMap[ixp]) {
+           double q2    = item.first;
+           auto &points = item.second;
+           can->cd(i+1);
+
+           TGraphErrors *gData = new TGraphErrors(points.size());
+
+           for(int j = 0; j < points.size(); ++j) {
+               gData->SetPoint(j, points[j].beta, points[j].xpSig);
+
+               double er = points[j].xpSig * points[j].errTot;
+               gData->SetPointError(j, 0, er);
+               //cout <<"ahoj  " << j<<" "<< points[j].beta <<" "<< points[j].xpSig << " " << endl;
+           }
+
+           map<double,double> zMin = { {0.0003, 0.02},
+                                       {0.0005, 0.02},
+                                       {0.001, 0.015},
+                                       {0.003, 0.0015},
+                                       {0.01, 0.0015},
+                                       {0.03, 0.0011}
+                                      };
+
+           TH1D *hFr = new TH1D(rn(), "", 1, zMin.at(xpomVec[ixp]), 1);
+           hFr->Draw("axis");
+           
+
+           //TGraph *gTh    = new TGraph(points.size());
+
+           /*
+           TGraph *gThOrgA = new TGraph(points.size());
+           TGraph *gThOrgB = new TGraph(points.size());
+           for(int j = 0; j < points.size(); ++j) {
+               gThOrgA->SetPoint(j, points[j].beta, points[j].thOrgA);
+               gThOrgB->SetPoint(j, points[j].beta, points[j].thOrgB);
+               gTh->SetPoint(j, points[j].beta, points[j].th);
+           }
+           */
+
+
+           TGraph *gTh = new TGraph();
+           for(int j = 0; j < points.size(); ++j) {
+              if(!points[j].isInside) continue;
+              //cout << "RADEK " << points[j].q2 <<" "<< points[j].isInside << endl;
+              gTh->SetPoint(gTh->GetN(), points[j].beta, points[j].th);
+           }
+
+
+           TGraph *gThOut = new TGraph();
+           for(int j = 0; j < points.size(); ++j) {
+              if(!points[j].isInside ||  (j<points.size()-1 && !points[j+1].isInside) ) 
+                 gThOut->SetPoint(gThOut->GetN(), points[j].beta, points[j].th);
+           }
+
+
+           TString st = (gTh->GetN()+gThOut->GetN()) > 1 ? "l same" : "l* same";
+
+
+           //MyTheory
+           gTh->SetLineColor(kBlue);
+           gTh->SetMarkerColor(kBlue);
+           gTh->SetLineWidth(3);
+           if(gTh->GetN() > 0)
+              gTh->Draw(st);
+
+
+           gThOut->SetLineColor(kBlue);
+           gThOut->SetMarkerColor(kBlue);
+           gThOut->SetLineWidth(3);
+           gThOut->SetLineStyle(2);
+           if(gThOut->GetN() > 0)
+              gThOut->Draw(st);
+
+
+
+           gData->SetMarkerColor(kRed);
+           gData->SetLineColor(kRed);
+           gData->SetMarkerStyle(20);
+           gData->SetMarkerSize(1.5);
+           gData->Draw("pe same");
+
+           gPad->SetLogx();
+
+           GetYaxis()->SetNdivisions(503);
+
+           GetYaxis()->SetRangeUser(0, 0.085);
+
+           SetFTO({30}, {14}, {1.55, 2.2, 0.4, 3.4});
+           GetXaxis()->SetTitleSize(1.4*GetXaxis()->GetTitleSize());
+           GetYaxis()->SetTitleSize(1.4*GetYaxis()->GetTitleSize());
+
+           DrawLatexUp(-1.3, Form("Q^{2} = %g GeV^{2}", q2), 28);
+           //DrawLatexUp(-1.3, Form("Q^{2} = %g GeV^{2}", q2), GetXaxis()->GetLabelSize());
+
+
+
+           if(i < dataMap.size() - 4  && dataMap.size() > 4) {
+               GetXaxis()->SetTickSize(0);
+               GetXaxis()->SetLabelOffset(5000);
+           }
+
+           if(i % 4 != 0) {
+               GetYaxis()->SetLabelOffset(5000);
+               GetYaxis()->SetTickSize(0);
+           }
+
+           if(ixp != dataMap.size()-1 && dataMap[ixp+1].size() >= i+1) {
+               GetXaxis()->SetTickSize(0);
+               GetXaxis()->SetLabelOffset(5000);
+           }
+
+
+
+           if(i == 0)
+               GetYaxis()->SetTitle("x_{IP} #sigma_{r}^{D(3)}");
+           if(i == dataMap.size() -1)
+               GetXaxis()->SetTitle("#beta");
+
+
+
+           if(i == 0) {
+               can->cd();
+               TLegend *leg = new TLegend(0.355-0.205, 1-can->GetTopMargin()+0.01, 0.95-0.205, 1);
+               leg->SetBorderSize(0);
+               leg->SetTextSize(PxFontToRel(32));
+               //leg->SetTextSize(0.035);
+               leg->SetNColumns(2);
+               leg->SetMargin(0.2);
+               leg->AddEntry(gData, "H1 Data #sqrt{s} = "+ fTag(1,1000) + " GeV", "pe");
+               //leg->AddEntry(gThOrgA,   "Fit A", "lp");
+               //leg->AddEntry(gTh,       "Our Fit A", "lp");
+               leg->AddEntry((TObject*)nullptr,       "", "");
+               leg->AddEntry(gTh,       "H1 Fit 2019 NNLO prelim.", "lp");
+               leg->AddEntry(gThOut,     "extrap.", "lp");
+
+
+               //leg->AddEntry(gThOrgB,   "Fit B", "lp");
+               leg->Draw();
+           }
+
+
+
+           ++i;
+       }
+    }
+
+    for(int ixp = 0; ixp < xpomVec.size(); ++ixp) {
+       int pos = dataMap[ixp].size();
+       //DrawLatexRight(can->GetPad(ixp*4 + pos), 0.9, Form("x_{IP} = %g", xpomVec[ixp]), -1, "l");
+       DrawLatex(can->GetPad(ixp*4 + pos), 1.1+(3-pos), 0.5, Form("x_{IP} = %g", xpomVec[ixp]), -1, "l");
+    }
+
+
+    can->cd();
+    TLegend *leg = new TLegend(0.4, 1-can->GetTopMargin(), 0.9, 1);
+
+
+    can->SaveAs(Form(outDir + "/%s_betaMore_xpom.pdf", fTag.Data()));
+    //can->SaveAs(Form(outDir + "/%s_beta_xpom%g.pdf", fTag.Data(), xpom));
 
 }
 
 
-void dPlotter::plotBeta(double xpom)
-{
-    map<double, vector<point>> dataMap;
 
-    for(point &p : data)
+
+
+
+
+
+void dPlotter::plotBeta(TString fTag, double xpom)
+{
+    map<double, vector<pointInc>> dataMap;
+
+    for(pointInc &p : data)
         if(p.xp == xpom) {
             dataMap[p.q2].push_back(p);
         }
@@ -133,10 +462,9 @@ void dPlotter::plotBeta(double xpom)
 
     gStyle->SetOptStat(0);
     TCanvas *can = new TCanvas(rn(),"", (1+4)*200, (1+nRows)*200);
-    SetLeftRight(0.5/(1+4), 0.5/(1+4));
+    SetLeftRight(0.5/(1+4) +0.05, 0.5/(1+4) -0.05);
     SetTopBottom(0.5/(1+nRows), 0.5/(1+nRows));
 
-    cout << "Middle" << endl;
     DivideTransparent(group(1, 0, 4), group(1, 0, nRows));
 
     cout << "next " << dataMap.size() <<  endl;
@@ -157,46 +485,70 @@ void dPlotter::plotBeta(double xpom)
         }
 
         map<double,double> zMin = { {0.0003, 0.02},
+                                    {0.0005, 0.02},
                                     {0.001, 0.015},
                                     {0.003, 0.0015},
                                     {0.01, 0.0015},
-                                    {0.03, 0.0015}
+                                    {0.03, 0.0011}
                                    };
 
         TH1D *hFr = new TH1D(rn(), "", 1, zMin[xpom], 1);
         hFr->Draw("axis");
         
 
+        //TGraph *gTh    = new TGraph(points.size());
+
+        /*
         TGraph *gThOrgA = new TGraph(points.size());
         TGraph *gThOrgB = new TGraph(points.size());
-        TGraph *gTh    = new TGraph(points.size());
         for(int j = 0; j < points.size(); ++j) {
             gThOrgA->SetPoint(j, points[j].beta, points[j].thOrgA);
             gThOrgB->SetPoint(j, points[j].beta, points[j].thOrgB);
             gTh->SetPoint(j, points[j].beta, points[j].th);
         }
-        gThOrgA->SetLineColor(kBlue);
-        gThOrgA->SetMarkerColor(kBlue);
-        gThOrgA->Draw("l* same");
+        */
 
-        gThOrgB->SetLineColor(kBlue);
-        gThOrgB->SetMarkerColor(kBlue);
-        gThOrgB->SetLineStyle(2);
-        gThOrgB->Draw("l* same");
+
+        TGraph *gTh = new TGraph();
+        for(int j = 0; j < points.size(); ++j) {
+           if(!points[j].isInside) continue;
+           //cout << "RADEK " << points[j].q2 <<" "<< points[j].isInside << endl;
+           gTh->SetPoint(gTh->GetN(), points[j].beta, points[j].th);
+        }
+
+
+        TGraph *gThOut = new TGraph();
+        for(int j = 0; j < points.size(); ++j) {
+           if(!points[j].isInside ||  (j<points.size()-1 && !points[j+1].isInside) ) 
+              gThOut->SetPoint(gThOut->GetN(), points[j].beta, points[j].th);
+        }
+
+
+        TString st = (gTh->GetN()+gThOut->GetN()) > 1 ? "l same" : "l* same";
 
 
         //MyTheory
-        gTh->SetLineColor(kGreen);
-        gTh->SetMarkerColor(kGreen);
-        gTh->Draw("l* same");
+        gTh->SetLineColor(kBlue);
+        gTh->SetMarkerColor(kBlue);
+        gTh->SetLineWidth(3);
+        if(gTh->GetN() > 0)
+           gTh->Draw(st);
+
+
+        gThOut->SetLineColor(kBlue);
+        gThOut->SetMarkerColor(kBlue);
+        gThOut->SetLineWidth(3);
+        gThOut->SetLineStyle(2);
+        if(gThOut->GetN() > 0)
+           gThOut->Draw(st);
+
 
 
         gData->SetMarkerColor(kRed);
         gData->SetLineColor(kRed);
         gData->SetMarkerStyle(20);
+        gData->SetMarkerSize(1.5);
         gData->Draw("pe same");
-
-
 
         gPad->SetLogx();
 
@@ -204,12 +556,16 @@ void dPlotter::plotBeta(double xpom)
 
         GetYaxis()->SetRangeUser(0, 0.085);
 
-        SetFTO({24}, {14}, {1.4, 2.2, 0.4, 3.9});
+        SetFTO({30}, {14}, {1.55, 2.2, 0.4, 3.4});
+        GetXaxis()->SetTitleSize(1.4*GetXaxis()->GetTitleSize());
+        GetYaxis()->SetTitleSize(1.4*GetYaxis()->GetTitleSize());
 
-        DrawLatexUp(-1.3, Form("Q^{2} = %g GeV^{2}", q2));
+        DrawLatexUp(-1.3, Form("Q^{2} = %g GeV^{2}", q2), 28);
+        //DrawLatexUp(-1.3, Form("Q^{2} = %g GeV^{2}", q2), GetXaxis()->GetLabelSize());
 
 
-        if(i < dataMap.size() - 4) {
+
+        if(i < dataMap.size() - 4  && dataMap.size() > 4) {
             GetXaxis()->SetTickSize(0);
             GetXaxis()->SetLabelOffset(5000);
         }
@@ -226,13 +582,187 @@ void dPlotter::plotBeta(double xpom)
 
         if(i == 0) {
             can->cd();
-            TLegend *leg = new TLegend(0.4, 1-can->GetTopMargin(), 0.9, 1);
+            TLegend *leg = new TLegend(0.365, 1-can->GetTopMargin()+0.01, 0.95, 1);
+            leg->SetBorderSize(0);
+            leg->SetMargin(0.2);
+            leg->SetTextSize(PxFontToRel(32));
+            //leg->SetTextSize(0.035);
+            leg->SetNColumns(2);
+            leg->AddEntry(gData, "H1 Data #sqrt{s} = 319 GeV", "pe");
+            leg->AddEntry((TObject*)nullptr,       "", "");
+
+            leg->AddEntry(gTh,       "H1 Fit 2019 NNLO prelim.", "lp");
+
+            leg->AddEntry(gThOut,     "extrap.", "lp");
+
+
+            //leg->AddEntry(gThOrgB,   "Fit B", "lp");
+            leg->Draw();
+        }
+
+
+        ++i;
+    }
+
+    DrawLatexUp(can->GetPad(1), 0.9, Form("x_{IP} = %g", xpom), -1, "l");
+
+    can->cd();
+    TLegend *leg = new TLegend(0.4, 1-can->GetTopMargin(), 0.9, 1);
+
+
+    can->SaveAs(Form(outDir + "/%s_beta_xpom%g.pdf", fTag.Data(), xpom));
+
+}
+
+void dPlotter::plotBetaRat(TString fTag, double xpom)
+{
+    map<double, vector<pointInc>> dataMap;
+
+    for(pointInc &p : data)
+        if(p.xp == xpom) {
+            dataMap[p.q2].push_back(p);
+        }
+
+    int nRows = ceil(dataMap.size() / 4.);
+    //cout << dataMap.size() << endl;
+
+    gStyle->SetOptStat(0);
+    TCanvas *can = new TCanvas(rn(),"", (1+4)*200, (1+nRows)*200);
+    SetLeftRight(0.5/(1+4) +0.05, 0.5/(1+4) -0.05);
+    SetTopBottom(0.5/(1+nRows), 0.5/(1+nRows));
+
+    cout << "Middle" << endl;
+    DivideTransparent(group(1, 0, 4), group(1, 0, nRows));
+
+    cout << "next " << dataMap.size() <<  endl;
+    int i = 0;
+    for(auto item : dataMap) {
+        double q2    = item.first;
+        auto &points = item.second;
+        can->cd(i+1);
+
+        TGraphErrors *gData = new TGraphErrors(points.size());
+
+        for(int j = 0; j < points.size(); ++j) {
+            //gData->SetPoint(j, points[j].beta, points[j].xpSig);
+            gData->SetPoint(j, points[j].beta, 1);
+
+            //double er = points[j].xpSig * points[j].errTot;
+            //gData->SetPointError(j, 0, er);
+            gData->SetPointError(j, 0, points[j].errTot);
+            //cout <<"ahoj  " << j<<" "<< points[j].beta <<" "<< points[j].xpSig << " " << endl;
+        }
+
+        map<double,double> zMin = { {0.0003, 0.02},
+                                    {0.0005, 0.02},
+                                    {0.001, 0.015},
+                                    {0.003, 0.0015},
+                                    {0.01, 0.0015},
+                                    {0.03, 0.0011}
+                                   };
+
+
+
+
+        TH1D *hFr = new TH1D(rn(), "", 1, zMin[xpom], 1);
+        hFr->Draw("axis");
+        
+
+        //TGraph *gTh    = new TGraph(points.size());
+
+        /*
+        TGraph *gThOrgA = new TGraph(points.size());
+        TGraph *gThOrgB = new TGraph(points.size());
+        for(int j = 0; j < points.size(); ++j) {
+            gThOrgA->SetPoint(j, points[j].beta, points[j].thOrgA);
+            gThOrgB->SetPoint(j, points[j].beta, points[j].thOrgB);
+            gTh->SetPoint(j, points[j].beta, points[j].th);
+        }
+        */
+
+
+        TGraph *gTh = new TGraph();
+        for(int j = 0; j < points.size(); ++j) {
+           if(!points[j].isInside) continue;
+           //cout << "RADEK " << points[j].q2 <<" "<< points[j].isInside << endl;
+           gTh->SetPoint(gTh->GetN(), points[j].beta, points[j].th / points[j].xpSig);
+        }
+
+
+        TGraph *gThOut = new TGraph();
+        for(int j = 0; j < points.size(); ++j) {
+           if(!points[j].isInside ||  (j<points.size()-1 && !points[j+1].isInside) ) 
+              gThOut->SetPoint(gThOut->GetN(), points[j].beta, points[j].th / points[j].xpSig);
+        }
+
+
+        TString st = (gTh->GetN()+gThOut->GetN()) > 1 ? "l same" : "l* same";
+
+
+        //MyTheory
+        gTh->SetLineColor(kBlue);
+        gTh->SetMarkerColor(kBlue);
+        gTh->SetLineWidth(2);
+        if(gTh->GetN() > 0)
+           gTh->Draw(st);
+
+
+        gThOut->SetLineColor(kBlue);
+        gThOut->SetMarkerColor(kBlue);
+        gThOut->SetLineWidth(2);
+        gThOut->SetLineStyle(2);
+        if(gThOut->GetN() > 0)
+           gThOut->Draw(st);
+
+
+
+        gData->SetMarkerColor(kRed);
+        gData->SetLineColor(kRed);
+        gData->SetMarkerStyle(20);
+        gData->Draw("pe same");
+
+        gPad->SetLogx();
+
+        GetYaxis()->SetNdivisions(303);
+
+        double eps = 0.001;
+        GetYaxis()->SetRangeUser(0.43+eps, 1.57 -eps);
+
+        SetFTO({30}, {14}, {1.55, 1.9, 0.4, 2.7});
+        GetXaxis()->SetTitleSize(1.4*GetXaxis()->GetTitleSize());
+        GetYaxis()->SetTitleSize(1.4*GetYaxis()->GetTitleSize());
+
+        DrawLatexUp(-1.3, Form("Q^{2} = %g GeV^{2}", q2), 28);
+
+
+
+        if(i < dataMap.size() - 4  && dataMap.size() > 4) {
+            GetXaxis()->SetTickSize(0);
+            GetXaxis()->SetLabelOffset(5000);
+        }
+
+        if(i % 4 != 0) {
+            GetYaxis()->SetLabelOffset(5000);
+            GetYaxis()->SetTickSize(0);
+        }
+
+        if(i == 0)
+            GetYaxis()->SetTitle("#sigma/#sigma^{data}");
+        if(i == dataMap.size() -1)
+            GetXaxis()->SetTitle("#beta");
+
+        if(i == 0) {
+            can->cd();
+            TLegend *leg = new TLegend(0.4, 1-can->GetTopMargin()+0.01, 0.9, 1);
             leg->SetBorderSize(0);
             leg->SetNColumns(2);
             leg->AddEntry(gData, "H1 Data", "pe");
-            leg->AddEntry(gThOrgA,   "Fit A", "lp");
-            leg->AddEntry(gTh,       "Our Fit", "lp");
-            leg->AddEntry(gThOrgB,   "Fit B", "lp");
+            //leg->AddEntry(gThOrgA,   "Fit A", "lp");
+            //leg->AddEntry(gTh,       "Our Fit A", "lp");
+            leg->AddEntry(gTh,       "H1 Fit 2019 NNLO", "lp");
+            leg->AddEntry((TObject*)nullptr,       "", "");
+            leg->AddEntry(gThOut,     "(extrapol. fit)", "lp");
+            //leg->AddEntry(gThOrgB,   "Fit B", "lp");
             leg->Draw();
         }
 
@@ -246,9 +776,13 @@ void dPlotter::plotBeta(double xpom)
     TLegend *leg = new TLegend(0.4, 1-can->GetTopMargin(), 0.9, 1);
 
 
-    can->SaveAs(Form(outDir + "/beta_xpom%g.pdf", xpom));
+    can->SaveAs(Form(outDir + "/%s_betaRat_xpom%g.pdf", fTag.Data(), xpom));
 
 }
+
+
+
+
 
 //To print the curve tag
 pair<double,double> getRight(TGraphErrors *gr)
@@ -265,20 +799,21 @@ pair<double,double> getRight(TGraphErrors *gr)
 }
 
 
-void dPlotter::plotQ2(double xpom)
+void dPlotter::plotQ2(TString fTag, double xpom)
 {
-    map<double, vector<point>> dataMap;
+    map<double, vector<pointInc>> dataMap;
 
-    for(point &p : data)
+    for(pointInc &p : data)
         if(p.xp == xpom)
             dataMap[p.beta].push_back(p);
 
     int nPoints = dataMap.size();
 
     gStyle->SetOptStat(0);
-    TCanvas *can = new TCanvas(rn(),"", 500, 800);
+    int ySize = xpom > 0.002 ? 800 : 500;
+    TCanvas *can = new TCanvas(rn(),"", 500, ySize);
     SetLeftRight(0.15, 0.07);
-    SetTopBottom(0.1, 0.1);
+    SetTopBottom(0.08, 0.12);
 
     gPad->SetLogx();
     gPad->SetLogy();
@@ -295,11 +830,25 @@ void dPlotter::plotQ2(double xpom)
 
 
     //Plotting style
-    TH1D *hFr = new TH1D(rn(), "", 1, 2, 1e4);
+    TH1D *hFr = new TH1D(rn(), "", 1, 2, 1.5e4);
     hFr->Draw("axis");
 
-    SetFTO({16}, {14}, {1.4, 2.2, 0.4, 3.9});
-    GetYaxis()->SetRangeUser(1e-2, 1e5);
+    SetFTO({20}, {14}, {1.4, 2.2, 0.4, 2.8});
+    GetXaxis()->SetTitleSize(1.3*GetXaxis()->GetTitleSize());
+    GetYaxis()->SetTitleSize(1.3*GetYaxis()->GetTitleSize());
+
+    map<double,vector<double>> yMinMax = {
+             {0.0003, {0.04, 1}},
+             {0.001,  {2e-2, 30}},
+             {0.003,  {2e-2, 2e2}},
+             {0.01,   {1e-2, 1e4}},
+             {0.03,   {1e-2, 2e5}},
+         };
+
+
+
+
+    GetYaxis()->SetRangeUser(yMinMax.at(xpom)[0], yMinMax.at(xpom)[1]);
     GetYaxis()->SetTitle("3^{i} * x_{IP} #sigma_{r}^{D(3)}");
     GetXaxis()->SetTitle("Q^{2} [GeV]");
 
@@ -310,8 +859,20 @@ void dPlotter::plotQ2(double xpom)
         double beta  = item.first;
         auto &points = item.second;
 
-        double fac = pow(3, dataMap.size() - 1 - i);
+        int idx = dataMap.size() - 1 - i;
+        double fac = pow(3, idx);
         TGraphErrors *gData = new TGraphErrors(points.size());
+
+
+        sort(points.begin(), points.end(), [](const pointInc &a, const pointInc &b) {return a.q2 < b.q2;});
+
+        //Check that it's rising 
+
+        for(int k = 0; k < points.size() - 1; ++k) {
+            if(points[k].q2 == points[k+1].q2)
+               cout << "Big problem " << endl;
+        }
+
 
         for(int j = 0; j < points.size(); ++j) {
             gData->SetPoint(j, points[j].q2, fac*points[j].xpSig);
@@ -321,27 +882,61 @@ void dPlotter::plotQ2(double xpom)
         }
         
 
-        TGraph *gTh = new TGraph(points.size());
-        TGraph *gThOrgA = new TGraph(points.size());
-        TGraph *gThOrgB = new TGraph(points.size());
+        TGraph *gTh = new TGraph();
         for(int j = 0; j < points.size(); ++j) {
-            gTh->SetPoint(j, points[j].q2, fac*points[j].th);
-            gThOrgA->SetPoint(j, points[j].q2, fac*points[j].thOrgA);
-            gThOrgB->SetPoint(j, points[j].q2, fac*points[j].thOrgB);
+           if(!points[j].isInside) continue;
+           //cout << "RADEK " << points[j].q2 <<" "<< points[j].isInside << endl;
+           gTh->SetPoint(gTh->GetN(), points[j].q2, fac*points[j].th);
         }
 
+        TGraph *gThOrgA = new TGraph();
+        TGraph *gThOrgB = new TGraph();
+        for(int j = 0; j < points.size(); ++j) {
+           gThOrgA->SetPoint(gThOrgA->GetN(), points[j].q2, fac*points[j].thOrgA);
+           gThOrgB->SetPoint(gThOrgB->GetN(), points[j].q2, fac*points[j].thOrgB);
+        }
+
+
+
+        TGraph *gThOut = new TGraph();
+        bool lastIn = false;
+        for(int j = 0; j < points.size(); ++j) {
+           if(points[j].isInside && (lastIn || gThOut->GetN() == 0)) continue;
+           gThOut->SetPoint(gThOut->GetN(), points[j].q2, fac*points[j].th);
+           if(points[j].isInside) lastIn = true;
+        }
+
+
+        /*
         gThOrgA->SetLineColor(kBlue);
         gThOrgA->SetMarkerColor(kBlue);
         gThOrgA->Draw("l* same");
+        */
 
-        gThOrgB->SetLineColor(kBlue);
-        gThOrgB->SetMarkerColor(kBlue);
-        gThOrgB->SetLineStyle(2);
-        gThOrgB->Draw("l* same");
+        TString st = (gTh->GetN()+gThOut->GetN()) > 1 ? "l same" : "l* same";
 
-        gTh->SetLineColor(kGreen);
-        gTh->SetMarkerColor(kGreen);
-        gTh->Draw("l* same");
+        /*
+        gThOrgB->SetLineColor(kGreen);
+        gThOrgB->SetMarkerColor(kGreen);
+        gThOrgB->SetLineStyle(1);
+        if(gThOrgB->GetN() > 0)
+           gThOrgB->Draw(st);
+        */
+
+
+        gTh->SetLineColor(kBlue);
+        gTh->SetMarkerColor(kBlue);
+        gTh->SetLineWidth(2);
+        if(gTh->GetN() > 0)
+           gTh->Draw(st);
+
+        gThOut->SetLineColor(kBlue);
+        gThOut->SetMarkerColor(kBlue);
+        gThOut->SetLineStyle(2);
+        gThOut->SetLineWidth(2);
+        if(gThOut->GetN() > 0)
+           gThOut->Draw(st);
+
 
         gData->SetMarkerColor(kRed);
         gData->SetLineColor(kRed);
@@ -355,19 +950,29 @@ void dPlotter::plotQ2(double xpom)
         TLatex *lat = new TLatex;
         lat->SetTextSize(PxFontToRel(16));
         lat->SetTextAlign(12);
-        lat->DrawLatex(xT*1.3, yT, Form("#beta=%g (i=%lu)", beta, dataMap.size() - 1 - i));
+        if(idx == 13) yT *= 1.3; //Hack for the highest point
+        lat->DrawLatex(xT*1.3, yT, Form("#beta=%g (i=%lu)", beta, idx));
 
 
         if(i == 0) {
             can->cd();
-            TLegend *leg = new TLegend(0.4, 1-can->GetTopMargin(), 0.9, 1);
+
+            double legSize = xpom < 0.002 ? 0.10 : 0;
+
+            TLegend *leg = new TLegend(0.50, 1-can->GetTopMargin()-0.15 - legSize, 0.9, 1-can->GetTopMargin()-0.01);
             leg->SetBorderSize(0);
             leg->SetFillStyle(0);
-            leg->SetNColumns(2);
+            leg->SetTextSize(1.0*GetYaxis()->GetLabelSize());
+            leg->SetNColumns(1);
             leg->AddEntry(gData, "H1 Data", "pe");
-            leg->AddEntry(gThOrgA,   "Fit A", "lp");
-            leg->AddEntry(gTh,       "Our Fit", "lp");
-            leg->AddEntry(gThOrgB,   "Fit B", "lp");
+            leg->AddEntry((TObject*)nullptr, "#sqrt{s} = 319 GeV", "");
+            //leg->AddEntry(gThOrgA,   "Fit A", "lp");
+            //leg->AddEntry(gTh,       "Our Fit A", "lp");
+            leg->AddEntry(gTh,       "H1 Fit 2019 NNLO", "l");
+            leg->AddEntry((TObject*)nullptr,   "      preliminary", "");
+            leg->AddEntry(gThOut,    "extrapolation", "l");
+
+            //leg->AddEntry(gThOrgB,   "Fit B", "lp");
             leg->Draw();
         }
 
@@ -375,17 +980,128 @@ void dPlotter::plotQ2(double xpom)
         ++i;
     }
 
-    DrawLatexUp(1, Form("x_{IP} = %g",xpom), -1, "l");
+    DrawLatexUp(0.9, Form("x_{IP} = %g",xpom), -1, "l");
 
 
-    can->SaveAs(Form(outDir +  "/q2_xpom%g.pdf", xpom));
+    can->SaveAs(Form(outDir +  "/%s_q2_xpom%g.pdf", fTag.Data(), xpom));
 
 }
+
+void dPlotter::plotJets()
+{
+    gStyle->SetOptStat(0);
+    TCanvas *can = new TCanvas(rn(),"", 600, 800);
+    SetLeftRight(0.1, 0.1);
+    SetTopBottom(0.1, 0.1);
+
+    DivideTransparent(group(1, 0, 2), group(1, 0, 3));
+
+    int i = 0;
+    for(auto data : jetsData) {
+       double q2Min, q2Max;
+       tie(q2Min,q2Max) = data.first;
+       TH1D *hData = data.second;
+       TH1D *hTh   = jetsTh[data.first];
+
+       can->cd(i+1);
+       gPad->SetLogy();
+       hData->Draw("e");
+       hTh->Draw("same");
+       ++i;
+    }
+    can->SaveAs(outDir + "/jets.pdf");
+}
+
+void plotJets(dPlotter &nlo, dPlotter &nnlo)
+{
+    gStyle->SetOptStat(0);
+    TCanvas *can = new TCanvas(rn(),"", 600, 800);
+    SetLeftRight(0.15, 0.05);
+    SetTopBottom(0.1, 0.1);
+
+    DivideTransparent(group(1, 0, 2), group(1, 0, 3));
+
+    int i = 0;
+    for(auto data : nlo.jetsData) {
+       double q2Min, q2Max;
+       tie(q2Min,q2Max) = data.first;
+       TH1D *hData = data.second;
+       TH1D *hNlo    = nlo.jetsTh[data.first];
+       TH1D *hNNlo   = nnlo.jetsTh[data.first];
+
+       can->cd(i+1);
+       gPad->SetLogy();
+       hData->SetMarkerColor(kBlack);
+       hData->SetMarkerSize(0.8);
+       hData->SetMarkerStyle(20);
+       hData->Draw("P X0 e");
+       hData->SetLineColor(kBlack);
+
+       hNlo->Draw("same");
+       hNNlo->Draw("same");
+       hNNlo->SetLineColor(kRed);
+
+       if(i == 4)
+          GetXaxis()->SetTitle("p^{*}_{T,1} [GeV]");
+       if(i == 0)
+          GetYaxis()->SetTitle("#frac{d^{2}#sigma}{dp^{*}_{T,1}dQ^{2}} [pb/GeV^{3}]");
+       GetYaxis()->SetNdivisions(303);
+       GetXaxis()->SetNdivisions(303);
+       SetFTO({20}, {10}, {1.4, 2.2, 0.4, 3.3});
+
+        if(i < nlo.jetsData.size() - 2  && nlo.jetsData.size() > 2) {
+            GetXaxis()->SetTickSize(0);
+            GetXaxis()->SetLabelOffset(5000);
+        }
+        if(i % 2 != 0) {
+            GetYaxis()->SetTickSize(0);
+            GetYaxis()->SetLabelOffset(5000);
+        }
+
+
+        /*
+        if(i == 1) {
+           TLegend *leg = newLegend(kPos9);
+           leg->AddEntry(hData, "H1 HERAII jet data", "le");
+           leg->AddEntry(hNlo, "NLO prediction");
+           leg->AddEntry(hNNlo, "NNLO prediction");
+           DrawLegends({leg});
+        }
+        */
+
+       DrawLatexUp(-1, Form("%g < Q^{2} < %g GeV^{2}",q2Min, q2Max), -1, "c");
+
+       if(i == 4) {
+          can->cd();
+          TLegend *leg = new TLegend(0.6, 0.2, 0.95, 0.3);
+          leg->SetTextSize(0.03);
+          leg->SetBorderSize(0);
+          leg->AddEntry(hData, "H1 HERAII jet data", "pe");
+          leg->AddEntry(hNlo, "NLO prediction", "l");
+          leg->AddEntry(hNNlo, "NNLO prediction", "l");
+          leg->Draw();
+       }
+
+
+
+
+       ++i;
+    }
+
+
+
+
+    can->SaveAs("jetsNLOvsNNLO.pdf");
+}
+
+
+
+
 
 
 void dPlotter::plotXpom()
 {
-    map<pair<double,double>, vector<point>> dataMap;
+    map<pair<double,double>, vector<pointInc>> dataMap;
 
     //vector<double> betas = {0.01, 0.04, 0.1, 0.2, 0.4, 0.65, 0.9};
     vector<double> betas = { 0.011, 0.043, 0.11, 0.2, 0.43, 0.67, 0.8};
@@ -393,7 +1109,7 @@ void dPlotter::plotXpom()
     vector<double> q2s   = {3.5, 5, 6.5, 8.5, 12, 15, 20, 25, 35, 45, 60, 90, 200, 400, 800, 1600};
 
 
-    for(point &p : data)
+    for(pointInc &p : data)
         dataMap[{p.q2, p.beta}].push_back(p);
 
 
@@ -531,10 +1247,33 @@ void dPlotter::plotCorrelations()
     SetLeftRight(0.24, 0.16);
     SetTopBottom(0.2, 0.2);
 
+    map<TString,TString> nMap = { {"PDFQ0_diff.g0", "A_{g}"},
+                             {"PDFQ0_diff.g1", "B_{g}"},
+                             {"PDFQ0_diff.g2", "C_{g}"},
+                             {"PDFQ0_diff.s0", "A_{s}"},
+                             {"PDFQ0_diff.s1", "B_{s}"},
+                             {"PDFQ0_diff.s2", "C_{s}"},
+                             {"QcdnumDDISCS.n_IR", "n_{IR}"},
+                             {"QcdnumDDISCS.a0_IP", "a_{IP}(0)"} };
+
+    
+    for(int i = 1; i <= hCorrs->GetNbinsX(); ++i) {
+       TString s = hCorrs->GetXaxis()->GetBinLabel(i);
+       if(nMap.count(s)) {
+          hCorrs->GetXaxis()->SetBinLabel(i, nMap[s]);
+          hCorrs->GetYaxis()->SetBinLabel(i, nMap[s]);
+       }
+    }
+
+
+
     hCorrs->Draw("colz text");
     hCorrs->GetXaxis()->SetTitle("");
     hCorrs->GetZaxis()->SetRangeUser(-1, 1);
     
+    double orSize = GetXaxis()->GetLabelSize();
+    GetXaxis()->SetLabelSize(1.5*orSize);
+    GetYaxis()->SetLabelSize(1.5*orSize);
 
     can->SaveAs(outDir + "/corrs.pdf");
 

@@ -113,10 +113,10 @@ struct PDF {
 
 };
 
-PDF loadLHAPDF(TString name)
+PDF loadLHAPDF(TString name, TString name2 = "")
 {
    PDF pdf;
-   DPDFset  dpdf(name.Data());
+   DPDFset  dpdf(name.Data(), name2.Data());
    pdf.name = name;
 
    pdf.shifts.resize(1);// dpdf.size());
@@ -144,8 +144,10 @@ PDF loadLHAPDF(TString name)
             double singlet  = 0;
             for(int l = 0; l < pdfsNow.size(); ++l) if(l != 6) singlet += xp*pdfsNow[l];
 
-            pdf.shifts[0].singletQ2[q2][i]->SetPoint(k, z, 1.2*singlet);
-            pdf.shifts[0].gluonQ2[q2][i]->SetPoint(k, z, 1.2*gluon);
+            if(z < 0.999) {
+            pdf.shifts[0].singletQ2[q2][i]->SetPoint(k, z, singlet);
+            pdf.shifts[0].gluonQ2[q2][i]->SetPoint(k, z, gluon);
+            }
          }
       }
    }
@@ -361,7 +363,7 @@ struct Style {
    int fillStyle;
 };
 
-vector<Style> pdfStyles = {   {kBlue,kBlue,kRed, 1001}, {kMagenta,kMagenta,kMagenta+3, 3244}   };
+vector<Style> pdfStyles = {   {kBlue,kBlue,kRed, 1001}, {kGreen,kGreen,kGreen+3, 3345 /*3244*/}   };
 
 
 Canvas operator <<(Canvas canvas, PDF pdf)
@@ -376,7 +378,7 @@ Canvas operator <<(Canvas canvas, PDF pdf)
 
    for(int i = 0; i < q2s.size(); ++i) {
       //Fill Graph
-      cout << "Helenka" <<  pdf.shifts[0].singletQ2.at(q2s[i]).size() << " "<<pdf.shifts[0].singletQ2.at(q2s[i])[0]<< endl;
+      cout << "Helenka " <<  pdf.shifts[0].singletQ2.at(q2s[i]).size() << " "<<pdf.shifts[0].singletQ2.at(q2s[i])[0]<< endl;
       TGraphAsymmErrors *grS = getBand(pdf.shifts[0].singletQ2.at(q2s[i]));
       TGraphAsymmErrors *grG = getBand(pdf.shifts[0].gluonQ2.at(q2s[i]));
 
@@ -388,6 +390,11 @@ Canvas operator <<(Canvas canvas, PDF pdf)
 
       grS->SetLineColor(pdfStyle.lineCol);
       grG->SetLineColor(pdfStyle.lineCol);
+
+      grG->SetLineWidth(3);
+      grS->SetLineWidth(3);
+      grGtot->SetLineWidth(3);
+      grStot->SetLineWidth(3);
 
       if(canvas.doRatio) {
          TGraph *grSRefNow, *grGRefNow;
@@ -420,7 +427,7 @@ Canvas operator <<(Canvas canvas, PDF pdf)
       else                           grStot->Draw("le02 same");
 
       auto plotBorders = [&](TGraphAsymmErrors *grNow) {
-         if(pdfStyle.fillStyle != 1001) {
+         if(pdfStyle.fillStyle != 1001 || true) {
             TGraph *grStotup, *grStotdn;
             tie(grStotup, grStotdn) =  GetUpDnCurve(grNow);
             grStotup->Draw("l same");
@@ -431,22 +438,22 @@ Canvas operator <<(Canvas canvas, PDF pdf)
 
       grS->SetFillColorAlpha(pdfStyle.innerCol, tr);
       grS->SetFillStyle(pdfStyle.fillStyle);
-      if(pdfStyle.fillStyle == 1001) grS->Draw("le03 same");
-      else                           grS->Draw("le02 same");
+      if(pdfStyle.fillStyle == 1001) grS->Draw("le03 same ][");
+      else                           grS->Draw("le02 same ][");
       plotBorders(grS);
 
       can->cd(2*i + 2);
 
       grGtot->SetFillColorAlpha(pdfStyle.outerCol, tr);
       grGtot->SetFillStyle(pdfStyle.fillStyle);
-      if(pdfStyle.fillStyle == 1001) grGtot->Draw("le03 same");
-      else                           grGtot->Draw("le02 same");
+      if(pdfStyle.fillStyle == 1001) grGtot->Draw("le03 same ][");
+      else                           grGtot->Draw("le02 same ][");
       plotBorders(grGtot);
 
       grG->SetFillColorAlpha(pdfStyle.innerCol, tr);
       grG->SetFillStyle(pdfStyle.fillStyle);
-      if(pdfStyle.fillStyle == 1001) grG->Draw("le03 same");
-      else                           grG->Draw("le02 same");
+      if(pdfStyle.fillStyle == 1001) grG->Draw("le03 same ][");
+      else                           grG->Draw("le02 same ][");
       plotBorders(grG);
 
       if(i == q2s.size() - 1)
@@ -547,6 +554,8 @@ pair<TGraph*,TGraph*>  GetUpDnCurve(TGraphAsymmErrors* gr)
    grDn->SetLineColor(gr->GetFillColor());
    grUp->SetLineStyle(1);
    grDn->SetLineStyle(1);
+   grUp->SetLineWidth(2);
+   grDn->SetLineWidth(2);
 
    for(int i = 0; i < gr->GetN(); ++i) {
       double x, y;
@@ -654,14 +663,24 @@ void comparePdf()
          {"Ext_nnlo_heraCjets", "AExt_nnlo_heraCjets" },
          */
 
+      { "AExt_nnlo_heraC", "BExt_nnlo_heraC"}, //Theory impact
+      { "AExt_nlo_heraC", "BExt_nlo_heraC"}, //Theory impact
+
+      { "AExt_nnlo_heraCjets", "BExt_nnlo_heraCjets"}, //Theory impact
+      { "AExt_nlo_heraCjets", "BExt_nlo_heraCjets"}, //Theory impact
+
+
+      //{ "AExt_nnlo_heraCjets", "AExt_nlo_heraCjets"}, //Theory impact
+      //{ "AExt_nnlo_heraC", "AExt_nlo_heraI"} //Theory impact
 
       //Theor comp.
 //      { "AExt_nnlo_heraC",  "AExt_nnlo_heraII"} //old fit vs new fit
 
       //{ "AExt_nnlo_fps3D",  "AExt_nnlo_fps4D"},//old fit vs new fit
       //{ "AExt_nnlo_heraC",  "AExt_nnlo_fps4D"},//old fit vs new fit
-      { "AExt_nnlo_heraC",  "AExt_nnlo_heraCfps3D"},//old fit vs new fit
-      { "AExt_nnlo_heraC",  "AExt_nnlo_heraCfps4D"}//old fit vs new fit
+
+      //{ "AExt_nnlo_heraC",  "AExt_nnlo_heraCfps3D"},//old fit vs new fit
+      //{ "AExt_nnlo_heraC",  "AExt_nnlo_heraCfps4D"}//old fit vs new fit
 
 
       /*
@@ -704,18 +723,24 @@ void comparePdf()
 
    TString pathIn = "../farm/variants/";
 
+   /*
 
-   PDF pdfZEUS =  loadLHAPDF("ZEUS_DPDF_2009SJ_NLO_pom");
+   PDF pdfFitBreg =  loadLHAPDF("lhaTest_reg");
+   PDF pdfFitBpom =  loadLHAPDF("lhaTest_pom");
+   PDF pdfABCDE   =  loadLHAPDF("ABCDE_pom");
+   //PDF pdfZEUS =  loadLHAPDF("ZEUS_DPDF_2009SJ_NLO_pom");
+   PDF pdfNew =  loadLHAPDF("lhaTest_reg");
    TString tag1 = "AExt_nlo_heraCjets";
    TString tag2 = "AExt_nnlo_heraC";
    PDF pdfH1(pathIn + tag1 + ".str_dir");
-   //PDF pdfH2(pathIn + tag2 + ".str_dir");
+   PDF pdfH2(pathIn + tag2 + ".str_dir");
    //pdfPlot("Log CompErrors")       <<  pdfH1 << pdfZEUS   << save("zeus.pdf");
-   pdfPlot("Log")       <<  pdfH1 << pdfZEUS   << save("zeus.pdf");
+   pdfPlot("Lin")       <<  pdfH2 << pdfABCDE   << save("xcheck_abcde.pdf");
    //TString name = "plots/" +  tag +"__"+ comp[1];
    //plotAllTypes(pdfH1, pdfH2, "plotsZEUS/h1vszeus");
 
    return;
+   */
 
    for(auto comp: compNames) {
       PDF pdf1(pathIn + comp[0] + ".str_dir");
