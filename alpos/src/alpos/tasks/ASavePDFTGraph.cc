@@ -8,6 +8,7 @@
 #include <TH1D.h>
 #include <TSystem.h>
 #include "alpos/AFactory.h"
+#include "alpos/AlposTools.h"
 #include "alpos/AChisq.h"
 #include "alpos/ASuperData.h"
 #include "alpos/ASuperTheory.h"
@@ -24,7 +25,6 @@ using namespace std;
 
 const string ASavePDFTGraph::fTaskType = "SavePDFTGraph";
 
-double rfluxRawInt(double a0, double ap, double b0,  double x_pom, double tAbsMin, double tAbsMax);
 vector<double>  xfxQownens(double X, double SCALE);
 
 
@@ -519,7 +519,7 @@ bool ASavePDFTGraph::Execute(){
             double a0 = PAR_ANY("IP_a0");
             double ap = PAR_ANY("IP_ap");
             double b0 = PAR_ANY("IP_b0");
-            const double dm =  rfluxRawInt(a0, ap, b0, xPomNorm,  0, tAbscutNorm);
+            const double dm =  AlposTools::rfluxRawInt(a0, ap, b0, xPomNorm,  0, tAbscutNorm);
             double  norm=(1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
 
             gridfile << "FluxType: Regge" << endl;
@@ -574,7 +574,7 @@ bool ASavePDFTGraph::Execute(){
             double ap = PAR_ANY("IR_ap");
             double b0 = PAR_ANY("IR_b0");
             double nR = PAR_ANY("IR_n");
-            const double dm =  rfluxRawInt(a0, ap, b0, xPomNorm,  0, tAbscutNorm);
+            const double dm =  AlposTools::rfluxRawInt(a0, ap, b0, xPomNorm,  0, tAbscutNorm);
             double  norm= nR * (1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
 
             string WriteLHAPDFreg = WriteLHAPDF;

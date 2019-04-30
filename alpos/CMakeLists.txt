@@ -41,9 +41,6 @@ set(FOUND_LIBRARIES aem apc apccpp gfortran)
 find_package(ROOT REQUIRED)
 include_directories(SYSTEM ${ROOT_INCLUDE_DIRS})
 
-find_package(LHAPDF REQUIRED)
-include_directories(SYSTEM ${LHAPDF_INCLUDE_DIRS})
-
 find_package(FastNLO REQUIRED)
 include_directories(SYSTEM ${FNLO_INCLUDE_DIRS})
 
@@ -51,9 +48,19 @@ find_package(Eigen REQUIRED)
 include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
 
 # append component libraries to variable used for linking
-set(FOUND_LIBRARIES ${ROOT_LIBRARIES} ${LHAPDF_LIBRARIES} ${FNLO_LIBRARIES} ${FOUND_LIBRARIES})
+set(FOUND_LIBRARIES ${ROOT_LIBRARIES} ${FNLO_LIBRARIES} ${FOUND_LIBRARIES})
 
 # -- system components (optional)
+
+# LHAPDF
+find_package(LHAPDF)
+if (LHAPDF_LIBRARIES)
+    add_definitions(-D_CMAKE_FOUND_LHAPDF=1)
+    include_directories(SYSTEM ${LHAPDF_INCLUDE_DIRS})
+    set(FOUND_LIBRARIES ${FOUND_LIBRARIES} ${LHAPDF_LIBRARIES})
+else()
+    message(WARNING "Could not find LHAPDF: building Alpos without this interface")
+endif()
 
 # APFEL
 find_package(APFEL)
@@ -89,7 +96,7 @@ endif()
 find_package(APPLgrid)
 if (APPLGRID_LIBRARIES)
     add_definitions(-D_CMAKE_FOUND_APPLGRID=1)
-    set(FOUND_LIBRARIES ${FOUND_LIBRARIES} ${APPLGRID_LIBRARIES_LIBRARIES})
+    set(FOUND_LIBRARIES ${FOUND_LIBRARIES} ${APPLGRID_LIBRARIES})
 else()
     message(WARNING "Could not find APPLgrid: building Alpos without this interface")
 endif()
@@ -137,6 +144,7 @@ if (NOT APFELxx_LIBRARIES)
     list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AApfelxxDISCS.cc")
     list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AApfelxxDDISCS.cc")
     list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AApfelxxPDF.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AApfelxxReggeonCS.cc")
 endif()
 
 # exclude sources which require optional component 'APPLgrid'

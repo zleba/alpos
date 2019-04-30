@@ -61,7 +61,7 @@ void AlposTools::CovToCovRel(TMatrixDSym& mat, const std::vector<double>& sigma)
 
    // check compatibility
    if (mat.GetNrows() != sigma.size()) {
-      say::debug["AlposTools::CovToCovRel"]<<"Matrix (size "<<mat.GetNrows()<<" x "<<mat.GetNcols()<<") and vector (size "<<sigma.size()<<") are incompatible."<<endl;
+      say::debug["AlposTools::CovToCovRel"]<<"Matrix (size "<<mat.GetNrows()<<" x "<<mat.GetNcols()<<") and vector (size "<<sigma.size()<<") are incompatible."<<std::endl;
       exit(1);
    }
    for ( int x = 0 ; x<mat.GetNrows() ; x++ ) {
@@ -82,7 +82,7 @@ void AlposTools::CovRelToCov(TMatrixDSym& mat, const std::vector<double>& sigma)
 
    // check compatibility
    if (mat.GetNrows() != sigma.size()) {
-      say::debug["AlposTools::CovRelToCov"]<<"Matrix (size "<<mat.GetNrows()<<" x "<<mat.GetNcols()<<") and vector (size "<<sigma.size()<<") are incompatible."<<endl;
+      say::debug["AlposTools::CovRelToCov"]<<"Matrix (size "<<mat.GetNrows()<<" x "<<mat.GetNcols()<<") and vector (size "<<sigma.size()<<") are incompatible."<<std::endl;
       exit(1);
    }
    for ( int x = 0 ; x<mat.GetNrows() ; x++ ) {
@@ -109,11 +109,11 @@ void AlposTools::CovRescale(TMatrixDSym& mat, const std::vector<double>& sigma_c
    if (sigma_rescale.size() != sigma_current.size()) {
       say::error["AlposTools::CovRescale"]<<"The reference cross section vector (size "<<sigma_current.size()<<
                                             ") and the rescaled cross section vector (size "<<sigma_rescale.size()<<
-                                            ") are incompatible."<<endl;
+         ") are incompatible."<<std::endl;
       exit(1);
    }
    if (mat.GetNrows() != sigma_current.size()) {
-      say::error["AlposTools::CovRescale"]<<"Matrix (size "<<mat.GetNrows()<<" x "<<mat.GetNcols()<<") and vector (size "<<sigma_current.size()<<") are incompatible."<<endl;
+      say::error["AlposTools::CovRescale"]<<"Matrix (size "<<mat.GetNrows()<<" x "<<mat.GetNcols()<<") and vector (size "<<sigma_current.size()<<") are incompatible."<<std::endl;
       exit(1);
    }
 
@@ -136,13 +136,13 @@ void AlposTools::CorrToCov(TMatrixDSym& mat, const std::vector<double>& error){
    // check compatibility
    using namespace std;
    if (mat.GetNrows() != error.size()) {
-      say::error["AlposTools::CorrToCov"]<<"Matrix (size "<<mat.GetNrows()<<" x "<<mat.GetNcols()<<") and error vector (size "<<error.size()<<") are imcompatible."<<endl;
+      say::error["AlposTools::CorrToCov"]<<"Matrix (size "<<mat.GetNrows()<<" x "<<mat.GetNcols()<<") and error vector (size "<<error.size()<<") are imcompatible."<<std::endl;
       exit(1);
    }
    for ( int x = 0 ; x<mat.GetNcols() ; x++ ) {
       for ( int y = 0 ; y<x+1 ; y++ ) {
 	      if ( x==y && mat[x][y]!=1 )
-	         say::warn["AlposTools::CorrToCov"]<<"Diagonal element of correlation matrix should be 1, but is "<<mat[x][y]<<endl;
+	         say::warn["AlposTools::CorrToCov"]<<"Diagonal element of correlation matrix should be 1, but is "<<mat[x][y]<<std::endl;
          mat[x][y] = mat[x][y]*error[x]*error[y];
 	      mat[y][x] = mat[x][y];
       }
@@ -156,7 +156,7 @@ TMatrixD AlposTools::InvertLU(const TMatrixD& mat){
    // --- invert matrix
    //TVectorD eigVec;
    //mat.EigenVectors(eigVec);
-   //cout << "RADEK condition "  << eigVec.Min() <<" "<< eigVec.Max() << endl;
+   //cout << "RADEK condition "  << eigVec.Min() <<" "<< eigVec.Max() << std::endl;
 
    TDecompLU lu(mat);
    TMatrixD Inv(mat);
@@ -441,3 +441,64 @@ std::map<int,double> AlposTools::LicoApfelxxToLhaMap(const std::vector<double>& 
    return lha;
 }
 
+
+//____________________________________________________________________________________ //
+double AlposTools::rfluxRawInt(double a0, double ap, double b0,  double x_pom, double tAbsMin, double tAbsMax) {
+   const double mp = 0.93827231;
+
+   //     calc min. kinematically  allowed t
+   double tAbsMinKin = pow(mp*x_pom,2)/(1.-x_pom);
+   tAbsMin = std::max(tAbsMin, tAbsMinKin);
+   assert(tAbsMin < tAbsMax);
+
+   //     c*xpom**(-(2apom-1))
+   double fl =  exp((2.0*a0-1.)*log(1.0/x_pom));
+   double b=(b0+2.0*ap*log(1.0/x_pom));
+
+   //   at fixed t:  exp(Bt)
+   //  fl = fl * exp(b*tcut);
+
+   //   t-integrated: (1/B)*[exp(-B*tmax)-exp(-B*tmin)]
+   fl = fl * (exp(-tAbsMin*b)-exp(-tAbsMax*b))/b;
+   if ( isinf(fl) || fl==0 || isnan(fl)) {
+      std::cout<<"[rfluxRawInt] rflux is not a reasonable value: "<<fl<<"\t fl0 = "<<exp((2.0*a0-1.)*log(1.0/x_pom))<<", b="<<b<<", a0="<<a0<<std::endl;
+   }
+   return fl;
+}
+
+double AlposTools::rfluxRaw(double a0, double ap, double b0, double x_pom, double tAbs) {
+   //     c*xpom**(-(2apom-1))
+   double fl =  exp((2.0*a0-1.)*log(1.0/x_pom));
+   double b=(b0+2.0*ap*log(1.0/x_pom));
+
+   //   at fixed t:  exp(Bt)
+   //  fl = fl * exp(b*tcut);
+   fl = fl * exp(-b*tAbs);
+
+   return fl;
+}
+
+double AlposTools::rfluxInt(double a0, double ap, double b0, double x_pom, double tAbsMin, double tAbsMax) {
+   double tAbscutNorm = 1;
+   double xPomNorm = 0.003;
+   const double dm =  rfluxRawInt(a0, ap, b0, xPomNorm,  0, tAbscutNorm);
+   double  norm=(1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
+
+   double rFlux = norm * rfluxRawInt(a0, ap, b0, x_pom, tAbsMin, tAbsMax);
+   if ( isnan(rFlux) ) {
+      std::cout<<"[rfluxInt] rFlux isnan: "<<rFlux<<". Input: a0="<<a0<<", ap="<<ap<<", b0="<<b0<<std::endl;
+      std::cout<<"[rfluxInt] rFlux isnan.           dm="<<dm<<", xPomNorm="<<xPomNorm<<std::endl;
+   }
+   return rFlux;
+}
+
+double AlposTools::rflux(double a0, double ap, double b0, double x_pom, double tAbs) {
+   double tAbscutNorm = 1;
+   double xPomNorm = 0.003;
+   const double dm =  rfluxRawInt(a0, ap, b0, xPomNorm,  0, tAbscutNorm);
+   double  norm=(1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
+
+   return  norm * rfluxRaw(a0, ap, b0, x_pom, tAbs);
+}
+
+//____________________________________________________________________________________ //

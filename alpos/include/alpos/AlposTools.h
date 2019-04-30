@@ -38,7 +38,12 @@ namespace AlposTools {
    std::vector<double> LicoLhaToApfelxx(const std::vector<double>& LiCoLha  );
    std::map<int,double> LicoApfelxxToLhaMap(const std::vector<double>& LiCoApfl );
    std::map<int,double> LicoLhaToApfelxxMap(const std::vector<double>& LiCoLha  );
-   
+
+   double rfluxRawInt(double a0, double ap, double b0,  double x_pom, double tAbsMin, double tAbsMax);
+   double rfluxRaw(double a0, double ap, double b0, double x_pom, double tAbs);
+   double rfluxInt(double a0, double ap, double b0, double x_pom, double tAbsMin, double tAbsMax);
+   double rflux(double a0, double ap, double b0, double x_pom, double tAbs);
+
    //! --- useful (but ambivalent) vector operations 
    //! Multiply element by element
    template <typename T>

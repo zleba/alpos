@@ -1,6 +1,7 @@
 
 #include "alpos/functions/AQcdnumDDISCS.h"
 #include "alpos/functions/AQcdnumInit.h"
+#include "alpos/AlposTools.h"
 
 
 extern "C" void zmstfun_(int* istf, double* def, double* x, double* Q2, double* f, int* n, int* nchk);
@@ -14,10 +15,6 @@ extern "C" {
 
 
   //hqstfun_(iF2, &icharm,&CEP2F[0],&beta[0],&q2[0],&F2c[0],&npts,&ichk);
-
-double rfluxInt(double a0, double ap, double b0, double x_pom, double tAbsMin, double tAbsMax);
-double rflux(double a0, double ap, double b0, double x_pom, double tAbs);
-
 
 #include <iostream>
 
@@ -166,8 +163,8 @@ bool AQcdnumDDISCS::Update() {
 
        double flxIP;
        //Pomeron flux
-       if (Is4D) flxIP = rflux   (a0_IP, ap_IP, b0_IP, xpom[i], tAbsVal[i]);
-       else      flxIP = rfluxInt(a0_IP, ap_IP, b0_IP, xpom[i], tAbsMin, tAbsMax);
+       if (Is4D) flxIP = AlposTools::rflux   (a0_IP, ap_IP, b0_IP, xpom[i], tAbsVal[i]);
+       else      flxIP = AlposTools::rfluxInt(a0_IP, ap_IP, b0_IP, xpom[i], tAbsMin, tAbsMax);
 
        //Reduced x-section for pomeron
        double xpSigRed_IP =  flxIP*xpom[i] * (F2  - y*y/yplus*FL);
@@ -176,8 +173,8 @@ bool AQcdnumDDISCS::Update() {
 
        double flxIR;
        //Reggeon flux
-       if (Is4D) flxIR = rflux   (a0_IR, ap_IR, b0_IR, xpom[i], tAbsVal[i]);
-       else      flxIR = rfluxInt(a0_IR, ap_IR, b0_IR, xpom[i], tAbsMin, tAbsMax);
+       if (Is4D) flxIR = AlposTools::rflux   (a0_IR, ap_IR, b0_IR, xpom[i], tAbsVal[i]);
+       else      flxIR = AlposTools::rfluxInt(a0_IR, ap_IR, b0_IR, xpom[i], tAbsMin, tAbsMax);
 
 
        //Get the Reggeon structure function from the H12006
@@ -244,77 +241,5 @@ bool AQcdnumDDISCS::Update() {
    }
 
    return true;
-}
-
-
-// ___________________________________________________________________________________________ //
-//
-//
-//
-
-
-double rfluxRawInt(double a0, double ap, double b0,  double x_pom, double tAbsMin, double tAbsMax)
-{
-    const double mp = 0.93827231;
-
-    //     calc min. kinematically  allowed t
-    double tAbsMinKin = pow(mp*x_pom,2)/(1.-x_pom);
-    tAbsMin = max(tAbsMin, tAbsMinKin);
-    assert(tAbsMin < tAbsMax);
-
-    //     c*xpom**(-(2apom-1))
-    double fl =  exp((2.0*a0-1.)*log(1.0/x_pom));
-    double b=(b0+2.0*ap*log(1.0/x_pom));
-
-    //   at fixed t:  exp(Bt)
-    //  fl = fl * exp(b*tcut);
-
-    //   t-integrated: (1/B)*[exp(-B*tmax)-exp(-B*tmin)]
-    fl = fl * (exp(-tAbsMin*b)-exp(-tAbsMax*b))/b;
-    if ( isinf(fl) || fl==0 || isnan(fl)) {
-       cout<<"[rfluxRawInt] rflux is not a reasonable value: "<<fl<<"\t fl0 = "<<exp((2.0*a0-1.)*log(1.0/x_pom))<<", b="<<b<<", a0="<<a0<<endl;
-    }
-    return fl;
-}
-
-static double rfluxRaw(double a0, double ap, double b0, double x_pom, double tAbs)
-{
-    //     c*xpom**(-(2apom-1))
-    double fl =  exp((2.0*a0-1.)*log(1.0/x_pom));
-    double b=(b0+2.0*ap*log(1.0/x_pom));
-
-    //   at fixed t:  exp(Bt)
-    //  fl = fl * exp(b*tcut);
-    fl = fl * exp(-b*tAbs);
-
-    return fl;
-}
-
-
-
-double rfluxInt(double a0, double ap, double b0, double x_pom, double tAbsMin, double tAbsMax)
-{
-    double tAbscutNorm = 1;
-    double xPomNorm = 0.003;
-    const double dm =  rfluxRawInt(a0, ap, b0, xPomNorm,  0, tAbscutNorm);
-    double  norm=(1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
-
-    double rFlux = norm * rfluxRawInt(a0, ap, b0, x_pom, tAbsMin, tAbsMax);
-    if ( isnan(rFlux) ) {
-       cout<<"[rfluxInt] rFlux isnan: "<<rFlux<<". Input: a0="<<a0<<", ap="<<ap<<", b0="<<b0<<endl;
-       cout<<"[rfluxInt] rFlux isnan.           dm="<<dm<<", xPomNorm="<<xPomNorm<<endl;
-    }
-    return rFlux;
-}
-
-
-double rflux(double a0, double ap, double b0, double x_pom, double tAbs)
-{
-    double tAbscutNorm = 1;
-    double xPomNorm = 0.003;
-    const double dm =  rfluxRawInt(a0, ap, b0, xPomNorm,  0, tAbscutNorm);
-    double  norm=(1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
-
-    return  norm * rfluxRaw(a0, ap, b0, x_pom, tAbs);
 }
 
