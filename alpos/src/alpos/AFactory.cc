@@ -13,28 +13,32 @@
 
 // functions
 #include "alpos/functions/AExampleFunction.h"
-#include "alpos/functions/ACRunDecFunction.h"
 #if _CMAKE_FOUND_APFEL
-#include "alpos/functions/AApfel.h"
-#include "alpos/functions/AApfelDISCS.h"
-#include "alpos/functions/AApfelDDISCS.h"
-#include "alpos/functions/AApfelDISCSEWFit.h"
+   #include "alpos/functions/AApfel.h"
+   #include "alpos/functions/AApfelDISCS.h"
+   #include "alpos/functions/AApfelDDISCS.h"
+   #include "alpos/functions/AApfelDISCSEWFit.h"
 #endif //_CMAKE_FOUND_APFEL
-#include "alpos/functions/ALhapdf6.h"
-#include "alpos/functions/ALhapdf6Alphas.h"
+#if _CMAKE_FOUND_LHAPDF
+   #include "alpos/functions/ALhapdf6.h"
+   #include "alpos/functions/ALhapdf6Alphas.h"
+#endif
+#if _CMAKE_FOUND_FASTNLO
+   #include "alpos/functions/ACRunDecFunction.h"
+   #include "alpos/functions/AfastNLO.h"
+   #include "alpos/functions/AfastNLOalt.h"
+   #include "alpos/functions/AfastNLODiffDIS.h"
+   #include "alpos/functions/AfastNLOnormDIS.h"
+   #include "alpos/functions/AfastNLOnormDISalt.h"
+   //#include "alpos/AfastNLODiffDIS.h"
+   #include "alpos/functions/AfastNLOInterpolPDFas.h"
+   #include "alpos/functions/AfastNLOInterpolPDFasNormDIS.h"
+   #include "alpos/functions/AfastNLORatio.h"
+   #endif
 #include "alpos/functions/AStrowp1.h"
 #include "alpos/functions/AH1DPDF2006.h"
 //#include "alpos/AAlphasDependentPDF.h"
 #include "alpos/functions/ABelleTDCPV.h"
-#include "alpos/functions/AfastNLO.h"
-#include "alpos/functions/AfastNLOalt.h"
-#include "alpos/functions/AfastNLODiffDIS.h"
-#include "alpos/functions/AfastNLOnormDIS.h"
-#include "alpos/functions/AfastNLOnormDISalt.h"
-//#include "alpos/AfastNLODiffDIS.h"
-#include "alpos/functions/AfastNLOInterpolPDFas.h"
-#include "alpos/functions/AfastNLOInterpolPDFasNormDIS.h"
-#include "alpos/functions/AfastNLORatio.h"
 #if _CMAKE_FOUND_APPLGRID
     #include "alpos/functions/AApplgrid.h"
 #endif //_CMAKE_FOUND_APPLGRID
@@ -55,13 +59,15 @@
 #include "alpos/ASuperData.h"
 #include "alpos/ASubsetFunction.h"
 #include "alpos/ASubsetData.h"
-#include "alpos/functions/AQcdnumInit.h"
-#include "alpos/functions/AQcdnumAlphas.h"
-#include "alpos/functions/AQcdnumPDF.h"
-#include "alpos/functions/AQcdnumDISCS.h"
-#include "alpos/functions/AQcdnumDDISCS.h"
+#if _CMAKE_FOUND_QCDNUM
+   #include "alpos/functions/AQcdnumInit.h"
+   #include "alpos/functions/AQcdnumAlphas.h"
+   #include "alpos/functions/AQcdnumPDF.h"
+   #include "alpos/functions/AQcdnumDISCS.h"
+   #include "alpos/functions/AQcdnumDDISCS.h"
+   #include "alpos/functions/AQcdnumDISCSEWFit.h"
+#endif
 #include "alpos/functions/APDFQ0_diff.h"
-#include "alpos/functions/AQcdnumDISCSEWFit.h"
 #include "alpos/functions/AAlphaEmRun.h"
 #include "alpos/functions/AEprc.h"
 #include "alpos/functions/APDFQ0_LHAPDF.h"
@@ -86,19 +92,22 @@
 #include "alpos/tasks/AStatAnalysis.h"
 #include "alpos/tasks/APrintErrorSummary.h"
 #include "alpos/tasks/APrintDataTheory.h"
-#include "alpos/tasks/AChi2FitPDFas.h"
 #include "alpos/tasks/AChi2InterpolPDFas.h"
 #include "alpos/tasks/AChi2Scan.h"
 #include "alpos/tasks/AContour.h"
 #include "alpos/tasks/AReplaceDataWithTheoryValues.h"
 #include "alpos/tasks/AApcFitter.h"
-#include "alpos/tasks/ASavePDFTGraph.h"
-#include "alpos/tasks/ASaveDPDFTGraph.h"
+#if _CMAKE_FOUND_FASTNLO
+   #include "alpos/tasks/AChi2FitPDFas.h"
+#endif
+#if _CMAKE_FOUND_LHAPDF
+   #include "alpos/tasks/ASavePDFTGraph.h"
+   #include "alpos/tasks/ASaveDPDFTGraph.h"
+   #include "alpos/tasks/ALHAPDFErrors.h"
+   #include "alpos/tasks/APDFUncer.h"
+#endif
 #include "alpos/tasks/ASaveDataTheory.h"
-
 #include "alpos/tasks/AScaleUncertainty.h"
-#include "alpos/tasks/APDFUncer.h"
-#include "alpos/tasks/ALHAPDFErrors.h"
 
 // chisq functions
 #include "alpos/AChisq.h"
@@ -116,7 +125,14 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
    
    AFuncD* ptr = NULL;
    if      ( functype == AExampleFunction::fFunctionName )  ptr = new AExampleFunction(funcname);
+#if _CMAKE_FOUND_FASTNLO
    else if ( functype == ACRunDecFunction::fFunctionName )  ptr = new ACRunDecFunction(funcname);
+   else if ( functype == AfastNLO::fFunctionName )          ptr = new AfastNLO(funcname);
+   else if ( functype == AfastNLOalt::fFunctionName )       ptr = new AfastNLOalt(funcname);
+   else if ( functype == AfastNLODiffDIS::fFunctionName )   ptr = new AfastNLODiffDIS(funcname);
+   else if ( functype == AfastNLOInterpolPDFas::fFunctionName )       ptr = new AfastNLOInterpolPDFas(funcname);
+   else if ( functype == AfastNLORatio::fFunctionName )     ptr = new AfastNLORatio(funcname);
+#endif
 #if _CMAKE_FOUND_APFEL
    else if ( functype == AApfelInit::fFunctionName )        ptr = new AApfelInit(funcname);
    else if ( functype == AApfelPDF::fFunctionName )         ptr = new AApfelPDF(funcname);
@@ -133,26 +149,28 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
    else if ( functype == AApfelxxPDF::fFunctionName )         ptr = new AApfelxxPDF(funcname);
    else if ( functype == AApfelxxReggeonCS::fFunctionName )   ptr = new AApfelxxReggeonCS(funcname);
 #endif //_CMAKE_FOUND_APFELxx
-   else if ( functype == ADPDF::fFunctionName )             ptr = new ADPDF(funcname);
+#if _CMAKE_FOUND_LHAPDF
    else if ( functype == ALhapdf6::fFunctionName )          ptr = new ALhapdf6(funcname);
    else if ( functype == ALhapdf6Alphas::fFunctionName )    ptr = new ALhapdf6Alphas(funcname);
+   else if ( functype == APDFQ0_LHAPDF::fFunctionName )     ptr = new APDFQ0_LHAPDF(funcname);
+#endif
+#if _CMAKE_FOUND_QCDNUM
+   else if ( functype == AfastNLOnormDIS::fFunctionName )   ptr = new AfastNLOnormDIS(funcname);
+   else if ( functype == AfastNLOnormDISalt::fFunctionName )   ptr = new AfastNLOnormDISalt(funcname);
+   else if ( functype == AfastNLOInterpolPDFasNormDIS::fFunctionName )       ptr = new AfastNLOInterpolPDFasNormDIS(funcname);
+   //else if ( functype == AfastNLODiffDIS::fFunctionName )   ptr = new AfastNLODiffDIS(funcname);
+   else if ( functype == AQcdnumInit::fFunctionName )       ptr = new AQcdnumInit(funcname);
+   else if ( functype == AQcdnumAlphas::fFunctionName )     ptr = new AQcdnumAlphas(funcname);
+   else if ( functype == AQcdnumPDF::fFunctionName )        ptr = new AQcdnumPDF(funcname);
+   else if ( functype == AQcdnumDISCS::fFunctionName )      ptr = new AQcdnumDISCS(funcname);
+   else if ( functype == AQcdnumDDISCS::fFunctionName )     ptr = new AQcdnumDDISCS(funcname);
+   else if ( functype == AQcdnumDISCSEWFit::fFunctionName ) ptr = new AQcdnumDISCSEWFit(funcname);
+#endif //_CMAKE_FOUND_QCDNUM
+   else if ( functype == ADPDF::fFunctionName )             ptr = new ADPDF(funcname);
    else if ( functype == AStrowp1::fFunctionName )          ptr = new AStrowp1(funcname);
    else if ( functype == AH1DPDF2006::fFunctionName )       ptr = new AH1DPDF2006(funcname);
    //else if ( functype == AAlphasDependentPDF::fFunctionName)ptr = new AAlphasDependentPDF(funcname);
    else if ( functype == ABelleTDCPV::fFunctionName )          ptr = new ABelleTDCPV(funcname);
-   else if ( functype == AfastNLO::fFunctionName )          ptr = new AfastNLO(funcname);
-   else if ( functype == AfastNLOalt::fFunctionName )       ptr = new AfastNLOalt(funcname);
-   else if ( functype == AfastNLODiffDIS::fFunctionName )   ptr = new AfastNLODiffDIS(funcname);
-#if _CMAKE_FOUND_QCDNUM
-   else if ( functype == AfastNLOnormDIS::fFunctionName )   ptr = new AfastNLOnormDIS(funcname);
-   else if ( functype == AfastNLOnormDISalt::fFunctionName )   ptr = new AfastNLOnormDISalt(funcname);
-   //else if ( functype == AfastNLODiffDIS::fFunctionName )   ptr = new AfastNLODiffDIS(funcname);
-#endif //_CMAKE_FOUND_QCDNUM
-   else if ( functype == AfastNLOInterpolPDFas::fFunctionName )       ptr = new AfastNLOInterpolPDFas(funcname);
-#if _CMAKE_FOUND_QCDNUM
-   else if ( functype == AfastNLOInterpolPDFasNormDIS::fFunctionName )       ptr = new AfastNLOInterpolPDFasNormDIS(funcname);
-#endif //_CMAKE_FOUND_QCDNUM
-   else if ( functype == AfastNLORatio::fFunctionName )     ptr = new AfastNLORatio(funcname);
 #if _CMAKE_FOUND_APPLGRID
    else if ( functype == AApplgrid::fFunctionName )         ptr = new AApplgrid(funcname);
 #endif //_CMAKE_FOUND_APPLGRID
@@ -163,18 +181,8 @@ AFuncD* AFactory::FunctionFactory(const std::string& functype,const std::string&
    else if ( functype == AData::fFunctionName )             ptr = new AData(funcname); //< A data set
    else if ( functype == ASingleConstant::fFunctionName )   ptr = new ASingleConstant(funcname);
    else if ( functype == AFunctionTF1::fFunctionName )      ptr = new AFunctionTF1(funcname);
-#if _CMAKE_FOUND_QCDNUM
-   else if ( functype == AQcdnumInit::fFunctionName )       ptr = new AQcdnumInit(funcname);
-   else if ( functype == AQcdnumAlphas::fFunctionName )     ptr = new AQcdnumAlphas(funcname);
-   else if ( functype == AQcdnumPDF::fFunctionName )        ptr = new AQcdnumPDF(funcname);
-   else if ( functype == AQcdnumDISCS::fFunctionName )      ptr = new AQcdnumDISCS(funcname);
-   else if ( functype == AQcdnumDDISCS::fFunctionName )     ptr = new AQcdnumDDISCS(funcname);
-
-   else if ( functype == AQcdnumDISCSEWFit::fFunctionName ) ptr = new AQcdnumDISCSEWFit(funcname);
-#endif //_CMAKE_FOUND_QCDNUM
    else if ( functype == AAlphaEmRun::fFunctionName )       ptr = new AAlphaEmRun(funcname);
    else if ( functype == AEprc::fFunctionName )	            ptr = new AEprc(funcname);
-   else if ( functype == APDFQ0_LHAPDF::fFunctionName )     ptr = new APDFQ0_LHAPDF(funcname);
    else if ( functype == APDFQ0_QcdnumExample::fFunctionName )     ptr = new APDFQ0_QcdnumExample(funcname);
    else if ( functype == APDFQ0_HERAStyle::fFunctionName )  ptr = new APDFQ0_HERAStyle(funcname);
    else if ( functype == APDFQ0_diff::fFunctionName )       ptr = new APDFQ0_diff(funcname);
@@ -216,18 +224,22 @@ ATask* AFactory::TaskFactory(const std::string& tname, const std::string& ttype)
    else if ( ttype == AStatAnalysis::fTaskType )      return new AStatAnalysis(tname);
    else if ( ttype == APrintErrorSummary::fTaskType ) return new APrintErrorSummary(tname);
    else if ( ttype == APrintDataTheory::fTaskType )   return new APrintDataTheory(tname);
-   else if ( ttype == AChi2FitPDFas::fTaskType )      return new AChi2FitPDFas(tname);
    else if ( ttype == AChi2InterpolPDFas::fTaskType ) return new AChi2InterpolPDFas(tname);
    else if ( ttype == AChi2Scan::fTaskType )          return new AChi2Scan(tname);
    else if ( ttype == AContour::fTaskType )           return new AContour(tname);
    else if ( ttype == AReplaceDataWithTheoryValues::fTaskType )           return new AReplaceDataWithTheoryValues(tname);
    else if ( ttype == AApcFitter::fTaskType )         return new AApcFitter(tname);
+#if _CMAKE_FOUND_FASTNLO
+   else if ( ttype == AChi2FitPDFas::fTaskType )      return new AChi2FitPDFas(tname);
+#endif
+#if _CMAKE_FOUND_LHAPDF
    else if ( ttype == ASavePDFTGraph::fTaskType )     return new ASavePDFTGraph(tname);
    else if ( ttype == ASaveDPDFTGraph::fTaskType )    return new ASaveDPDFTGraph(tname);
+   else if ( ttype == ALHAPDFErrors::fTaskType )      return new ALHAPDFErrors(tname);
+   else if ( ttype == APDFUncer::fTaskType )          return new APDFUncer(tname);
+#endif
    else if ( ttype == ASaveDataTheory::fTaskType )    return new ASaveDataTheory(tname);
    else if ( ttype == AScaleUncertainty::fTaskType )  return new AScaleUncertainty(tname);
-   else if ( ttype == APDFUncer::fTaskType )          return new APDFUncer(tname);
-   else if ( ttype == ALHAPDFErrors::fTaskType )      return new ALHAPDFErrors(tname);
    // ...
    // ...
    // ...

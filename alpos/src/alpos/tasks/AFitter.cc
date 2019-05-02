@@ -1,7 +1,6 @@
 #include "alpos/tasks/AFitter.h"
 #include "alpos/AFactory.h"
 #include <iostream>
-#include <alpos/functions/AfastNLOInterpolPDFas.h>
 #include <alpos/ASubsetFunction.h>
 #include "alpos/ASuperData.h"
 #include "alpos/ASuperTheory.h"

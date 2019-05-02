@@ -41,16 +41,25 @@ set(FOUND_LIBRARIES aem apc apccpp gfortran)
 find_package(ROOT REQUIRED)
 include_directories(SYSTEM ${ROOT_INCLUDE_DIRS})
 
-find_package(FastNLO REQUIRED)
-include_directories(SYSTEM ${FNLO_INCLUDE_DIRS})
-
 find_package(Eigen REQUIRED)
 include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
 
 # append component libraries to variable used for linking
-set(FOUND_LIBRARIES ${ROOT_LIBRARIES} ${FNLO_LIBRARIES} ${FOUND_LIBRARIES})
+set(FOUND_LIBRARIES ${ROOT_LIBRARIES} ${FOUND_LIBRARIES})
 
 # -- system components (optional)
+
+# fastNLO
+find_package(FastNLO)
+if (FASTNLO_LIBRARIES)
+    add_definitions(-D_CMAKE_FOUND_FASTNLO=1)
+    include_directories(SYSTEM ${FASTNLO_INCLUDE_DIRS})
+    set(FOUND_LIBRARIES ${FOUND_LIBRARIES} ${FASTNLO_LIBRARIES})
+else()
+    message(WARNING "Could not find fastNLO: building Alpos without this interface")
+    include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/external/fastnlo/include)
+endif()
+
 
 # LHAPDF
 find_package(LHAPDF)
@@ -105,13 +114,45 @@ endif()
 
 # choose which source files to compile
 file(GLOB alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/*.cc" "${PROJECT_SOURCE_DIR}/src/alpos/tasks/*.cc" "${PROJECT_SOURCE_DIR}/src/alpos/functions/*.cc")
+if (NOT FASTNLO_LIBRARIES)
+    file(GLOB alpos_SRC ${alpos_SRC} "${PROJECT_SOURCE_DIR}/external/fastnlo/src/*.cc")
+endif()
 
 # specify 'include' directories
 include_directories(BEFORE "${PROJECT_SOURCE_DIR}/include")
 
 ## exclude old source files
-#list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLOnormDISalt.cc")
-#list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLOalt.cc")
+# exclude sources which require optional component 'fastNLO'
+if (NOT FASTNLO_LIBRARIES)
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLOnormDISalt.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLOalt.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLO.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLOInterpolPDFasNormDIS.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLOnormDISalt.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLOnormDIS.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/ACRunDecFunction.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLORatio.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/fastNLOAlposDPDF.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/fastNLOAlpos.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLOInterpolPDFas.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLODiffDIS.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/tasks/AChi2FitPDFas.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/tasks/ALHAPDFErrors.cc")
+endif()
+
+# exclude sources which require optional component 'LHAPDF'
+if (NOT LHAPDF_LIBRARIES)
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/ALhapdf6.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/ALhapdf6Alphas.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLORatio.cc")    
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLOInterpolPDFas.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/tasks/ASavePDFTGraph.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/tasks/APDFUncer.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/tasks/ASaveDPDFTGraph.cc")
+    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/tasks/ALHAPDFErrors.cc")
+endif()
+
+
 
 # exclude sources which require optional component 'QCDNUM'
 if (NOT QCDNUM_LIBRARIES)

@@ -1,35 +1,35 @@
 # - Try to find fastNLO
 # Once done, this will define
 #
-# FNLO_FOUND
-# FNLO_INCLUDE_DIRS
-# FNLO_LIBRARIES
+# FASTNLO_FOUND
+# FASTNLO_INCLUDE_DIRS
+# FASTNLO_LIBRARIES
 
 MESSAGE(STATUS "Find fastNLO...")
 
-FIND_LIBRARY(FNLO_LIBRARIES
+FIND_LIBRARY(FASTNLO_LIBRARIES
   NAMES fastnlotoolkit
   PATHS
-  ${FNLO_PREFIX}/lib
+  ${FASTNLO_PREFIX}/lib
   ${PREFIX}/lib
   $ENV{HOME}/.local/lib
   /usr/local/lib
   /usr/lib
   )
 
-FIND_PATH(FNLO_INCLUDE_DIRS
+FIND_PATH(FASTNLO_INCLUDE_DIRS
   NAMES fastnlotk/fastNLOReader.h
   PATHS
-  ${FNLO_PREFIX}/include
+  ${FASTNLO_PREFIX}/include
   $ENV{HOME}/.local/include
   /usr/local/include
   /usr/include
   )
 
-if (NOT FNLO_LIBRARIES)
-  MESSAGE(STATUS "FNLO not found.")
-  MESSAGE(STATUS "You can pass -DFNLO_PREFIX=/path/to/lhapdf to cmake.")
+if (NOT FASTNLO_LIBRARIES)
+  MESSAGE(STATUS "FASTNLO not found.")
+  MESSAGE(STATUS "You can pass -DFASTNLO_PREFIX=/path/to/lhapdf to cmake.")
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(FastNLO DEFAULT_MSG FNLO_LIBRARIES FNLO_INCLUDE_DIRS)
+find_package_handle_standard_args(FastNLO DEFAULT_MSG FASTNLO_LIBRARIES FASTNLO_INCLUDE_DIRS)

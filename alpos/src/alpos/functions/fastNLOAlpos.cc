@@ -10,7 +10,6 @@
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
-#include <LHAPDF/LHAPDF.h>
 #include "alpos/functions/fastNLOAlpos.h"
 #include "alpos/ATheory.h"
 
