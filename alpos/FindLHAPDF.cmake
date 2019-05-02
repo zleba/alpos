@@ -8,7 +8,6 @@
 
 MESSAGE(STATUS "Looking for LHAPDF...")
 
-
 # try to use lhapdf-config tool
 FIND_PROGRAM(LHAPDF_CONFIG_EXECUTABLE NAMES lhapdf-config)
 EXEC_PROGRAM(${LHAPDF_CONFIG_EXECUTABLE} ARGS "--prefix" OUTPUT_VARIABLE LHAPDF_CONFIG__PREFIX)
@@ -36,6 +35,8 @@ FIND_PATH(LHAPDF_INCLUDE_DIRS
 if (NOT LHAPDF_LIBRARIES)
   MESSAGE(STATUS "LHAPDF not found.")
   MESSAGE(STATUS "You can pass -DLHAPDF_PREFIX=/path/to/lhapdf to cmake.")
+else()
+  MESSAGE(STATUS "LHAPDF found. Library path: " ${LHAPDF_LIBRARIES}  ", Include path:" ${LHAPDF_INCLUDE_DIRS})
 endif()
 
 include(FindPackageHandleStandardArgs)

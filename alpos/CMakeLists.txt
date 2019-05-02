@@ -137,7 +137,6 @@ if (NOT FASTNLO_LIBRARIES)
     list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLOInterpolPDFas.cc")
     list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/functions/AfastNLODiffDIS.cc")
     list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/tasks/AChi2FitPDFas.cc")
-    list(REMOVE_ITEM alpos_SRC "${PROJECT_SOURCE_DIR}/src/alpos/tasks/ALHAPDFErrors.cc")
 endif()
 
 # exclude sources which require optional component 'LHAPDF'
