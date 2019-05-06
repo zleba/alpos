@@ -460,7 +460,7 @@ double AlposTools::rfluxRawInt(double a0, double ap, double b0,  double x_pom, d
 
    //   t-integrated: (1/B)*[exp(-B*tmax)-exp(-B*tmin)]
    fl = fl * (exp(-tAbsMin*b)-exp(-tAbsMax*b))/b;
-   if ( isinf(fl) || fl==0 || isnan(fl)) {
+   if ( std::isinf(fl) || fl==0 || std::isnan(fl)) {
       std::cout<<"[rfluxRawInt] rflux is not a reasonable value: "<<fl<<"\t fl0 = "<<exp((2.0*a0-1.)*log(1.0/x_pom))<<", b="<<b<<", a0="<<a0<<std::endl;
    }
    return fl;
@@ -485,7 +485,7 @@ double AlposTools::rfluxInt(double a0, double ap, double b0, double x_pom, doubl
    double  norm=(1./(xPomNorm*dm)); //xpom * flux normalized to 1 at xpom = 0.003
 
    double rFlux = norm * rfluxRawInt(a0, ap, b0, x_pom, tAbsMin, tAbsMax);
-   if ( isnan(rFlux) ) {
+   if ( std::isnan(rFlux) ) {
       std::cout<<"[rfluxInt] rFlux isnan: "<<rFlux<<". Input: a0="<<a0<<", ap="<<ap<<", b0="<<b0<<std::endl;
       std::cout<<"[rfluxInt] rFlux isnan.           dm="<<dm<<", xPomNorm="<<xPomNorm<<std::endl;
    }
