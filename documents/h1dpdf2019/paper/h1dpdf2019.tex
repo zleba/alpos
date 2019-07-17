@@ -1,0 +1,464 @@
+% ================================================================
+% LaTeX file with prefered layout for H1 paper drafts
+% use: dvips -D600 file-name
+% ================================================================
+%%%%%%%%%%%%% LATEX HEADER
+%%%%%%%%%%%%% DO NOT DELET NOT CHANGE ANYTHING IN THE HEADER
+%%%%%%%%%%%%% UNLESS CLEARLY RECOMMENDED
+
+\documentclass[12pt]{article}
+%\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+%\bibliographystyle{desy19-080}
+\bibliographystyle{utphys}
+ %Choose a bibliograhpic style
+\usepackage{amsmath}
+\usepackage{amssymb}
+%\usepackage{times}
+\usepackage{txfonts}
+\usepackage[mathlines,displaymath]{lineno}
+\DeclareMathAlphabet{\mathbold}{OML}{txr}{b}{it}
+%\usepackage[font={small,it}]{caption}
+\usepackage[font={small}]{caption}
+
+\usepackage{multirow}
+%\usepackage{units}
+%\usepackage{hhline}
+\usepackage{dsfont}
+\usepackage{xcolor}
+%\usepackage{subcaption}
+%\usepackage{pdflscape}
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{paralist} % compactitem
+
+%\usepackage{longtable}
+\usepackage{xspace}
+%\usepackage{bm} % 'bold' math symbols (better use \usepackage{newtxtext,newtxmath}, if available on latex distribution)
+\usepackage{acronym}
+\usepackage{dcolumn}
+\newcolumntype{L}{D{.}{.}{2,5}}
+%\usepackage{bbold}
+
+%%%%%%%%%%%%% Comment the next two lines to remove the line numbering
+%\usepackage[]{lineno}
+%\linenumbers
+%%%%%%%%%%%%%%
+
+
+\usepackage{hyperref} % has to be last package loaded
+\hypersetup{colorlinks=true, urlcolor=blue}
+%\usepackage{cite} % Use this package to display references as [21-25], which in contrast removes the hyperlink
+\usepackage{cite} % DB: enable also clickable references (must be loaded after hyperref)
+\hypersetup{
+  colorlinks,
+  citecolor=blue,
+  linkcolor=red,
+  urlcolor=blue
+  }
+  
+%%%%%%%%%%%%
+\renewcommand{\topfraction}{1.0}
+\renewcommand{\bottomfraction}{1.0}
+\renewcommand{\textfraction}{0.0}
+\renewcommand{\arraystretch}{1.25} % make lines a bit larger for tables
+\newlength{\dinwidth}
+\newlength{\dinmargin}
+\setlength{\dinwidth}{21.0cm}
+\textheight23.5cm \textwidth16.0cm
+\setlength{\dinmargin}{\dinwidth}
+\setlength{\unitlength}{1mm}
+\addtolength{\dinmargin}{-\textwidth}
+\setlength{\dinmargin}{0.5\dinmargin}
+\oddsidemargin -1.0in
+\addtolength{\oddsidemargin}{\dinmargin}
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\marginparwidth}{0.9\dinmargin}
+\marginparsep 8pt \marginparpush 5pt
+\topmargin -42pt
+\headheight 12pt
+\headsep 30pt \footskip 24pt
+\parskip 3mm plus 2mm minus 2mm
+
+% do not indent first line of paragraph!
+%\setlength{\parindent}{0pt}
+\usepackage{parskip}
+\hyphenation{pa-ra-me-ters}
+
+
+%%%%%%%%%%%%%%%% END OF LATEX HEADER
+%===============================title page=============================
+\begin{document}  
+
+%% uncertainties: Absolute and relative uncertainties
+\newcommand{\delrel}{\ensuremath{\delta}}
+\newcommand{\delabs}{\ensuremath{\Delta}}
+\newcommand{\dabs}[2][1]{\ensuremath{\delabs^{{\rm{#1}}}_{{#2}}}}
+\newcommand{\drel}[2][1]{\ensuremath{\delrel^{{\rm{#1}}}_{{#2}}}}
+\newcommand{\Nsys}{{N_{\rm sys}}}
+\newcommand{\stat}{{\rm stat}}
+\newcommand{\sys}{{\rm sys}}
+\newcommand{\TODO}{\color{red}TODO\xspace}
+\newcommand{\AS}{\color{red} AS:\xspace}
+
+\newcommand{\muf}{\ensuremath{\mu_{f}}\xspace}
+\newcommand{\mur}{\ensuremath{\mu_{r}}\xspace}
+\newcommand{\as}{\ensuremath{\alpha_s}\xspace}
+\newcommand{\asmz}{\ensuremath{\alpha_s(M_Z)}\xspace}
+\newcommand{\asmur}{\ensuremath{\alpha_s(\mur)}\xspace}
+\newcommand{\aem}{\ensuremath{\alpha_{\mathrm{em}}}\xspace}
+\newcommand{\Lumi}{\ensuremath{\mathcal{L}}}
+\newcommand{\pb}{\rm pb}
+\newcommand{\invpb}{\ensuremath{\rm{pb}^{-1}}}
+\newcommand{\PDF}{\ensuremath{{\rm PDF}}\xspace}
+\renewcommand{\deg}{\ensuremath{^\circ}\xspace}
+\newcommand{\unitmatrix}{1\!\!1}
+\newcommand{\fC}{\ensuremath{f^{\rm C}}\xspace}
+\newcommand{\fU}{\ensuremath{f^{\rm U}}\xspace}
+% bold faces: no ensuremath for them
+\newcommand{\bas}{\boldsymbol{{\alpha_s}}} 
+\newcommand{\basmz}{\boldsymbol{\alpha_s(M_Z)}} 
+\newcommand{\bmur}{\boldsymbol{\mu_{r}}}
+
+%% unfolding
+\newcommand{\chisq}{\ensuremath{\chi^{2}}}
+\newcommand{\chisqA}{\ensuremath{\chi_{\rm A}^{2}}}
+\newcommand{\chisqL}{\ensuremath{\chi_{\rm L}^{2}}}
+\newcommand{\ndf}{\ensuremath{n_{\rm dof}}}
+\newcommand{\A}{\ensuremath{\bm{A}}}
+\newcommand{\M}{\ensuremath{\bm{M}}}
+\newcommand{\V}{\ensuremath{\bm{V}}}
+\newcommand{\B}{\ensuremath{\bm{B}}}
+\newcommand{\J}{\ensuremath{\bm{J}}}
+\newcommand{\N}{\ensuremath{\bm{N}}}
+\newcommand{\LL}{\ensuremath{\bm{L}}}
+
+%% calibration and cluster separation
+\newcommand{\femjet}{\ensuremath{f_{\mathrm{em,jet}}}\xspace}
+\newcommand{\femjetgen}{\ensuremath{f_{\mathrm{em,jet}}^{\mathrm{gen}}}\xspace}
+\newcommand{\femjetrec}{\ensuremath{f_{\mathrm{em,jet}}^{\mathrm{rec}}}\xspace}
+\newcommand{\Pem}{\ensuremath{P_{\mathrm{em}}}\xspace}
+\newcommand{\Eem}{\ensuremath{E_{\mathrm{em}}}\xspace}
+\newcommand{\Ehad}{\ensuremath{E_{\mathrm{had}}}\xspace}
+%\newcommand{\Ptbal}{\ensuremath{P_{\mathrm{T}}\text{--}\mathrm{balance}}\xspace}
+\newcommand{\Ptbal}{\ensuremath{P_{\mathrm{T}}}--balance\ }
+\newcommand{\PTbal}{\ensuremath{P_{\mathrm{T,bal}}}\xspace}
+\newcommand{\Ptgen}{\ensuremath{P_{\mathrm{T}}^\mathrm{gen}}\xspace}
+\newcommand{\Ptda}{\ensuremath{P_{\mathrm{T}}^{\mathrm{da}}}\xspace}
+\newcommand{\thetajet}{\ensuremath{\theta_{\mathrm{jet}}}\xspace}
+\newcommand{\etajet}{\ensuremath{\eta_{\mathrm{jet}}}\xspace}
+\newcommand{\Ejet}{\ensuremath{E_{\mathrm{jet}}}\xspace}
+\newcommand{\Ejetda}{\ensuremath{E^{\mathrm{da}}_{\mathrm{jet}}}\xspace}
+\newcommand{\relres}{\ensuremath{\sigma(\Ejet)/\Ejet}\xspace}
+
+% hadronic variables
+\newcommand{\Empz}{\ensuremath{E-p_z}\xspace}
+\newcommand{\gammah}{\ensuremath{\gamma_{\mathrm{h}}}\xspace}
+\newcommand{\Pth}{\ensuremath{P_{\mathrm{T}}^{\mathrm{h}}}\xspace}
+\newcommand{\Pzh}{\ensuremath{p_z^{\mathrm{h}}}\xspace}
+\newcommand{\h}{\ensuremath{\mathrm{h}}}
+
+% electron variables
+\newcommand{\e}{\ensuremath{\mathrm{e}}}
+\newcommand{\Ee}{\ensuremath{E_\mathrm{e}^\prime}\xspace}
+\newcommand{\Pte}{\ensuremath{P_{\mathrm{T}}^{\mathrm{e}}}\xspace}
+\newcommand{\thetae}{\ensuremath{\theta_\mathrm{e^\prime}}\xspace}
+\newcommand{\phie}{\ensuremath{\phi_\mathrm{e}}\xspace}
+\newcommand{\Eda}{\ensuremath{E^{\mathrm{da}}}\xspace}
+
+% beams
+\newcommand{\Ebeam}{\ensuremath{E_{\mathrm{e}}}\xspace}
+\newcommand{\Pbeam}{\ensuremath{E_{\mathrm{p}}}\xspace}
+
+%% observables
+\newcommand{\xbj}{\ensuremath{x}\xspace}
+\newcommand{\Qsq}{\ensuremath{Q^2}\xspace}
+
+% ep scattering
+\newcommand{\ep}{\ensuremath{e^+}\xspace}
+\newcommand{\emm}{\ensuremath{e^-}\xspace}
+\newcommand{\epm}{\ensuremath{e^\pm}\xspace}
+
+%% p_T:
+\newcommand{\ptjet}{\ensuremath{P_{\rm T}^{\rm jet}}\xspace}
+\newcommand{\ptjetmin}{\ensuremath{P_{\rm T,min}^{\rm jet}}\xspace}
+\newcommand{\meanpt}{\ensuremath{\langle P_{\rm T} \rangle}}
+\newcommand{\meanptdi}{\ensuremath{\langle P_{\mathrm{T}} \rangle_{2}}\xspace}
+\newcommand{\meanpttri}{\ensuremath{\langle P_{\mathrm{T}} \rangle_{3}}\xspace}
+\newcommand{\pt}{\ensuremath{P_{\rm T}}\xspace}
+\newcommand{\Pt}{\ensuremath{P_{\mathrm{T}}}\xspace}
+\newcommand{\Ptone}{\ensuremath{P_{\mathrm{T,1}}}\xspace}
+\newcommand{\Pttwo}{\ensuremath{P_{\mathrm{T,2}}}\xspace}
+
+\newcommand{\kt}{\ensuremath{{k_{\mathrm{T}}}}\xspace}
+\newcommand{\antikt}{\ensuremath{{\mathrm{anti-}k_{\mathrm{T}}}}\xspace}
+\newcommand{\bkt}{\ensuremath{\bm{k}_{\boldsymbol{\mathrm{T}}} }\xspace}
+\newcommand{\bantikt}{\ensuremath{\boldsymbol{\mathrm{anti-}}\bm{k}_{\boldsymbol{\mathrm{T}}}}\xspace}
+
+\newcommand{\etal}{{\it et al.}}
+\newcommand{\Hone}{[H1 Collaboration]}
+
+
+\newcommand{\Et}{\ensuremath{E_\mathrm{T}}\xspace}
+\newcommand{\etalab}{\ensuremath{\eta^{\mathrm{jet}}_{\mathrm{lab}}}\xspace}
+\newcommand{\ptlab}{\ensuremath{P^{\mathrm{jet}}_{\mathrm{T,lab}}}\xspace}
+\newcommand{\Mjj}{\ensuremath{M_{\mathrm{12}}}\xspace}
+\newcommand{\Mjjj}{\ensuremath{M_{\rm 123}}}
+\newcommand{\xij}{\ensuremath{\xi}\xspace}
+\newcommand{\xidi}{\ensuremath{\xi_2}\xspace}
+\newcommand{\xitri}{\ensuremath{\xi_3}\xspace}
+
+\newcommand{\ud}{\ensuremath{\mathrm{d}}\xspace}
+\newcommand{\LO}{\ensuremath{\mathcal{O}(\alpha_s^0)}\xspave}
+\newcommand{\Oa}{\ensuremath{\mathcal{O}(\alpha_s)}\xspace}
+\newcommand{\Oaa}{\ensuremath{\mathcal{O}(\alpha_s^2)}\xspace}
+\newcommand{\Oaaa}{\ensuremath{\mathcal{O}(\alpha_s^3)}\xspace}
+
+\newcommand{\eq}{equation}
+\newcommand{\fig}{figure}
+\newcommand{\tab}{table}
+
+\newcommand{\MeV}{\ensuremath{\mathrm{MeV}}\xspace}
+\newcommand{\GeV}{\ensuremath{\mathrm{GeV}}\xspace}
+\newcommand{\GeVsq}{\ensuremath{\mathrm{GeV}^2}\xspace}
+\newcommand{\sw}{\ensuremath{{\rm sin}^2\theta_W}}
+\newcommand{\dr}{\ensuremath{\Delta r}}
+\newcommand{\gf}{\ensuremath{G_{\rm F}}}
+
+\newcommand{\rhopW}[2][]{\ensuremath{\rho^{\prime}_{\text{CC}#2}}}
+\newcommand{\rhop}[2][] {\ensuremath{\rho^{\prime}_{\text{NC}#2}}}
+\newcommand{\kapp}[2][] {\ensuremath{\kappa^{\prime}_{\text{NC}#2}}}
+\newcommand{\rhopu}{\rhop{, u}}
+\newcommand{\kappu}{\kapp{, u}}
+\newcommand{\rhopd}{\rhop{, d}}
+\newcommand{\kappd}{\kapp{, d}}
+\newcommand{\rhope}{\rhop{, e}}
+\newcommand{\kappe}{\kapp{, e}}
+\newcommand{\kapz}{\ensuremath{\kappa_{\text{NC}, f}}}
+\newcommand{\rhoz}{\ensuremath{\rho_{\text{NC},f}}}
+\newcommand{\Itf}{\ensuremath{I^3_{{\rm L},f}}}
+\newcommand{\Itq}{\ensuremath{I^3_{{\rm L},q}}}
+
+\newcommand{\fifteen}{\ensuremath{15\,000}}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\Ord}{\ensuremath{\mathcal{O}}}
+
+% couplings
+\newcommand{\ad} {\ensuremath{g_A^d}}
+\newcommand{\vd} {\ensuremath{g_V^d}}
+\newcommand{\au} {\ensuremath{g_A^u}}
+\newcommand{\vu} {\ensuremath{g_V^u}}
+\newcommand{\aq} {\ensuremath{g_A^q}}
+\newcommand{\vq} {\ensuremath{g_V^q}}
+\newcommand{\gae}{\ensuremath{g_A^e}}
+\newcommand{\ve} {\ensuremath{g_V^e}}
+
+
+%% masses
+\newcommand{\mt} {\ensuremath{m_t}}
+\newcommand{\mW} {\ensuremath{m_W}}
+\newcommand{\mWprop} {\ensuremath{m^{\rm prop}_W}}
+\newcommand{\mWGfW} {\ensuremath{m^{(\gf,\mW)}_W}}
+\newcommand{\mZ} {\ensuremath{m_Z}}
+\newcommand{\mH} {\ensuremath{m_H}}
+
+
+% Journal macro
+\def\Journal#1#2#3#4{{#1}~{\bf #2} (#3) #4}
+%
+\def\NPB{Nucl. Phys.~}
+\def\PRL{Phys. Rev. Lett.~}
+\def\EPJC{Eur. Phys. J.~}
+\def\PLB{Phys. Lett.~}
+\def\NIM{Nucl. Instrum. Meth.~}
+\def\PRD{Phys. Rev.~}
+\def\JHEP{JHEP~}
+\def\PROC{Conf. Proc.~}
+\def\CPC{Comp. Phys. Commun.~}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% title page %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+
+\noindent
+\begin{flushleft}
+{\tt DESY 18-080    \hfill    ISSN 0418-9833} \\
+%{\tt Spring 2018}                  \\
+\end{flushleft}
+
+\noindent
+Date:      \ \ \ July 2019      \\
+Version:   0.0 \\
+Editors:   D.\ Britzger (daniel.britzger@desy.de), R.~\v{Z}leb\v{c}\'{i}k (radek.zlebcik@desy.de) \\
+Referees:  L. Schoeffel (laurent.schoeffel@cea.fr), K. Cerny (karel.cerny@upol.cz)
+\noindent
+
+\vspace{2cm}
+\begin{center}
+\begin{Large}
+
+
+{\bf Fit of diffractive parton distribution functions in NNLO to diffractive inclusive DIS data}
+
+\vspace{2cm}
+
+H1 Collaboration
+
+\end{Large}
+\end{center}
+
+\vspace{2cm}
+
+\begin{abstract}
+\noindent
+%
+We present the infamous H1DPDF2019 fit.
+%
+\end{abstract}
+
+
+\vspace{6cm}
+
+\begin{center} To be submitted to a journal \end{center}
+
+\end{titlepage}
+\sloppy
+
+\clearpage
+%
+%   REMOVE the table of contents 
+%\clearpage
+%\tableofcontents
+%\clearpage
+
+\section*{Todo}
+\begin{itemize}
+\item write DIS proceedings
+\item write paper
+\end{itemize}
+\clearpage
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% body starts here %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%-----------------------------------------------------------------------
+%   Introduction
+%-----------------------------------------------------------------------
+\section{Introduction}
+%
+
+
+%-----------------------------------------------------------------------
+%   Introduction
+%-----------------------------------------------------------------------
+\section{Theoretical framework}
+
+
+%-----------------------------------------------------------------------
+%   Input data
+%-----------------------------------------------------------------------
+\section{Input data and fit ansatz}
+
+
+%-----------------------------------------------------------------------
+%   Results
+%-----------------------------------------------------------------------
+\section{Results}
+
+
+%-----------------------------------------------------------------------
+\begin{figure}[tb]
+  \begin{center}
+    %    \includegraphics[width=0.48\textwidth]{d18-080f2.pdf}
+    \hskip0.01\textwidth
+  \end{center}
+  \caption{
+    Value of the $W$-boson mass compared to results obtained by the ATLAS, ALEPH, CDF,
+    D0, DELPHI, L3 and OPAL experiments, and the world average value.
+    The inner error bars indicate statistical uncertainties and the
+    outer error bars full uncertainties.
+}
+\label{fig:mW}
+\end{figure}
+
+
+
+
+%-----------------------------------------------------------------------
+%                            Summary
+%-----------------------------------------------------------------------
+\section{Summary}
+\label{sect:Conclusion}
+
+Summary
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Acknowledgements}
+We are grateful to the HERA machine group whose outstanding
+efforts have made this experiment possible.
+We thank the engineers and technicians for their work in constructing and
+maintaining the H1 detector, our funding agencies for
+financial support, the
+DESY technical staff for continual assistance
+and the DESY directorate for support and for the
+hospitality which they extend to the non--DESY
+members of the collaboration.
+
+We would like to give credit to all partners contributing to the EGI
+computing infrastructure for their support for the H1 Collaboration.  
+
+We express our thanks to all those involved in securing not only the
+H1 data but also the software and working environment for long term
+use, allowing the unique H1 data set to continue to be explored in the
+coming years. The transfer from experiment specific to central
+resources with long term support, including both storage and batch
+systems, has also been crucial to this enterprise. We therefore also
+acknowledge the role played by DESY-IT and all people involved during
+this transition and their future role in the years to come.  
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+\appendix
+\section*{Appendix}
+\section{DPDF code}
+\label{appx:DPDFcode}
+
+% -----------------------------------------------------------------------------
+%\begin{table}[ht]
+%  \footnotesize
+%  \centering
+%   \begin{tabular}{ccr@{$\,\pm\,$}l|cccc} 
+%   \hline
+%   \Qsq\ range $[\GeVsq]$ & Parameter & \multicolumn{2}{c}{Result} & \multicolumn{4}{c}{Correlation} \\
+%   \hline
+%   $[224,708]$    & \rhopW{,f} &    0.976 &  0.018 &  1.00  \\
+%   $[708,2239]$   & \rhopW{,f} &    0.998 &  0.011 &  0.47 &  1.00  \\
+%   \hline
+%   \end{tabular}
+%   \caption{
+%     Caption
+%   }
+%     \label{tab:example}
+%\end{table}
+%
+%
+
+
+
+%%======================= References ==========================%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+
+\begin{flushleft}
+\bibliography{h1dpdf2019}
+\end{flushleft}
+
+
+\end{document}
