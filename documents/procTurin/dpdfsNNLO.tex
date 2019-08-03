@@ -19,6 +19,7 @@
 \usepackage{xspace}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{paralist}
 
 
 
@@ -34,6 +35,24 @@
 %\newcommand{\includegraphicss}[2][]{\fbox{\includegraphics[#1]{#2}}}
 \newcommand{\includegraphicss}[2][]{\includegraphics[#1]{#2}}
 %            Mandatory arg: #2; Optional arg: #1.}
+
+
+\makeatletter
+\newcommand*{\rom}[1]{\expandafter\@slowromancap\romannumeral #1@}
+\makeatother
+
+
+% the six measurements
+\newcommand{\HERAI} {\protect\scalebox{0.8}{(HERA~\rom{1})}}
+\newcommand{\HERAII} {\protect\scalebox{0.8}{(HERA~\rom{2})}}
+\newcommand{\LowEP} {\protect\scalebox{0.8}{($300\,\GeV$)}}
+\newcommand{\HLRG}  {H1~LRG~\HERAII\xspace}
+\newcommand{\HVFPS} {H1~VFPS~\HERAII\xspace}
+\newcommand{\HFPS}  {H1~FPS~\HERAII\xspace}
+\newcommand{\HLRGI} {H1~LRG~\HERAI\xspace}
+\newcommand{\ZLRG}  {ZEUS~LRG~\HERAI\xspace}
+\newcommand{\HLRGEp}{H1~LRG~\LowEP\xspace}
+
 
 
 \abstract{A new fit of diffractive parton distribution functions (DPDFs) to the HERA inclusive and di-jet data in diffractive deep-inelastic scattering (DDIS) at next-to-next-to-leading order accuracy (NNLO) is presented. The inclusion of the most comprehensive dijet cross section data, together with their NNLO predictions, provide enhanced constraints to the gluon component of the DPDF, which is of particular importance for diffractive PDFs. Compared to previous HERA fits, the presented fit includes the high-precision HERA~II data of the H1 collaboration, which corresponds to a 40-fold increase in luminosity for inclusive data and six-fold increase for di-jet data. In addition to the inclusive DDIS data sample at the nominal centre-of-mass energy $\sqrt{s} = 319\,\GeV$, H1 data at $252$~GeV and $225$~GeV are included. The extracted DPDFs are compared to previous DPDF fits and are used to predict cross sections for a large number of available measurements and differential observables.}
@@ -89,7 +108,7 @@ Notice, that at LO for inclusive (di-jet) production the variable $\beta = \frac
 We fit the data from combined HERA~I and HERA~II measurement of the inclusive reduced diffractive cross section $\sigma_r^{D(3)}(\xpom, Q^2, \beta)$  at the nominal HERA centre-of-mass energy $\sqrt{s} = 319\,\GeV$ and integrated luminosity of up to $\sim\!\! 340\,\text{pb}^{-1}$  \cite{Aaron:2012ad}.
 Also the inclusive data from the low-energy HERA~II runs at $\sqrt{s} = 225\,\GeV$ ($8.5\,\text{pb}^{-1}$) and $\sqrt{s} = 252\,\GeV$ ($5.2\,\text{pb}^{-1}$) are included \cite{Aaron:2012zz}.
 In addition the DPDF fit is constrained by the DDIS di-jet data, where the double-differential measurement as functions of $p_T^{\mathrm{jet}1}$ and $Q^2$ is included in the fit \cite{Andreev:2014yra}.
-Only the inclusive DDIS data satisfying $Q^2 > 8.5 \GeVsq$ and $\beta < 0.8$ and $M_X = \sqrt{Q^2(1/\beta - 1)} > 2\,\GeV$ are considered in the fit in order to avoid the region of the phase space where pQCD predictions are less reliable, similarly as in Ref.~\cite{Aktas:2006hy}.
+Only the inclusive DDIS data satisfying $Q^2 > 8.5\, \GeVsq$ and $\beta < 0.8$ and $M_X = \sqrt{Q^2(1/\beta - 1)} > 2\,\GeV$ are considered in the fit in order to avoid the region of the phase space where pQCD predictions are less reliable, similarly as in Ref.~\cite{Aktas:2006hy}.
 All these data sets are based on the Large Rapidity Gap method for the selection of the diffractive events with $|t| < 1\,\GeVsq$ and $M_Y < 1.6\,\GeVsq$.
 
 
@@ -151,7 +170,17 @@ In contrast the gluon contribution is about 30\,\% smaller for the new fit. It i
 
 \section{Predictions based on new NNLO DPDF}
 
-We calculated the theoretical cross sections for several measurements of the di-jet production made by H1 and ZEUS collaborations.
+We calculated the theoretical cross sections for several measurements of the di-jet production made by H1 and ZEUS collaborations, we will refer to them as:
+We will refer to them as
+\begin{compactitem}
+\item \HFPS ~\cite{Aaron:2011mp},
+\item \HVFPS~\cite{Andreev:2015cwa},
+\item \HLRG ~\cite{Andreev:2014yra},
+\item \HLRGI~\cite{Aktas:2007bv},
+\item\HLRGEp~\cite{Aktas:2007hn}, and
+\item\ZLRG~\cite{Chekanov:2007aa}.
+\end{compactitem}
+%
 For comparison, the new H1~Fit2019 NNLO as well as older H1~Fit2006B NLO DPDFs \cite{Aktas:2006hy} were used for the predictions.
 
 In Fig.~\ref{figTotalXsecs} we observe that the new fit describes the overall data normalization better than the H1~Fit2006B. For that comparison, NLO DPDFs are convoluted with NNLO partonic cross sections, in order to detach the impact of the NNLO contributions of the matrix elements.
@@ -165,10 +194,10 @@ In Fig.~\ref{figTotalXsecs} we observe that the new fit describes the overall da
 %
 A summary of the kinematic ranges of the individual measurements is found in~\cite{Britzger:2018zvv}.
 It is observed, that the normalization of the H1 HERA~I analyses is somewhat too high.
-Note, the "H1 LRG (HERA~II)" data, differential in $p_T^{\mathrm{jet}1}$ and $Q^2$, were included into the fit, as described in the previous section.
+Note, the "\HLRG" data, differential in $p_T^{\mathrm{jet}1}$ and $Q^2$, were included into the fit, as described in the previous section.
 
 In addition to the total di-jet cross sections, several differential distributions are studied.
-As an example, Fig.~\ref{figZEUSdiff} displays the differential distributions as measured by the ZEUS collaboration, denoted as "ZEUS LRG (HERA~I)", compared with the NNLO predictions using H1 Fit2019 NNLO (prel.).
+As an example, Fig.~\ref{figZEUSdiff} displays the differential distributions as measured by the ZEUS collaboration, denoted as "\ZLRG", compared with the NNLO predictions using H1 Fit2019 NNLO (prel.).
 \begin{figure}[h]
 \centering
 \includegraphicss[trim={0cm 0.3cm 0 0.3cm},clip,width=.8\textwidth]{{{plots/H1prelim-19-013.fig7}}}
