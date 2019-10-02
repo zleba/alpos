@@ -13,8 +13,8 @@ extern "C" {
    void qcd_2006_(double *z,double *q2, int *ifit, double *xPq, double *f2, double *fl, double *c2, double *cl);
    void h12006flux_(double *xpom, double *t, int *Int, int *ifit, int *ipom, double *flux);
 }
-double rfluxInt(double a0, double ap, double b0, double x_pom, double tAbsMin, double tAbsMax);
-double rflux(double a0, double ap, double b0, double x_pom, double tAbs);
+// double rfluxInt(double a0, double ap, double b0, double x_pom, double tAbsMin, double tAbsMax);
+// double rflux(double a0, double ap, double b0, double x_pom, double tAbs);
 
 
 // __________________________________________________________________________________________ //
@@ -107,8 +107,8 @@ bool AApfelDDISCS::Update() {  //alpos
    const double ap_IR = PAR(ap_IR);
    const double b0_IR = PAR(b0_IR);
    const double n_IR  = PAR(n_IR);
-   const double tAbsMin = 0;//PAR(tAbsMin); TODO 
-   const double tAbsMax = 1;//PAR(tAbsMax); TODO
+   const double tAbsMin = EXIST_NS(tAbsMin,GetAlposName()) ? DOUBLE_NS(tAbsMin,GetAlposName()) : 0;
+   const double tAbsMax = EXIST_NS(tAbsMax,GetAlposName()) ? DOUBLE_NS(tAbsMax,GetAlposName()) : 1.;
 
 
 
@@ -191,8 +191,8 @@ bool AApfelDDISCS::Update() {  //alpos
 
             // --- Reduced x-section for pomeron 
             double flxIP = Is4D ?
-               rflux   (a0_IP, ap_IP, b0_IP, xpom[i], tAbsVal[i]):
-               rfluxInt(a0_IP, ap_IP, b0_IP, xpom[i], tAbsMin, tAbsMax);
+               AlposTools::rflux   (a0_IP, ap_IP, b0_IP, xpom[i], tAbsVal[i]):
+               AlposTools::rfluxInt(a0_IP, ap_IP, b0_IP, xpom[i], tAbsMin, tAbsMax);
             double xpSigRed_IP =  flxIP*xpom[i] * (F2  - yy*yy/yplus*FL);
 
 
@@ -218,8 +218,8 @@ bool AApfelDDISCS::Update() {  //alpos
             
             //  reggeon flux
             double flxIR = Is4D ?
-               rflux   (a0_IR, ap_IR, b0_IR, xpom[i], tAbsVal[i]):
-               rfluxInt(a0_IR, ap_IR, b0_IR, xpom[i], tAbsMin, tAbsMax);
+               AlposTools::rflux   (a0_IR, ap_IR, b0_IR, xpom[i], tAbsVal[i]):
+               AlposTools::rfluxInt(a0_IR, ap_IR, b0_IR, xpom[i], tAbsMin, tAbsMax);
             
             //Reduced x-section for reggeon
             double xpSigRed_IR =  flxIR*xpom[i] * (sigmaReg);
