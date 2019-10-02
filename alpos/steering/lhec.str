@@ -41,11 +41,11 @@ DataTheorySets {{
 Tasks {{
   TaskType                TaskName
 #   PrintSteering           PrintSteering
-  ReplaceDataWithTheoryValues  ReplaceDataWithTheoryValues
    PrintTheorySet         PrintTheorySet
+   ReplaceDataWithTheoryValues  ReplaceDataWithTheoryValues
    PrintDataTheory        PrintDataTheory
-   AFitter                MyFit
-   StatAnalysis           Stat
+#   AFitter                MyFit
+#   StatAnalysis           Stat
 #   SaveDPDFTGraph         SaveDPDFTGraph
 #   SavePDFTGraph         SavePDFTGraph
 #   SaveDPDFTGraph         SaveDPDFTGraph
