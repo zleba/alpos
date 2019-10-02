@@ -52,7 +52,7 @@ xpom_max           0.03
 #  Bin  iJet     q2min     q2max    Pt_min    Pt_max   BinSize       Sigma   stat(%)  syst+(%)  syst-(%)   tot+(%)   tot-(%)  Uncorr+  Uncorr-   Model+   Model-   RW402+   RW402-     JES+     JES-    RCES+    RCES-    ElEn+    ElEn-    ElTh+    ElTh-    Lumi+    Lumi-    LArN+    LArN-     PHP+     PHP-  PHPUnc+  PHPUnc-  StatMC+  StatMC-   HadCorr    HadErr   RadCorr    RadErr          
 
 Data {{
- iData    q2min   q2max  ptmin  ptmax      mu~   Theory            Sigma              N                stat[%]            stat_korrigiert[%]     unc  lumi  ElEn_1p001 ElTh_0p0001    JES_1p005  Noise_20MeV   intlumi
+ iData    q2min   q2max  ptmin  ptmax      mu~   TheoPred.         Sigma              N                stat[%]            stat_korrigiert[%]     unc  lumi  ElEn_1p001 ElTh_0p0001    JES_1p005  Noise_20MeV   intlumi
      0        8      32      4      8   6.9282   106239        22541.4       9.01655e+10         0.000470971687381        0.05                   0.2   1.0        0.05       -0.34         1.0116       0.74   1000000
      1        8      32      8     16   12       19550         2242.29       1.79383e+10         0.001055903808672        0.05                   0.2   1.0        0.01       -0.26         1.31         0.42   1000000
      2        8      32     16     32   22.978   2382.14       141.231       2.2597e+09          0.002975018050047        0.05                   0.2   1.0        0.01        -0.2         1.44         0.26   1000000
