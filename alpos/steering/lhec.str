@@ -31,6 +31,7 @@
 DataTheorySets {{
   AlposName                     SteerFile                                   TheoryFunction            
   LHeC-DDIS-a              datafiles/lhec/DDIS/lhec-all-a.dat     ApfelDDISCS   Q2>=3.2 #  beta<=0.81   mx>=2
+  LHeC-incjet              datafiles/lhec/diff-incjets/lhec_diff_incjets.dat    fastNLODiffDIS
 }}
 
 
@@ -42,9 +43,9 @@ Tasks {{
 #   PrintSteering           PrintSteering
   ReplaceDataWithTheoryValues  ReplaceDataWithTheoryValues
    PrintTheorySet         PrintTheorySet
+   PrintDataTheory        PrintDataTheory
    AFitter                MyFit
    StatAnalysis           Stat
-#   PrintDataTheory        PrintDataTheory
 #   SaveDPDFTGraph         SaveDPDFTGraph
 #   SavePDFTGraph         SavePDFTGraph
 #   SaveDPDFTGraph         SaveDPDFTGraph
