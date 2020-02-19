@@ -57,6 +57,7 @@ struct dPlotter {
     void plotQ2(TString fTag, double xpom);
     void plotXpom();
     void plotXpomT();
+    void plotBslope();
     void plotPDFs(bool inLog);
     void plotParameters();
     void plotCorrelations();
@@ -115,6 +116,7 @@ void dplotter(TString inFile = "../testA/alpos.out.root")
     dPlotter dpltFPS;
     dpltFPS.readDataInc(inFile, {"H1FPS_4D"});
     dpltFPS.plotXpomT();
+    dpltFPS.plotBslope();
     //return;
 
     dPlotter dplt252;
@@ -1345,6 +1347,270 @@ void dPlotter::plotXpomT()
     can->SaveAs("xpomRegge.pdf");
 
 }
+
+
+void dPlotter::plotBslope()
+{
+    gStyle->SetOptStat(0);
+
+    map<pair<double,double>, vector<pointInc>> pMap;
+
+    for(auto &p : data) {
+        pMap[{p.beta, p.q2}].push_back(p);
+    }
+
+    map<pair<double,double>,TGraphErrors*> grSlopes, grSlopesTh;
+
+    double chi2 = 0;
+    int nDf = 0;
+    for(auto &pm : pMap) {
+        auto ps = pm.second; //points with equal beta, q2
+        double q2, beta;
+        tie(beta,q2) = pm.first;
+        
+        map<double, TGraphErrors*> sigmaData, sigmaTh;
+
+        //Loop over points with equal beta,q2 for data
+        for(auto &p : ps) {
+
+            if(sigmaData.count(p.xp) == 0) sigmaData[p.xp] = new TGraphErrors();
+            if(sigmaTh.count(p.xp) == 0)   sigmaTh[p.xp] = new TGraphErrors();
+
+            sigmaData.at(p.xp)->SetPoint(sigmaData.at(p.xp)->GetN(), p.tAbs, p.xpSig);
+            sigmaData.at(p.xp)->SetPointError(sigmaData.at(p.xp)->GetN()-1, 0, p.xpSig*p.errTot);
+
+            sigmaTh.at(p.xp)->SetPoint(sigmaTh.at(p.xp)->GetN(), p.tAbs, p.th);
+            sigmaTh.at(p.xp)->SetPointError(sigmaTh.at(p.xp)->GetN()-1, 0, p.th*p.errTot);
+
+        }
+
+
+        for(auto gr : sigmaData) {
+            TFitResultPtr res = gr.second->Fit("expo", "ES");
+            double slope = -res->Parameter(1); 
+            double err   = res->ParError(1);
+
+            if(grSlopes.count(pm.first) == 0)
+                grSlopes[pm.first] = new TGraphErrors();
+
+            grSlopes.at(pm.first)->SetPoint(grSlopes.at(pm.first)->GetN(), gr.first, slope);
+            grSlopes.at(pm.first)->SetPointError(grSlopes.at(pm.first)->GetN()-1, 0, err);
+        }
+
+        for(auto gr : sigmaTh) {
+            TFitResultPtr res = gr.second->Fit("expo", "ES");
+            double slope = -res->Parameter(1); 
+            double err   = res->ParError(1);
+
+            if(grSlopesTh.count(pm.first) == 0)
+                grSlopesTh[pm.first] = new TGraphErrors();
+
+            grSlopesTh.at(pm.first)->SetPoint(grSlopesTh.at(pm.first)->GetN(), gr.first, slope);
+            grSlopesTh.at(pm.first)->SetPointError(grSlopesTh.at(pm.first)->GetN()-1, 0, 0*err);
+        }
+    }
+
+
+    auto can = new TCanvas("can","", 600, 670);
+    SetLeftRight(0.15, 0.05);
+    double f = 0.28358;
+    SetTopBottom(0.12/0.20*f, 0.08/0.20*f);
+
+
+
+    //set<double> q2Set, betaSet;
+    //for(auto s : grSlopes) {
+    //    betaSet.insert(s.first.first);
+    //    q2Set.insert(s.first.second);
+    //}
+
+    vector<double> q2Set, betaSet;
+    for(auto pm : grSlopes) {
+        auto ps = pm.second; //points with equal beta, q2
+        //if(ps.size() < 2) continue;
+
+        betaSet.push_back(pm.first.first);
+        q2Set.push_back(pm.first.second);
+    }
+
+    auto clean = [](vector<double> &v) {
+        std::sort(v.begin(), v.end()); // 1 1 2 2 3 3 3 4 4 5 5 6 7 
+        auto last = std::unique(v.begin(), v.end());
+        // v now holds {1 2 3 4 5 6 7 x x x x x x}, where 'x' is indeterminate
+        v.erase(last, v.end());
+    };
+    clean(betaSet);
+    clean(q2Set);
+
+
+
+
+
+    cout << "Sizes " << q2Set.size() <<" "<< betaSet.size() << endl;
+
+    //DividePad(vector<double>(q2Set.size(),1), vector<double>(betaSet.size(),1));
+    DivideTransparent(group(1,0,q2Set.size()), group(1,0,betaSet.size()));
+
+    //int iq2 = 0, ibeta = 0;
+    //for(auto q2 : q2Set) {
+    //    ibeta = 0;
+    //    for(auto beta : betaSet) {
+    for(int iq2 = 0; iq2 < q2Set.size(); ++iq2)
+    for(int ibeta = 0; ibeta < betaSet.size(); ++ibeta) {
+
+            can->cd(iq2*q2Set.size() + ibeta + 1);
+
+            TH1D *hAx = new TH1D(rn(), "", 1, 0.0013, 0.15);
+            hAx->Draw("axis");
+
+            gPad->SetLogx();
+            GetYaxis()->SetRangeUser(0.0001, 9.9999);
+
+            int ifit = 2;
+            double beta = betaSet[ibeta];
+            double q2 = q2Set[iq2];
+
+
+            if(grSlopes.count({beta,q2}) >= 1) {
+                //can->cd(iq2*betaSet.size() + ibeta + 1);
+                auto gr = grSlopes.at({beta,q2});
+                auto grTh = grSlopesTh.at({beta,q2});
+
+                cout << "RADEK " << ibeta <<" "<< iq2 <<" "<< endl;
+
+                //TH1D *h = new TH1D(rn(), "", 1, 1e-3, 1e-1);
+                //h->Draw("axis");
+
+                gr->SetLineColor(kRed);
+                gr->SetMarkerColor(kRed);
+                gr->SetMarkerStyle(20);
+                gr->SetMarkerSize(0.7);
+
+                gr->Draw("pe same");
+                grTh->SetLineColor(kBlack);
+                grTh->SetMarkerColor(kBlack);
+                grTh->SetLineWidth(2);
+                if(grTh->GetN() > 1)
+                    grTh->Draw("l same");
+                else
+                    grTh->Draw("* same");
+
+                //gPad->SetLogx();
+
+
+            }
+
+            //hAx->SetMinimum(0);
+            //hAx->SetMaximum(8);
+
+
+            if(iq2 == q2Set.size()-1 && ibeta == betaSet.size()-1) {
+                GetXaxis()->SetTitle("x_{IP}");
+            }
+            if(iq2 == 0 && ibeta == 0) {
+                GetYaxis()->SetTitle("B (GeV^{-2})");
+            }
+
+
+
+
+            double fSize = 16;
+            SetFTO({fSize}, {7}, {1.45, 1.7, 0.3, 2.0});
+
+            GetXaxis()->SetTitleSize(PxFontToRel(26));
+            GetYaxis()->SetTitleSize(PxFontToRel(26));
+
+            GetXaxis()->SetNdivisions(303);
+            GetYaxis()->SetNdivisions(505);
+
+            if(iq2 != q2Set.size()-1) GetXaxis()->SetLabelSize(0);
+            if(ibeta != 0) GetYaxis()->SetLabelOffset(11000);
+
+            if(iq2 == 0)   DrawLatexUp(-1, Form("#beta=%g", beta), fSize);
+            if(ibeta == 0) {
+                if(iq2 == 0) DrawLatexUp(-2, Form("%g GeV^{2}", q2), fSize);
+                else DrawLatexUp(-1, Form("%g GeV^{2}", q2), fSize);
+            }
+
+            //Legend
+            if(iq2 == q2Set.size()-1 && ibeta == betaSet.size()-1) {
+
+                auto gr = grSlopes.at({beta,q2});
+                auto grTh = grSlopesTh.at({beta,q2});
+
+                auto back = gPad;
+                can->cd();
+                auto leg = new TLegend(0.15, 0.805, 0.25, 0.905);        
+                leg->SetTextSize(PxFontToRel(20));
+                leg->SetBorderSize(0);
+                leg->SetFillStyle(0);
+                leg->AddEntry(gr, "H1 FPS HERA II", "p");
+                leg->Draw();
+
+                auto leg2 = new TLegend(0.55, 0.805, 0.65, 0.905);        
+                leg2->SetTextSize(PxFontToRel(20));
+                leg2->SetBorderSize(0);
+                leg2->SetFillStyle(0);
+                //leg2->SetHeader("H1 FPS");
+                leg2->AddEntry(grTh, "H1 Fit 2020 NNLO prelim.", "l");
+                leg2->Draw();
+
+                back->cd();
+            }
+
+
+
+
+
+    }
+
+    /*
+
+    map<double,double> sumSlopes, sumWgt;
+    //Construct weight average
+    for(auto s : grSlopes) {
+        auto gr = s.second;
+        for(int i = 0; i < gr->GetN(); ++i) {
+            double xpom, sl;
+            gr->GetPoint(i, xpom, sl);
+            double err2 = pow(gr->GetErrorY(i),2);
+            sumSlopes[xpom] += sl/err2;
+            sumWgt[xpom] += 1./err2;
+        }
+    }
+
+
+    TGraphErrors *gr = new TGraphErrors();
+
+    for(auto sl: sumSlopes) {
+        double xp = sl.first; 
+        double sumSl = sl.second;
+        double sumW = sumWgt.at(xp);
+
+        double err = 1./sqrt(sumW);
+
+        double rat = sumSl / sumW;
+        cout <<"Slopes " <<  xp <<" "<< rat <<" "<<  err <<    endl;
+
+        gr->SetPoint(gr->GetN(), log(1./xp), rat);
+        gr->SetPointError(gr->GetN()-1, 0,  err);
+    }
+
+    auto dan = new TCanvas("dan","", 600, 600);
+
+    gr->SetMarkerStyle(20);
+    gr->Draw("ae*");
+    gr->Fit("pol1");
+    */
+
+    can->SaveAs("slopeRegge.pdf");
+
+
+}
+
+
+
+
 
 
 
