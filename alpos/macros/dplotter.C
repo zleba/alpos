@@ -4,6 +4,11 @@ R__LOAD_LIBRARY($PlH_DIR/plottingHelper_C.so)
 using namespace PlottingHelper;
 
 
+//Plot the results of the fit
+//i.e. the fit quality of the data on the inclusive or jet data points
+
+
+
 #include "TCanvas.h"
 #include "TGraphErrors.h"
 #include "TGraph.h"
@@ -26,7 +31,7 @@ TString rn() {return Form("%d",rand());}
 
 
 struct pointInc {
-    double xp,  q2,  beta, xpSig;
+    double xp,  q2,  beta, tAbs, xpSig;
     double th, thErr;
     double thOrgA, thOrgB;
     double errStat, errSys, errTot, errUnc;
@@ -51,6 +56,7 @@ struct dPlotter {
 
     void plotQ2(TString fTag, double xpom);
     void plotXpom();
+    void plotXpomT();
     void plotPDFs(bool inLog);
     void plotParameters();
     void plotCorrelations();
@@ -71,6 +77,9 @@ void dplotter(TString inFile = "../testA/alpos.out.root")
     inFile = "../farm/variants/AExt_nnlo_heraCjets.str_dir/steering.str0_dir/out.root";
     //inFile = "../farm/variants/Ext_nloF_heraI.str_dir/steering.str0_dir/out.root";
 
+    inFile = "../farm/variants/AExt_nnlo_heraCfps4D.str_dir/steering.str0_dir/out.root";
+
+
     //inFile = "../steering.str0_FactorizationNNLO/out.root";
 
     //dplt.readDataInc(inFile, {"H1incDDIS_HERA_I_LAr_cuts", "H1incDDIS_HERA_I_SpacMB_cuts", "H1incDDIS_HERA_I_SpacTrg_cuts"});
@@ -78,6 +87,7 @@ void dplotter(TString inFile = "../testA/alpos.out.root")
 
     dplt.readDataInc(inFile, {"H1incDDIS_Comb"});
 
+    dplt.plotXpom();
 
     dplt.plotBeta("comb", 0.0003);
     dplt.plotBeta("comb", 0.001);
@@ -102,6 +112,9 @@ void dplotter(TString inFile = "../testA/alpos.out.root")
     dplt.plotQ2("comb", 0.03);
 
 
+    dPlotter dpltFPS;
+    dpltFPS.readDataInc(inFile, {"H1FPS_4D"});
+    dpltFPS.plotXpomT();
     //return;
 
     dPlotter dplt252;
@@ -157,7 +170,8 @@ void dPlotter::readDataInc(TString inFile, vector<TString> samples)
     //Loop over all
     //vector<TString> dataNames = {"sample_H1incDDIS_HERA_I_LAr_cuts", "sample_H1incDDIS_HERA_I_SpacMB_cuts", "sample_H1incDDIS_HERA_I_SpacTrg_cuts"};
     for(auto n : samples) {
-       TNtuple *tuple = (TNtuple*) file->Get("ASaveDataTheory/sample_" + n);
+       TTree *tuple = dynamic_cast<TTree*>(file->Get("ASaveDataTheory/sample_" + n));
+       //TNtuple *tuple = (TNtuple*) (file->Get("ASaveDataTheory/sample_" + n));
 
 
        pointInc pt;
@@ -166,6 +180,8 @@ void dPlotter::readDataInc(TString inFile, vector<TString> samples)
        tuple->SetBranchAddress("isInside",&isIn);
        tuple->SetBranchAddress("Q2",&pt.q2);
        tuple->SetBranchAddress("beta",&pt.beta);
+       if(n.Contains("FPS_4D"))
+           tuple->SetBranchAddress("tAbs",&pt.tAbs);
        tuple->SetBranchAddress("xpSigData",&pt.xpSig);
        tuple->SetBranchAddress("xpSigDataErr",&pt.errTot);
        tuple->SetBranchAddress("xpSigTh",&pt.th);
@@ -1095,6 +1111,243 @@ void plotJets(dPlotter &nlo, dPlotter &nnlo)
 }
 
 
+//The xpom plot in the H1 style for FPS 4D data
+void dPlotter::plotXpomT()
+{
+    gStyle->SetOptStat(0);
+
+    //for(auto &p : pars) p = smear(p);
+
+    map<pair<double,double>, vector<pointInc>> pMap;
+
+    for(auto &p : data) {
+        pMap[{p.beta, p.q2}].push_back(p);
+    }
+
+    map<pair<double,double>,map<double,TGraphErrors*>> grDataMap;
+    map<pair<double,double>,map<double,TGraph*>> grThMap;
+
+
+    double chi2 = 0;
+    int nDf = 0;
+    for(auto &pm : pMap) {
+        auto ps = pm.second; //points with equal beta, q2
+        double q2, beta;
+        tie(beta,q2) = pm.first;
+        
+        if(ps.size() < 2) continue;
+
+        map<double,TGraphErrors*> grData;
+        map<double,TGraph*> grTh;
+
+        //Loop over points with equal beta,q2 for data
+        for(auto &p : ps) {
+            if(grData.count(p.tAbs) == 0) grData[p.tAbs] = new TGraphErrors();
+            grData.at(p.tAbs)->SetPoint(grData.at(p.tAbs)->GetN(), p.xp, p.xpSig);
+            grData.at(p.tAbs)->SetPointError(grData.at(p.tAbs)->GetN()-1, 0,  p.xpSig*p.errTot);
+
+            if(grTh.count(p.tAbs) == 0) grTh[p.tAbs] = new TGraph();
+            grTh.at(p.tAbs)->SetPoint(grTh.at(p.tAbs)->GetN(), p.xp, p.th);
+
+        }
+        assert(grDataMap.count(pm.first)==0);
+        grDataMap[pm.first] = grData;
+        grThMap[pm.first] = grTh;
+    }
+
+
+    vector<double> q2Set, betaSet;
+    for(auto pm : pMap) {
+        auto ps = pm.second; //points with equal beta, q2
+        if(ps.size() < 2) continue;
+
+        betaSet.push_back(pm.first.first);
+        q2Set.push_back(pm.first.second);
+    }
+
+    auto clean = [](vector<double> &v) {
+        std::sort(v.begin(), v.end()); // 1 1 2 2 3 3 3 4 4 5 5 6 7 
+        auto last = std::unique(v.begin(), v.end());
+        // v now holds {1 2 3 4 5 6 7 x x x x x x}, where 'x' is indeterminate
+        v.erase(last, v.end());
+    };
+    clean(betaSet);
+    clean(q2Set);
+
+    cout << "Sizes " << q2Set.size() <<" "<< betaSet.size() << endl;
+    auto can = new TCanvas("can","", 600, 670);
+    SetLeftRight(0.15, 0.05);
+    double f = 0.28358;
+    SetTopBottom(0.12/0.20*f, 0.08/0.20*f);
+
+    //DividePad(vector<double>(q2Set.size(),1), vector<double>(betaSet.size(),1));
+    DivideTransparent(group(1,0,q2Set.size()), group(1,0,betaSet.size()));
+
+    int iq2 = 0, ibeta = 0;
+    double chi2tot = 0;
+    int ndf = 0;
+
+    for(int iq2 = 0; iq2 < q2Set.size(); ++iq2)
+    for(int ibeta = 0; ibeta < betaSet.size(); ++ibeta) {
+        can->cd(iq2*q2Set.size() + ibeta + 1);
+
+        TH1D *hAx = new TH1D(rn(), "", 1, 0.0013, 0.15);
+        hAx->Draw("axis");
+
+        gPad->SetLogx();
+        GetYaxis()->SetRangeUser(-0.01, 0.12);
+
+        int ifit = 2;
+        double beta = betaSet[ibeta];
+        double q2 = q2Set[iq2];
+
+
+        if(grDataMap.count({beta, q2}) > 0) {
+            auto gr   = grDataMap.at({beta, q2});
+            auto grTh = grThMap.at({beta, q2});
+
+            /*
+            vector<double> aVec, data, regg, err;
+            //Fill data and theory points
+            for(auto p : pMap.at({beta,q2})) { //points with equal beta, q2
+
+
+
+                //Subtract Reggeon from fitted data
+                double xPq[13], f2[2], fl[2], c2[2], cl[2];
+                double z = p.beta;
+                double q2 = p.q2;
+                qcd_2006_(&z,&q2, &ifit, xPq, f2, fl, c2, cl);
+                ifit = 0;
+                //const double bNorm = fluxI(0.003, a0_R, ap_R/b0_R);
+
+                const double a0_R = 0.5;
+                const double ap_R = 0.3;
+                const double b0_R = 1.6;
+
+                const double a0_P = 1.11101;
+                const double ap_P = 0.06;
+                const double b0_P = 5.5;
+
+                double bFluxFitB = flux(p.xp,p.tAbs, a0_R, ap_R, b0_R);
+                double aFluxFitB = flux(p.xp,p.tAbs, a0_P, ap_P, b0_P);
+                //p.sigma -= f2[1]*bFlux*pars[3];
+
+                const double s = 319*319;
+                double y = q2 / (s*p.xp*p.beta);
+                //double FL = y*y / (1+pow(1-y,2))*fl[0];
+                double flC = y*y / (1+pow(1-y,2));
+
+                double corr = (f2[1]-flC*fl[1])*bFluxFitB*pars[3] - flC*fl[0]*aFluxFitB;
+
+                aVec.push_back(aFlux);
+                regg.push_back(corr);
+                //cout << "Radek " << p.sigma <<" "<< p.err/p.sigma << endl;
+                double errNow = smear(p.err/p.sigma) * p.sigma;
+                data.push_back(smear(p.sigma) - corr);
+
+                data.push_back(p.xpSig);
+                err.push_back(p.errTot);
+            }
+            double norm;
+            double chiNow =  chi2Raw(data, err,  aVec, &norm);
+            chi2tot += chiNow;
+            ndf += data.size() -1;
+
+            map<double, TGraph*> grTh;
+            //Fill theory plot
+            int i = 0;
+            for(auto p : pMap.at({beta,q2})) { //points with equal beta, q2
+                //aFlux = flux(p.xp,p.tAbs, pars[0], pars[1], pars[2]);
+                if(grTh.count(p.tAbs) == 0) grTh[p.tAbs] = new TGraph;
+                int idx = grTh.at(p.tAbs)->GetN();
+                grTh.at(p.tAbs)->SetPoint(idx, p.xp, aVec[i]*norm + regg[i]);
+                ++i;
+            }
+            */    
+
+
+
+            for(auto g : gr) {
+                g.second->Draw("*e same");
+                if(g.first == 0.2) g.second->SetLineColor(kBlue);
+                else if(g.first == 0.4) g.second->SetLineColor(kRed);
+                else if(g.first == 0.6) g.second->SetLineColor(kBlack);
+                if(g.first == 0.2) g.second->SetMarkerColor(kBlue);
+                else if(g.first == 0.4) g.second->SetMarkerColor(kRed);
+                else if(g.first == 0.6) g.second->SetMarkerColor(kBlack);
+
+                if(g.first == 0.2) g.second->SetMarkerStyle(20);
+                else if(g.first == 0.4) g.second->SetMarkerStyle(24);
+                else if(g.first == 0.6) g.second->SetMarkerStyle(22);
+
+                g.second->SetMarkerSize(0.7);
+                grTh.at(g.first)->SetLineColor(g.second->GetLineColor());
+                grTh.at(g.first)->Draw("l same");
+            }
+
+
+            //Legend
+            if(iq2 == q2Set.size()-1 && ibeta == betaSet.size()-1) {
+                auto back = gPad;
+                can->cd();
+                auto leg = new TLegend(0.15, 0.835, 0.25, 0.935);        
+                leg->SetTextSize(PxFontToRel(20));
+                leg->SetBorderSize(0);
+                leg->AddEntry(gr.at(0.2), "|t| = 0.2 GeV^{-2}", "p");
+                leg->AddEntry(gr.at(0.4), "|t| = 0.4 GeV^{-2}", "p");
+                leg->AddEntry(gr.at(0.6), "|t| = 0.6 GeV^{-2}", "p");
+                leg->Draw();
+
+                auto leg2 = new TLegend(0.55, 0.835, 0.65, 0.935);        
+                leg2->SetTextSize(PxFontToRel(20));
+                leg2->SetBorderSize(0);
+                leg2->SetHeader("H1 FPS");
+                leg2->AddEntry(grTh.at(0.6), "H1 Fit 2020 NNLO prelim.", "l");
+                leg2->Draw();
+
+
+                back->cd();
+            }
+        }
+
+
+        if(iq2 == q2Set.size()-1 && ibeta == betaSet.size()-1) {
+            GetXaxis()->SetTitle("x_{IP}");
+        }
+        if(iq2 == 0 && ibeta == 0) {
+            GetYaxis()->SetTitle("x_{IP}#sigma_{r}^{D(4)} (GeV^{-2})");
+        }
+
+
+        double fSize = 16;
+        SetFTO({fSize}, {7}, {1.4, 1.7, 0.3, 2.7});
+
+        GetXaxis()->SetTitleSize(PxFontToRel(26));
+        GetYaxis()->SetTitleSize(PxFontToRel(26));
+
+        GetXaxis()->SetNdivisions(303);
+        GetYaxis()->SetNdivisions(603, kTRUE);
+
+        if(iq2 != q2Set.size()-1) GetXaxis()->SetLabelSize(0);
+
+        if(iq2 == 0)   DrawLatexUp(-1, Form("#beta=%g", beta), fSize);
+        if(ibeta == 0) {
+            if(iq2 == 0) DrawLatexUp(-2, Form("%g GeV^{2}", q2), fSize);
+            else DrawLatexUp(-1, Form("%g GeV^{2}", q2), fSize);
+        }
+
+
+
+    }
+    cout << "H1 result: chi2= "<< chi2tot << " / " << ndf << endl;
+
+    can->SaveAs("xpomRegge.pdf");
+
+}
+
+
+
 
 
 
@@ -1108,9 +1361,19 @@ void dPlotter::plotXpom()
 
     vector<double> q2s   = {3.5, 5, 6.5, 8.5, 12, 15, 20, 25, 35, 45, 60, 90, 200, 400, 800, 1600};
 
-
-    for(pointInc &p : data)
+    map<double, set<double>> q2Beta;
+    for(pointInc &p : data) {
         dataMap[{p.q2, p.beta}].push_back(p);
+        q2Beta[p.q2].insert(p.beta);
+    }
+
+    int maxBetaN=0;
+    for(auto it : q2Beta) {
+        maxBetaN = max(maxBetaN, int(it.second.size()));
+        cout << "q2 " << it.first << " " << it.second.size() << endl;
+        for(auto b : it.second)
+            cout <<"beta " <<  b << " " << endl;
+    }
 
 
     gStyle->SetOptStat(0);
@@ -1118,71 +1381,75 @@ void dPlotter::plotXpom()
     SetLeftRight(0.1, 0.1);
     SetTopBottom(0.1, 0.1);
 
-    DivideTransparent(group(1, 0, betas.size()), group(1, 0, q2s.size()));
+    DivideTransparent(group(1, 0,  maxBetaN), group(1, 0, q2Beta.size()));
 
-    for(int iq = 0; iq < q2s.size();   ++iq)
-    for(int ib = 0; ib < betas.size(); ++ib) {
-        double q2   = q2s[iq];
-        double beta = betas[ib];
+    int iq2 = 0, ibeta = 0;
+    for(auto qq : q2Beta) {
+        double q2   = qq.first;
+        for(auto beta  : qq.second) {
+            can->cd(iq2*maxBetaN + ibeta + 1);
 
-        can->cd(iq*betas.size() + ib + 1);
+            TH1D *hFr = new TH1D(rn(), "", 1, 1e-4, 4e-2);
+            hFr->Draw("axis");
+            GetYaxis()->SetRangeUser(0, 0.085);
 
-        TH1D *hFr = new TH1D(rn(), "", 1, 1e-4, 4e-2);
-        hFr->Draw("axis");
-        GetYaxis()->SetRangeUser(0, 0.085);
-
-        gPad->SetLogx();
-        GetYaxis()->SetNdivisions(303);
-        SetFTO({14}, {6}, {1.4, 2.2, 0.4, 3.9});
-
-
-        if(iq != q2s.size() -1)
-            GetXaxis()->SetTickSize(0);
-        if(ib != 0)
-            GetYaxis()->SetTickSize(0);
+            gPad->SetLogx();
+            GetYaxis()->SetNdivisions(303);
+            SetFTO({14}, {6}, {1.4, 2.2, 0.4, 3.9});
 
 
+            /*
+            if(iq != q2s.size() -1)
+                GetXaxis()->SetTickSize(0);
+            if(ib != 0)
+                GetYaxis()->SetTickSize(0);
+            */
 
-        if(!dataMap.count({q2,beta})) {
-            cout << "Not existing " << q2 <<" "<< beta << endl;
-            continue;
+
+            if(!dataMap.count({q2,beta})) {
+                cout << "Not existing " << q2 <<" "<< beta << endl;
+                continue;
+            }
+            else {
+                cout << "Yes existing " << q2 <<" "<< beta << endl;
+            }
+            auto &points = dataMap.at({q2,beta});
+
+
+            TGraphErrors *gData = new TGraphErrors(points.size());
+
+            for(int j = 0; j < points.size(); ++j) {
+                gData->SetPoint(j, points[j].xp, points[j].xpSig);
+
+                double er = points[j].xpSig * points[j].errTot;
+                gData->SetPointError(j, 0, er);
+            }
+
+
+
+            gData->SetMarkerColor(kRed);
+            gData->SetLineColor(kRed);
+            gData->SetMarkerSize(0.3);
+            gData->SetMarkerStyle(20);
+            gData->Draw("pe same");
+
+            TGraph *gTh = new TGraph(points.size());
+            for(int j = 0; j < points.size(); ++j) {
+                gTh->SetPoint(j, points[j].xp, points[j].th);
+            }
+            gTh->SetLineColor(kBlue);
+            gTh->SetMarkerColor(kBlue);
+            gTh->Draw("*l same");
+
+
+
+
+            DrawLatex(0.5, 0.5, Form("%zu", points.size()));
+
+            ++ibeta;
+
         }
-        else {
-            cout << "Yes existing " << q2 <<" "<< beta << endl;
-        }
-        auto &points = dataMap.at({q2,beta});
-
-
-        TGraphErrors *gData = new TGraphErrors(points.size());
-
-        for(int j = 0; j < points.size(); ++j) {
-            gData->SetPoint(j, points[j].xp, points[j].xpSig);
-
-            double er = points[j].xpSig * points[j].errTot;
-            gData->SetPointError(j, 0, er);
-        }
-
-
-        
-        gData->SetMarkerColor(kRed);
-        gData->SetLineColor(kRed);
-        gData->SetMarkerSize(0.3);
-        gData->SetMarkerStyle(20);
-        gData->Draw("pe same");
-
-        TGraph *gTh = new TGraph(points.size());
-        for(int j = 0; j < points.size(); ++j) {
-            gTh->SetPoint(j, points[j].xp, points[j].th);
-        }
-        gTh->SetLineColor(kBlue);
-        gTh->SetMarkerColor(kBlue);
-        gTh->Draw("*l same");
-
-
-
-
-        DrawLatex(0.5, 0.5, Form("%zu", points.size()));
-
+        ++iq2;
     }
 
     //DrawLatexUp(-1.3, Form("Q^{2} = %g GeV^{2}", q2));
