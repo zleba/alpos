@@ -43,8 +43,8 @@ log                 = $(dirName)/logs/$(Process).log
 # if not set, default is 3 hours
 # longer requested job run times get more hit in the fairshare calculation
 #
-+RequestRuntime     = 4500
++RequestRuntime     = 6500
 #
 #
 ##########################
-queue 19
+queue $(nFiles)

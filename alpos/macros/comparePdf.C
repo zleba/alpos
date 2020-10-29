@@ -7,6 +7,10 @@ R__ADD_INCLUDE_PATH($PROJECT_DIR/dpdfLib)
 R__LOAD_LIBRARY($PROJECT_DIR/dpdfLib/DPDFset.so)
 R__LOAD_LIBRARY(/cvmfs/sft.cern.ch/lcg/releases/MCGenerators/lhapdf/6.2.1-c9645/x86_64-slc6-gcc7-opt/lib/libLHAPDF.so)
 
+// To compare two PDFs stored in the ROOT files
+
+
+
 #include "DPDFset.h"
 #include "plottingHelper.h"
    using namespace PlottingHelper;//pollute the namespace!
@@ -663,11 +667,11 @@ void comparePdf()
          {"Ext_nnlo_heraCjets", "AExt_nnlo_heraCjets" },
          */
 
-      { "AExt_nnlo_heraC", "BExt_nnlo_heraC"}, //Theory impact
-      { "AExt_nlo_heraC", "BExt_nlo_heraC"}, //Theory impact
+      //{ "AExt_nnlo_heraC", "BExt_nnlo_heraC"}, //Theory impact
+      //{ "AExt_nlo_heraC", "BExt_nlo_heraC"}, //Theory impact
 
-      { "AExt_nnlo_heraCjets", "BExt_nnlo_heraCjets"}, //Theory impact
-      { "AExt_nlo_heraCjets", "BExt_nlo_heraCjets"}, //Theory impact
+      //{ "AExt_nnlo_heraCjets", "BExt_nnlo_heraCjets"}, //Theory impact
+      //{ "AExt_nlo_heraCjets", "BExt_nlo_heraCjets"}, //Theory impact
 
 
       //{ "AExt_nnlo_heraCjets", "AExt_nlo_heraCjets"}, //Theory impact
@@ -680,7 +684,7 @@ void comparePdf()
       //{ "AExt_nnlo_heraC",  "AExt_nnlo_fps4D"},//old fit vs new fit
 
       //{ "AExt_nnlo_heraC",  "AExt_nnlo_heraCfps3D"},//old fit vs new fit
-      //{ "AExt_nnlo_heraC",  "AExt_nnlo_heraCfps4D"}//old fit vs new fit
+      { "AExt_nnlo_heraC",  "GExt_nnlo_heraCfps4D"}//old fit vs new fit
 
 
       /*

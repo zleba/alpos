@@ -5,7 +5,7 @@ from ROOT import PlottingHelper as ph
 
 
 import subprocess
-tab = subprocess.Popen("cd /afs/desy.de/user/z/zlebcr/h1/diff/alpos/farm/variants/AExt_nnlo_heraC_scan.str_dir/logs/ && grep ' | Summary: SuperTheory         ' * | sort -n | sed 's/\.out:/ /' | awk '{print $1, $5, $6}'", shell=True, stdout=subprocess.PIPE).stdout.read()
+tab = subprocess.Popen("cd /afs/desy.de/user/z/zlebcr/h1/diff/alpos/farm/variants/AExt_nnlo_heraCjets_scan.str_dir/logs/ && grep ' | Summary: SuperTheory         ' * | sort -n | sed 's/\.out:/ /' | awk '{print $1, $5, $6}'", shell=True, stdout=subprocess.PIPE).stdout.read()
 
 nums = []
 
@@ -79,5 +79,5 @@ ph.GetXaxis().SetTitle("Q^{2}_{cut} [GeV]")
 
 
 #ph.DrawLatexUp(can.GetPad(1), can.GetPad(5), 2, "This is a testing grid in Python");
-can.SaveAs("chi2Ndf.pdf");
+can.SaveAs("chi2NdfJets.pdf");
 

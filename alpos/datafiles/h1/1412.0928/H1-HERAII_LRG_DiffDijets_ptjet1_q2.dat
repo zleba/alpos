@@ -56,7 +56,7 @@ xpom_max           0.03
 ##########################################################
 
 Data {{
-ptjet1_min  ptjet1_max  q2_min q2_max   Sigma  tot     stat     sys    dThE     dEe     dHFS     dQ2      dxpom   dbeta   dptj1  dzpom    dxDijet dPhi    dt     dbgr   Hadr    dHadr    rad   InvBinSize
+ptjet1_min  ptjet1_max  Q2_min Q2_max   Sigma  tot     stat     sys    dThE     dEe     dHFS     dQ2      dxpom   dbeta   dptj1  dzpom    dxDijet dPhi    dt     dbgr   Hadr    dHadr    rad   InvBinSize
  5.5    7.0    4    6    3.35    15.6     9.1     12.7    0.4     5.9     -1.2    2.7     1.1    3.4     -1.3    5.8     2.9    0.6     -1.0    0.1    1.05   0.05    1.04                     0.333333
  7.0    9.0    4    6    1.23    18.6     15.1     10.9    -0.1     3.0     -6.1    1.3     1.2    1.5     -2.5    0.1     -0.7    0.0     -0.3    0.5    1.06   0.04    1.05                0.25
 9.0    15.0    4    6    0.122    30.1     26.6     14.2    7.8     0.5     -5.5    -0.1     0.7    0.3     -5.5    -1.2     -0.5    3.3     -2.2    0.8    1.04   0.03    1.06                0.0833333
@@ -78,7 +78,7 @@ ptjet1_min  ptjet1_max  q2_min q2_max   Sigma  tot     stat     sys    dThE     
 
 
 Subsets {
-    q2_min ptjet1_min  
+    Q2_min ptjet1_min  
 }
 
 Cuts { }

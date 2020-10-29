@@ -40,7 +40,7 @@ Tasks {{
    PrintTheorySet         PrintTheorySet
    AFitter                MyFit
    StatAnalysis           Stat
-   SavePDFTGraph          SavePDFTGraph
+   SavePDFTGraph          SavePDFTGraphPom
 #   ASaveDataTheory        ASaveDataTheory
 }}
 
@@ -93,7 +93,7 @@ Stat {{{
 }}}
 
 
-SavePDFTGraph {{{
+SavePDFTGraphPom {{{
    PDF                  QcdnumPDF  # LHAPDF6 
 #   PDF                  PDFQ0_diff  # LHAPDF6 
    nx                   100
@@ -102,6 +102,7 @@ SavePDFTGraph {{{
    LHAPDFoutput         lhaTest
    Alphas               QcdnumAlphas
    PDFQ0_diff           PDFQ0_diff
+   AdditionalParameters { IP_a0 IP_ap IP_b0 QcdnumInit.mcharm QcdnumInit.mbottom }
 }}}
 #
 ASaveDataTheory {{{

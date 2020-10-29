@@ -72,7 +72,7 @@ double getF2(string scheme, double mu, double q, double x)
    APFEL::SetAlphaEvolution("exact");
    APFEL::SetMaxFlavourAlpha(5);
    APFEL::SetMaxFlavourPDFs(5);
-   //APFEL::EnableMassRunning(PAR(EnableMassRunning));
+   APFEL::EnableMassRunning(1);
    APFEL::InitializeAPFEL_DIS();
    APFEL::SetPerturbativeOrder(iOrd);
 
@@ -107,7 +107,7 @@ int main()
    double q = sqrt(200);
    double z = 0.5;
    for(int i = 0; i < mu.size(); ++i) {
-      fonl[i] = getF2("FONLL-C", mu[i], q, z);
+      fonl[i] = 0;//getF2("FONLL-C", mu[i], q, z);
       zmns[i] = getF2("ZM-VFNS", mu[i], q, z);
       cout <<"RADEK " <<  mu[i] <<" : "<< fonl[i] << " "<< zmns[i] << endl;
    }

@@ -39,15 +39,16 @@ $heraI  H1incDDIS-HERA-I-LAr            datafiles/h1/0606004/h1_ddis_heraI-LAr.d
 $heraI  H1incDDIS-HERA-I-SpacMB         datafiles/h1/0606004/h1_ddis_heraI-SpaC-97MB.dat   ApfelDDISCS    Q2>=8.4   beta<=0.81   mx>=2
 $heraI  H1incDDIS-HERA-I-SpacTrg        datafiles/h1/0606004/h1_ddis_heraI-SpaC-97all.dat  ApfelDDISCS    Q2>=8.4   beta<=0.81   mx>=2
 
-$jets  H1-LRG-DiffDijets                datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets.dat         fastNLODiffDIS              # ptmin>=11 
+#$jets  H1-LRG-DiffDijets                datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets.dat         fastNLODiffDIS              # ptmin>=11 
+$jets  H1-LRG-DiffDijets                datafiles/h1/1412.0928/H1-HERAII_LRG_DiffDijets_ptjet1_q2.dat     fastNLODiffDIS #  ptjet1_min>100
 
 #  H1incDDIS-HERA-I-A            datafiles/h1/0606004/h1_ddis_heraI.dat          ApfelxxDDISCS   # Q2>=8.4   beta<=0.81   mx>=2
 $heraC H1incDDIS-Comb                 datafiles/h1/1203.4495/h1_ddis_Comb.dat         ApfelDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 $heraC H1incDDIS-LowE225              datafiles/h1/1107.3420/h1_ddis_lowE_225.dat     ApfelDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 $heraC H1incDDIS-LowE252              datafiles/h1/1107.3420/h1_ddis_lowE_252.dat     ApfelDDISCS   Q2>=8.4   beta<=0.81   mx>=2
 
-$fps3D H1FPS-3D            datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS.dat              ApfelDDISCS   Q2>=8.4   beta<=0.81  mx>=2  xp<0.05
-$fps4D H1FPS-4D            datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS-4D.dat           ApfelDDISCS   Q2>=8.4   beta<=0.81  mx>=2  xp<0.05
+$fps3D H1FPS-3D            datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS.dat              ApfelDDISCS   Q2>=8.4   beta<=0.81  mx>=2  xp<0.15
+$fps4D H1FPS-4D            datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS-4D.dat           ApfelDDISCS   Q2>=8.4   beta<=0.81  mx>=2  xp<0.15
 #     H1FPS-HII           datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS-tmax0p55.dat     ApfelDDISCS   Q2>=8.4   beta<=0.81  mx>=2  #xp<0.03
 
 #   #   H1FPS-HII-t0p55       datafiles/h1/1010.1476/H1-DDIS-HERAII-FPS-tmax0p55.dat         QcdnumDDISCS  Q2>=8.4  # beta<=0.81   mx>=2 xp<0.03
@@ -67,6 +68,7 @@ Tasks {{
    PrintTheorySet         PrintTheorySet
    AFitter                MyFit
    StatAnalysis           Stat
+#  SavePDFTGraph          SavePDFTGraphPom
    SaveDPDFTGraph         SaveDPDFTGraph
    ASaveDataTheory        ASaveDataTheory
 }}
@@ -98,12 +100,12 @@ MyFit {{{
    Chisq                        LogNormal
    
    FitParameters { 
-       #IP_ap
-       #IP_b0
-       #IR_a0
-       #IR_ap
-       #IR_b0
        IP_a0
+       IP_ap
+       IP_b0
+       IR_a0
+       IR_ap
+       IR_b0
        IR_n 
        PDFQ0_diff.g0  
        PDFQ0_diff.g1  
@@ -128,6 +130,21 @@ Stat {{{
 }}}
 
 
+
+SavePDFTGraphPom {{{
+#   PDF                  QcdnumPDF  # LHAPDF6 
+   PDF                  ApfelPDF  # LHAPDF6 
+   nx                   100
+   xmin                 0.004
+   Q2Values             { 1.75, 2.5, 8.5, 20, 90, 800 }
+   LHAPDFoutput         lhaTest_pom
+   Alphas               ApfelAs
+   PDFQ0_diff           PDFQ0_diff
+   AdditionalParameters { IP_a0 IP_ap IP_b0  IR_a0 IR_ap IR_b0  IR_n mc mb mu0  AlphasMz ApfelInit.ScaleFacMuR }
+}}}
+
+
+
 SaveDPDFTGraph {{{
    DPDF                 DPDF 
    nzpom                330
@@ -137,6 +154,8 @@ SaveDPDFTGraph {{{
    AsciiOutput          false
    Alphas               todo
 }}}
+
+
 
 ASaveDataTheory {{{
 }}}
@@ -363,6 +382,7 @@ PDFQ0_diff.s1                 2.2964
 PDFQ0_diff.s2                 0.56894
 PDFQ0_diff.s3                 0
 PDFQ0_diff.s4                 0
+PDFQ0_diff.K                  0.01
 
 PDFQ0_diff.v0               0
 PDFQ0_diff.v1               0
@@ -430,6 +450,7 @@ ApfelDDISCS.a0_IR            IR_a0
 ApfelDDISCS.ap_IR            IR_ap
 ApfelDDISCS.b0_IR            IR_b0
 ApfelDDISCS.n_IR             IR_n 
+ApfelDDISCS.ReggeonCS        H1FitA
 
 
 # --- APFEL

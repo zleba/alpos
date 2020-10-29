@@ -40,6 +40,38 @@ def replace(fName, sh, shId, sign): #0=cnt, 1=up, 2=dn
         return fOutName
 
 
+#For the template file fName replace the parameters with errors
+def parScan(fName, sh, sign): #0=cnt, 1=up, 2=dn
+    global pars
+    with open(fName, "rt") as fin:
+        #tag = ''
+        tag = sign
+        #if sign == 1:
+        #    tag = 'u'
+        #elif sign == 2:
+        #    tag = 'd'
+        fOutName = jobName +'/steering.str'+ str(tag) # fName
+        with open(fOutName, "wt") as fout:
+            #print( sh - 1)
+            for line in fin:
+                for p in pars:
+                    if p in sh:
+                        line = line.replace('@'+p, str(pars[p][sign]))
+                    else:
+                        line = line.replace('@'+p, str(pars[p][0]))
+                import os
+                line = line.replace('@outFile', os.environ['ALPOS_DIR']+'/farm/variants/'+ fOutName+'_dir'+'/'+'out'+'.root')
+
+                fout.write(line)
+        print fOutName
+        return fOutName
+
+
+
+
+
+
+
 #For the template file fName replace the parameters with errors (all possible combinations)
 def put2files(fName, shifts):
     import os
@@ -49,9 +81,19 @@ def put2files(fName, shifts):
         os.mkdir(jobName+'/logs')
     inFiles = []
     inFiles.append(replace(fName, [], 0, 0))
-    for i in range(len(shifts)):
-        inFiles.append(replace(fName, shifts[i], i+1, 1))
-        inFiles.append(replace(fName, shifts[i], i+1, 2))
+
+    if len(shifts) > 1:
+        for i in range(len(shifts)):
+            inFiles.append(replace(fName, shifts[i], i+1, 1))
+            inFiles.append(replace(fName, shifts[i], i+1, 2))
+    else:
+        sh = shifts[0][0]
+        print pars
+        for i in range(len(pars[sh])):
+            inFiles.append(parScan(fName, shifts[0], i))
+        
+
+
     return inFiles
 
 

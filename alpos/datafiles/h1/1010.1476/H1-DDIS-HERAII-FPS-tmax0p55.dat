@@ -32,6 +32,7 @@ e-polarity                       0.
 IsReducedCS                      true
 IsNC                             true
 tmin                             -0.55
+tmax                             -0.09
 
 ##########################################################          
 #

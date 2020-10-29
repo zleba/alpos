@@ -1,4 +1,4 @@
-tag=*fps*
+tag=GExt_nnlo_heraCfps4D*
 
 pwd=$PWD
 cd $pwd/variants
@@ -16,6 +16,7 @@ cd $pwd
 
 for f in variants/${tag}_dir
 do
-   echo $f
-   condor_submit  -batch-name `basename $f` dirName=$f  alpos.submit
+   #echo $f
+   nFiles=`ls  $f/steering.str?  $f/steering.str??  | wc -l`
+   condor_submit  -batch-name `basename $f` dirName=$f nFiles=$nFiles  alpos.submit
 done

@@ -101,13 +101,232 @@ bool ASaveDataTheory::Execute(){
    const auto& supdata = TheoryHandler::Handler()->GetSuperPair().first;
    const auto& suptheo = TheoryHandler::Handler()->GetSuperPair().second;
 
+   /*
+   cout << "Hope1 has size " << TheoryHandler::Handler()->GetAllSubsetPairs().size() << endl;
+   for(const auto &id : TheoryHandler::Handler()->GetAllSubsetPairs()) {
+      cout << id.first<<" "<< id.second.first->GetFunctionName()  << endl;
+      auto data = id.second.first->GetValues();
+      auto th   = id.second.second->GetValues();
+      cout << "Ultimate hope " << data.size() <<" " << th.size();
+   }
+   cout << "Hope2 has size " << TheoryHandler::Handler()->GetDataTheoryPairs().size() << endl;
+   for(const auto &id : TheoryHandler::Handler()->GetDataTheoryPairs()) {
+      cout << id.first <<" "<<endl;// id.second.GetFunctionName()  << endl;
+   }
+   auto allNoCuts =   TheoryHandler::Handler()->GetAllSubsetPairs();           
+   */
+
    std::vector<AData*> dataChildren = supdata->GetChildren();           
    std::vector<AParmFuncBase<double>*> theoChildren = suptheo->GetChildren();   
 
    cout << "dataSize theorSize " << dataChildren.size() << " "<< theoChildren.size() << endl;
 
+   for(int iChild = 0; iChild < dataChildren.size(); ++iChild) { //loop over different data samples
 
+      TString name = "sample_";
+      name +=  theoChildren[iChild]->GetAlposName();
+      if(name.Contains(':'))
+         name = name(0, name.First(':'));
+      name = name.ReplaceAll('-','_');
+      name.ReplaceAll("_cuts", "");
+
+      //cout << "Helenka name is " << name << endl;
+
+      //Search for proper data set
+
+      //auto dataAll =  TheoryHandler::Handler()->GetAllSubsetPairs().begin()->second.first;
+      //auto thAll   =  TheoryHandler::Handler()->GetAllSubsetPairs().begin()->second.second;
+
+      AData *dataAll = nullptr;
+      AParmFuncBase<double> *thAll = nullptr;
+
+      //auto thAll = id.second.second;
+
+      bool isFound = false;
+      for(const auto &id : TheoryHandler::Handler()->GetAllSubsetPairs()) {
+         TString noCutName = id.first;
+         TString CutName = noCutName;
+         CutName.ReplaceAll("_NoCuts", "");
+         CutName.ReplaceAll("-", "_");
+         //cout << "Hela " << name  <<" "<< CutName << endl;
+         if(name.Contains(CutName)) {
+            dataAll = id.second.first;
+            thAll = id.second.second;
+            isFound = true;
+         }
+      }
+      if(!isFound) {
+         cout << "Not found, setting equal " << name << endl;
+         dataAll =  dataChildren[iChild];
+         thAll   =  theoChildren[iChild];
+      }
+
+
+      /*
+      int iChild;
+      for(iChild = 0; iChild < dataChildren.size(); ++iChild) {
+         if( TString(theoChildren[iChild]->GetAlposName()).Contains(CutName))
+            break;
+      }
+      assert(iChild < dataChildren.size());
+      */
+
+
+      const std::vector<double>* dataPts = &dataChildren[iChild]->GetValues();
+      const std::vector<double>* theoPts = &theoChildren[iChild]->GetValues();
+      assert(dataPts->size() == theoPts->size());
+
+      const std::vector<double> *dataAllPts = &dataAll->GetValues();
+      const std::vector<double> *theoAllPts = &thAll->GetValues();
+      assert(dataAllPts->size() == theoAllPts->size());
+
+      //cout << "Helenka " <<  id.first << endl;
+      //cout << "Radek all " << theoChildren[iChild]->GetAlposName() << endl;
+
+      auto dataTable = dataChildren[iChild]->GetDataTable(); //data table for sample iChild (the cut data removed)
+      auto dataTableAll = dataAll->GetDataTable();  //all data points for iChild sample (without cuts)
+
+
+      //cout << "RadekRadek " << name << " " << id.first<<" "<<  TheoryHandler::Handler()->GetAllSubsetPairs().size() <<" "<< dataChildren.size() << endl;
+
+
+      if(!name.Contains("jets")) {
+
+         vector<double> tAbs, tAbsCut;
+         cout << "Check name : " << name << endl;
+         if(name.Contains("FPS_4D")) tAbs =  dataTableAll.at("tAbs");
+         vector<double> q2      = dataTableAll.at("Q2");
+         vector<double> xpom    = dataTableAll.at("xp");
+         vector<double> beta    = dataTableAll.at("beta");
+         vector<double> dataUnc = dataTableAll.at("tot");
+
+         vector<double> q2Cut   = dataTable.at("Q2");
+         vector<double> xpomCut = dataTable.at("xp");
+         vector<double> betaCut = dataTable.at("beta");
+         if(name.Contains("FPS_4D")) tAbsCut =  dataTable.at("tAbs");
+
+
+         assert(q2.size() == dataAllPts->size());
+
+
+         TTree *ThDataTab = new TTree(name,"table with data and theory");
+
+         double xp_, q2_, beta_, tAbs_, xpSigData_, xpSigDataErr_, xpSigTh_, xpSigThErr_;
+         double xpSigThOrgA_, xpSigThOrgB_;
+
+         ThDataTab->Branch("xp",&xp_,"xp/D");
+         ThDataTab->Branch("Q2",&q2_,"Q2/D");
+         ThDataTab->Branch("beta",&beta_,"beta/D");
+         if(name.Contains("FPS_4D"))
+             ThDataTab->Branch("tAbs",&tAbs_,"tAbs/D");
+         ThDataTab->Branch("xpSigData",&xpSigData_,"xpSigData/D");
+         ThDataTab->Branch("xpSigDataErr",&xpSigDataErr_,"xpSigDataErr/D");
+         ThDataTab->Branch("xpSigDataErrUnc",&xpSigDataErr_,"xpSigDataErr/D");
+         ThDataTab->Branch("xpSigTh",&xpSigTh_,"xpSigTh/D");
+         ThDataTab->Branch("xpSigThErr",&xpSigThErr_,"xpSigThErr/D");
+
+         bool isInside = false;
+         ThDataTab->Branch("isInside",&isInside,"xpSigThErr/B");
+
+         ThDataTab->Branch("xpSigThOrgA",&xpSigThOrgA_,"xpSigThOrgA/D");
+         ThDataTab->Branch("xpSigThOrgB",&xpSigThOrgB_,"xpSigThOrgB/D");
+
+         double sSqrt = 319;
+         if(name.Contains("225"))
+            sSqrt = 225;
+         else if(name.Contains("252"))
+            sSqrt = 252;
+         else if(name.Contains("H1incDDIS-HERA-I-SpacMB") || name.Contains("H1incDDIS-HERA-I-SpacTrg"))
+            sSqrt = 301;
+
+
+         for(int i = 0; i < dataAllPts->size(); ++i) {
+            //cout << " "<<beta[i] <<" "<< q2[i] <<" "<<  xpom[i] <<" : "<< dataPts->at(i) << endl;
+            xp_ = xpom[i];
+            q2_ = q2[i];
+            beta_ = beta[i];
+            if(name.Contains("FPS_4D"))
+               tAbs_ = tAbs[i];
+            xpSigData_ = dataAllPts->at(i);
+            xpSigDataErr_ = dataUnc[i] * 0.01; //from % to relErr
+            xpSigTh_ = theoAllPts->at(i);
+            xpSigThErr_ = 0;
+
+            //Search in subset
+            isInside = false;
+            for(int j = 0; j < dataPts->size(); ++j) {
+               if(q2Cut[j] == q2_ && xpomCut[j] == xp_ && beta_ == betaCut[j]) {
+                  if(name.Contains("FPS_4D") && tAbs_ !=  tAbsCut[j]) continue;
+                  isInside = true;
+                  assert(theoAllPts->at(i) == theoPts->at(j));
+               }
+            }
+            //cout << "q2_ xpom beta " << q2_ <<" "<< xp_ <<" " << beta_ <<" "<< isInside << endl;
+
+            xpSigThOrgA_ = getSigRed2006(1, xp_, q2_, beta_, sSqrt);
+            xpSigThOrgB_ = getSigRed2006(2, xp_, q2_, beta_, sSqrt);
+
+            ThDataTab->Fill();
+         }
+      }
+      else { //for jets
+         vector<double> q2_min      = dataTableAll.at("Q2_min");
+         vector<double> q2_max      = dataTableAll.at("Q2_max");
+         vector<double> pt_min      = dataTableAll.at("ptjet1_min");
+         vector<double> pt_max      = dataTableAll.at("ptjet1_max");
+
+         vector<double> dataUnc = dataTableAll.at("tot");
+         assert(q2_min.size() == dataAllPts->size());
+         assert(dataPts->size() == dataAllPts->size());
+
+         TTree *ThDataTab = new TTree(name,"table with data and theory");
+
+
+         double xp_, q2_, beta_, SigData_, SigDataErr_, SigTh_, SigThErr_;
+
+
+         double q2_min_, q2_max_, pt_min_, pt_max_; 
+
+         ThDataTab->Branch("q2_min",&q2_min_,"q2_min/D");
+         ThDataTab->Branch("q2_max",&q2_max_,"q2_max/D");
+
+         ThDataTab->Branch("pt_min",&pt_min_,"pt_min/D");
+         ThDataTab->Branch("pt_max",&pt_max_,"pt_max/D");
+
+
+         ThDataTab->Branch("SigData",&SigData_,"SigData/D");
+         ThDataTab->Branch("SigDataErr",&SigDataErr_,"SigDataErr/D");
+         ThDataTab->Branch("SigTh",&SigTh_,"SigTh/D");
+         ThDataTab->Branch("SigThErr",&SigThErr_,"SigThErr/D");
+
+
+         for(int i = 0; i < dataAllPts->size(); ++i) {
+            //cout << " "<<beta[i] <<" "<< q2[i] <<" "<<  xpom[i] <<" : "<< dataPts->at(i) << endl;
+            q2_min_ = q2_min[i];
+            q2_max_ = q2_max[i];
+            pt_min_ = pt_min[i];
+            pt_max_ = pt_max[i];
+
+            SigData_ = dataAllPts->at(i);
+            SigDataErr_ = dataUnc[i] * 0.01; //from % to relErr
+            SigTh_ = theoAllPts->at(i);
+            SigThErr_ = 0;
+
+            ThDataTab->Fill();
+         }
+      }
+
+
+
+
+   }
+
+
+
+   /*
    for(int iChild = 0; iChild < dataChildren.size(); ++iChild) {
+
+      cout << "Radek all " << theoChildren[iChild]->GetAlposName() << endl;
 
       TString name = "sample_";
       name +=  theoChildren[iChild]->GetAlposName();
@@ -217,6 +436,7 @@ bool ASaveDataTheory::Execute(){
          }
       }
    }
+   */
 
    //cout << "Helenka " << endl;
    //exit(0);

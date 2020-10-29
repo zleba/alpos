@@ -78,7 +78,7 @@ void dplotter(TString inFile = "../testA/alpos.out.root")
     inFile = "../farm/variants/AExt_nnlo_heraCjets.str_dir/steering.str0_dir/out.root";
     //inFile = "../farm/variants/Ext_nloF_heraI.str_dir/steering.str0_dir/out.root";
 
-    inFile = "../farm/variants/AExt_nnlo_heraCfps4D.str_dir/steering.str0_dir/out.root";
+    inFile = "../farm/variants/GExt_nnlo_heraCfps4D.str_dir/steering.str0_dir/out.root";
 
 
     //inFile = "../steering.str0_FactorizationNNLO/out.root";

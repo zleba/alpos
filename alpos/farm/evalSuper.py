@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("super_steering", help="input super-steering file")
 args = parser.parse_args()
 
-if  'AExt' in args.super_steering:
+if  'AExt' in args.super_steering or   'BExt' in args.super_steering or  'CExt' in args.super_steering or  'FExt' in args.super_steering or  'GExt' in args.super_steering :
    orders   = ['nlo', 'nnlo']
 else:
    orders   = ['nloF']
